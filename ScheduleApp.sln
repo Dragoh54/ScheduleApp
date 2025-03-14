@@ -1,0 +1,104 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserService", "UserService", "{CD5720EA-3D92-4406-BDE0-C1CAFF601ABC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", "{17C4032D-B367-45AC-AB81-FE4478D79B91}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScheduleService", "ScheduleService", "{B4C6BBDE-87EF-4945-AFBA-7F0CFE47834C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MeetingService", "MeetingService", "{005ABFEA-DF50-442C-9E4E-90F0D1F79006}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Api", "backend\ApiGateway\ApiGateway.Api\ApiGateway.Api.csproj", "{9EFBE1A1-F37B-4C95-B64D-28AD188235B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleService.Api", "backend\ScheduleService\ScheduleService.Api\ScheduleService.Api.csproj", "{27A76365-19CD-4667-80FE-294E5291A530}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Api", "backend\UserService\UserService.Api\UserService.Api.csproj", "{76DC1668-AFA1-4E2C-82C2-AE8E0099CD89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Application", "backend\UserService\UserService.Application\UserService.Application.csproj", "{71CA3513-2E08-4019-AE3C-38ECFD2DA71A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.DataAccess", "backend\UserService\UserService.DataAccess\UserService.DataAccess.csproj", "{C46F644A-65BE-4482-8908-C73681D34F4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleService.Application", "backend\ScheduleService\ScheduleService.Application\ScheduleService.Application.csproj", "{514147A6-232B-404E-89E6-102B55B8DE68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleService.DataAccess", "backend\ScheduleService\ScheduleService.DataAccess\ScheduleService.DataAccess.csproj", "{D1EDE0B3-F177-4DE2-9602-9D868D02E9E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleService.DomainModel", "backend\ScheduleService\ScheduleService.DomainModel\ScheduleService.DomainModel.csproj", "{922D2472-0D26-4976-9225-0A7FA3BA26FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.Api", "backend\MeetingService\MeetingService.Api\MeetingService.Api.csproj", "{45EC3268-5DA4-4494-8947-CF8F9BC518B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.DataAccess", "backend\MeetingService\MeetingService.DataAccess\MeetingService.DataAccess.csproj", "{052C3D29-42EA-417C-AC0C-D4487F7BEDDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.DomainModel", "backend\MeetingService\MeetingService.DomainModel\MeetingService.DomainModel.csproj", "{1D344806-80A3-438F-95A8-31783C858E2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.Application", "backend\MeetingService\MeetingService.Application\MeetingService.Application.csproj", "{A173F7A2-CA1A-42D0-9F90-7CD1535143BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9EFBE1A1-F37B-4C95-B64D-28AD188235B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EFBE1A1-F37B-4C95-B64D-28AD188235B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EFBE1A1-F37B-4C95-B64D-28AD188235B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EFBE1A1-F37B-4C95-B64D-28AD188235B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27A76365-19CD-4667-80FE-294E5291A530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27A76365-19CD-4667-80FE-294E5291A530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27A76365-19CD-4667-80FE-294E5291A530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27A76365-19CD-4667-80FE-294E5291A530}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76DC1668-AFA1-4E2C-82C2-AE8E0099CD89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76DC1668-AFA1-4E2C-82C2-AE8E0099CD89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76DC1668-AFA1-4E2C-82C2-AE8E0099CD89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76DC1668-AFA1-4E2C-82C2-AE8E0099CD89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71CA3513-2E08-4019-AE3C-38ECFD2DA71A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71CA3513-2E08-4019-AE3C-38ECFD2DA71A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71CA3513-2E08-4019-AE3C-38ECFD2DA71A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71CA3513-2E08-4019-AE3C-38ECFD2DA71A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C46F644A-65BE-4482-8908-C73681D34F4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C46F644A-65BE-4482-8908-C73681D34F4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C46F644A-65BE-4482-8908-C73681D34F4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C46F644A-65BE-4482-8908-C73681D34F4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{514147A6-232B-404E-89E6-102B55B8DE68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{514147A6-232B-404E-89E6-102B55B8DE68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{514147A6-232B-404E-89E6-102B55B8DE68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{514147A6-232B-404E-89E6-102B55B8DE68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1EDE0B3-F177-4DE2-9602-9D868D02E9E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1EDE0B3-F177-4DE2-9602-9D868D02E9E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1EDE0B3-F177-4DE2-9602-9D868D02E9E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1EDE0B3-F177-4DE2-9602-9D868D02E9E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{922D2472-0D26-4976-9225-0A7FA3BA26FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{922D2472-0D26-4976-9225-0A7FA3BA26FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{922D2472-0D26-4976-9225-0A7FA3BA26FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{922D2472-0D26-4976-9225-0A7FA3BA26FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45EC3268-5DA4-4494-8947-CF8F9BC518B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45EC3268-5DA4-4494-8947-CF8F9BC518B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45EC3268-5DA4-4494-8947-CF8F9BC518B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45EC3268-5DA4-4494-8947-CF8F9BC518B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{052C3D29-42EA-417C-AC0C-D4487F7BEDDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{052C3D29-42EA-417C-AC0C-D4487F7BEDDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{052C3D29-42EA-417C-AC0C-D4487F7BEDDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{052C3D29-42EA-417C-AC0C-D4487F7BEDDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D344806-80A3-438F-95A8-31783C858E2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D344806-80A3-438F-95A8-31783C858E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D344806-80A3-438F-95A8-31783C858E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D344806-80A3-438F-95A8-31783C858E2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A173F7A2-CA1A-42D0-9F90-7CD1535143BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A173F7A2-CA1A-42D0-9F90-7CD1535143BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A173F7A2-CA1A-42D0-9F90-7CD1535143BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A173F7A2-CA1A-42D0-9F90-7CD1535143BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9EFBE1A1-F37B-4C95-B64D-28AD188235B1} = {17C4032D-B367-45AC-AB81-FE4478D79B91}
+		{27A76365-19CD-4667-80FE-294E5291A530} = {B4C6BBDE-87EF-4945-AFBA-7F0CFE47834C}
+		{76DC1668-AFA1-4E2C-82C2-AE8E0099CD89} = {CD5720EA-3D92-4406-BDE0-C1CAFF601ABC}
+		{71CA3513-2E08-4019-AE3C-38ECFD2DA71A} = {CD5720EA-3D92-4406-BDE0-C1CAFF601ABC}
+		{C46F644A-65BE-4482-8908-C73681D34F4E} = {CD5720EA-3D92-4406-BDE0-C1CAFF601ABC}
+		{514147A6-232B-404E-89E6-102B55B8DE68} = {B4C6BBDE-87EF-4945-AFBA-7F0CFE47834C}
+		{D1EDE0B3-F177-4DE2-9602-9D868D02E9E3} = {B4C6BBDE-87EF-4945-AFBA-7F0CFE47834C}
+		{922D2472-0D26-4976-9225-0A7FA3BA26FC} = {B4C6BBDE-87EF-4945-AFBA-7F0CFE47834C}
+		{45EC3268-5DA4-4494-8947-CF8F9BC518B5} = {005ABFEA-DF50-442C-9E4E-90F0D1F79006}
+		{052C3D29-42EA-417C-AC0C-D4487F7BEDDE} = {005ABFEA-DF50-442C-9E4E-90F0D1F79006}
+		{1D344806-80A3-438F-95A8-31783C858E2B} = {005ABFEA-DF50-442C-9E4E-90F0D1F79006}
+		{A173F7A2-CA1A-42D0-9F90-7CD1535143BB} = {005ABFEA-DF50-442C-9E4E-90F0D1F79006}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,59 @@
+﻿services:
+  #---------------------- DATABASES -------------------------
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${POSTGRES_PORTS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      
+  #TODO: ADD postgres for second service    
+        
+  redis:
+    image: redis:latest
+    container_name: redis
+    env_file:
+      - .env
+    ports:
+      - ${REDIS_PORTS}
+    volumes:
+      - redis_data:/var/lib/redis/data
+        
+  mongodb:
+    image: mongo:latest
+    container_name: mongo
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+        - ${MOVIE_MONGO_PORTS}
+    volumes:
+      - mongodb_data:/var/lib/mongodb/data
+        
+  #---------------------- MESSAGE-BROKER --------------------
+  rabbitmq:
+      image: rabbitmq:latest
+      container_name: rabbitmq
+      env_file:
+        - .env
+      environment:
+        RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+        RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      ports:
+        - ${RABBITMQ_PORTS}
+      volumes:
+        - rabbitmq_data:/var/lib/rabbitmq/data
+  
+  #---------------------- SERVICES --------------------------
+  
+  #---------------------- ELK -------------------------------
+    
