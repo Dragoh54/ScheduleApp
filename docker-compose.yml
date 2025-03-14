@@ -1,31 +1,83 @@
-﻿services:
+﻿#---------------------- SERVICES ----------------------------
+services:
   #---------------------- DATABASES -------------------------
-  postgres:
+  user_postgres:
     image: postgres:latest
-    container_name: postgres
+    container_name: user_postgres
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${USER_SERVICE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${USER_SERVICE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${USER_SERVICE_POSTGRES_DB}
     ports:
-      - ${POSTGRES_PORTS}
+      - ${USER_SERVICE_POSTGRES_PORTS}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      
-  #TODO: ADD postgres for second service    
-        
-  redis:
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U USER_SERVICE_POSTGRES_USER -d USER_SERVICE_POSTGRES_PASSWORD -t 10',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  meeting_postgres:
+    image: postgres:latest
+    container_name: meeting_postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${MEETING_SERVICE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${MEETING_SERVICE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${MEETING_SERVICE_POSTGRES_DB}
+    ports:
+      - ${MEETING_SERVICE_POSTGRES_PORTS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U MEETING_SERVICE_POSTGRES_USER -d MEETING_SERVICE_POSTGRES_PASSWORD -t 10',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  schedule_redis:
     image: redis:latest
-    container_name: redis
+    container_name: schedule_redis
     env_file:
       - .env
     ports:
-      - ${REDIS_PORTS}
+      - ${SCHEDULE_SERVICE_REDIS_PORTS}
     volumes:
       - redis_data:/var/lib/redis/data
-        
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  meeting_redis:
+    image: redis:latest
+    container_name: meeting_redis
+    env_file:
+      - .env
+    ports:
+      - ${MEETING_SERVICE_REDIS_PORTS}
+    volumes:
+      - redis_data:/var/lib/redis/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5  
+
   mongodb:
     image: mongo:latest
     container_name: mongo
@@ -35,25 +87,44 @@
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
-        - ${MOVIE_MONGO_PORTS}
+        - ${MONGO_PORTS}
     volumes:
       - mongodb_data:/var/lib/mongodb/data
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
         
   #---------------------- MESSAGE-BROKER --------------------
   rabbitmq:
-      image: rabbitmq:latest
+      image: rabbitmq:3.10.7-management
       container_name: rabbitmq
+      restart: always
       env_file:
         - .env
       environment:
         RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
         RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: ${RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS}
       ports:
-        - ${RABBITMQ_PORTS}
+        - "${RABBITMQ_PORT_AMQP}"
+        - "${RABBITMQ_PORT_UI}"
       volumes:
         - rabbitmq_data:/var/lib/rabbitmq/data
+      healthcheck:
+        test: rabbitmq-diagnostics check_port_connectivity
+        interval: 30s
+        timeout: 30s
+        retries: 10
   
   #---------------------- SERVICES --------------------------
   
   #---------------------- ELK -------------------------------
     
+#---------------------- VOLUMES -----------------------------
+volumes:
+  postgres_data:
+  redis_data:
+  mongodb_data:
+  rabbitmq_data:
