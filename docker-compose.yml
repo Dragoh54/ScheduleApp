@@ -118,7 +118,57 @@ services:
       retries: 10
   
   #---------------------- SERVICES --------------------------
-  
+  api_gateway:
+    build:
+      context: .
+      dockerfile: /backend/ApiGateway/ApiGateway.Api/Dockerfile
+    container_name: api_gateway
+    env_file:
+      - .env
+    ports:
+      - "5004:80"
+    depends_on:
+      - user_service
+      - schedule_service
+      - meeting_service
+
+  user_service:
+    build:
+      context: .
+      dockerfile: /backend/UserService/UserService.Api/Dockerfile
+    container_name: user_service
+    env_file:
+      - .env
+    ports:
+      - "5001:80"
+    depends_on:
+      - user_postgres
+
+  schedule_service:
+    build:
+      context: .
+      dockerfile: /backend/ScheduleService/ScheduleService.Api/Dockerfile
+    container_name: schedule_service
+    env_file:
+      - .env
+    ports:
+      - "5002:80"
+    depends_on:
+      - mongodb
+
+  meeting_service:
+    build:
+      context: .
+      dockerfile: /backend/MeetingService/MeetingService.Api/Dockerfile
+    container_name: meeting_service
+    env_file:
+      - .env
+    ports:
+      - "5003:80"
+    depends_on:
+      - meeting_postgres
+      - rabbitmq
+
   #---------------------- ELK -------------------------------
   elasticsearch:
     container_name: elasticsearch

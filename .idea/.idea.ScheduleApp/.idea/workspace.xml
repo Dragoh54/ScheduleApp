@@ -38,8 +38,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff52a424-1181-4a93-ad4b-dde018e3e750" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/logstash.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/ApiGateway/ApiGateway.Api/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/MeetingService/MeetingService.Api/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/ScheduleService/ScheduleService.Api/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/UserService/UserService.Api/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ScheduleApp/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ScheduleApp/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/ApiGateway/ApiGateway.Api/ApiGateway.Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/backend/ApiGateway/ApiGateway.Api/ApiGateway.Api.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/MeetingService/MeetingService.Api/MeetingService.Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/backend/MeetingService/MeetingService.Api/MeetingService.Api.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/ScheduleService/ScheduleService.Api/ScheduleService.Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/backend/ScheduleService/ScheduleService.Api/ScheduleService.Api.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/UserService/UserService.Api/UserService.Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/backend/UserService/UserService.Api/UserService.Api.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +57,20 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Dragoh54&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Dragoh54/ScheduleApp.git&quot;,
+    &quot;accountId&quot;: &quot;0ea3f20f-074d-459d-b3a2-f9dff6d7e502&quot;
+  }
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -571,8 +592,99 @@
         <option name="Build" />
       </method>
     </configuration>
+    <configuration name="ApiGateway.Api/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="apigateway.api" />
+          <option name="containerName" value="apigateway.api" />
+          <option name="contextFolderPath" value="D:\Projects\ScheduleApp" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="8080" />
+                <option name="hostIp" value="127.0.0.1" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="backend/ApiGateway/ApiGateway.Api/Dockerfile" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="MeetingService.Api/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="meetingservice.api" />
+          <option name="containerName" value="meetingservice.api" />
+          <option name="contextFolderPath" value="D:\Projects\ScheduleApp" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="8080" />
+                <option name="hostIp" value="127.0.0.1" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="backend/MeetingService/MeetingService.Api/Dockerfile" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ScheduleService.Api/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="scheduleservice.api" />
+          <option name="containerName" value="scheduleservice.api" />
+          <option name="contextFolderPath" value="D:\Projects\ScheduleApp" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="8080" />
+                <option name="hostIp" value="127.0.0.1" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="backend/ScheduleService/ScheduleService.Api/Dockerfile" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="UserService.Api/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="userservice.api" />
+          <option name="containerName" value="userservice.api" />
+          <option name="contextFolderPath" value="D:\Projects\ScheduleApp" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="8080" />
+                <option name="hostIp" value="127.0.0.1" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="backend/UserService/UserService.Api/Dockerfile" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
       <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
+      <deployment type="dockerfile">
         <settings />
       </deployment>
       <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
@@ -637,6 +749,7 @@
       <workItem from="1741891231755" duration="38000" />
       <workItem from="1741936204792" duration="49000" />
       <workItem from="1741936308646" duration="8671000" />
+      <workItem from="1741963790206" duration="1163000" />
     </task>
     <servers />
   </component>
