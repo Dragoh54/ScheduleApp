@@ -1,5 +1,4 @@
-﻿#---------------------- SERVICES ----------------------------
-services:
+﻿services:
   #---------------------- DATABASES -------------------------
   user_postgres:
     image: postgres:latest
@@ -100,7 +99,6 @@ services:
   rabbitmq:
       image: rabbitmq:3.10.7-management
       container_name: rabbitmq
-      restart: always
       env_file:
         - .env
       environment:
@@ -121,6 +119,73 @@ services:
   #---------------------- SERVICES --------------------------
   
   #---------------------- ELK -------------------------------
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.14.3
+    env_file:
+      - .env
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.watcher.enabled=false
+    ports:
+      - ${ELASTIC_PORTS}
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200/_cluster/health?wait_for_status=green&timeout=50s" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - elk
+    
+  logstash:
+    image: logstash:7.9.1
+    container_name: logstash
+    env_file:
+      - .env
+    ports:
+      - ${LOGSTASH_PORTS}
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9600" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - elk
+
+  kibana:
+    image: kibana:8.14.3
+    container_name: kibana
+    env_file:
+      - .env
+    ports:
+      - ${KIBANA_PORTS}
+    depends_on:
+      - elasticsearch
+    volumes:
+      - kibana_data:/usr/share/kibana/data
+    environment:
+      - ELASTICSEARCH_URL=${ELASTIC_URL}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5601/api/status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - elk
+
+#---------------------- NETWORKS ----------------------------
+networks:
+  elk:
+    driver: bridge
     
 #---------------------- VOLUMES -----------------------------
 volumes:
@@ -128,3 +193,5 @@ volumes:
   redis_data:
   mongodb_data:
   rabbitmq_data:
+  elasticsearch_data:
+  kibana_data:
