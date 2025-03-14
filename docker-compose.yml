@@ -117,6 +117,11 @@
         retries: 10
   
   #---------------------- SERVICES --------------------------
+  apigateway:
+    container_name: apigateway
+    image:
+    env_file:
+      - .env
   
   #---------------------- ELK -------------------------------
   elasticsearch:

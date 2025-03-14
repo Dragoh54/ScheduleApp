@@ -38,7 +38,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff52a424-1181-4a93-ad4b-dde018e3e750" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/logstash.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.nb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ScheduleApp/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ScheduleApp/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
@@ -636,7 +636,7 @@
       <workItem from="1741869072213" duration="8302000" />
       <workItem from="1741891231755" duration="38000" />
       <workItem from="1741936204792" duration="49000" />
-      <workItem from="1741936308646" duration="11975000" />
+      <workItem from="1741936308646" duration="12896000" />
     </task>
     <servers />
   </component>
