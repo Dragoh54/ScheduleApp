@@ -125,12 +125,19 @@ services:
     container_name: api_gateway
     env_file:
       - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5004:80"
+      - ${API_GATEWAY_SERVICE_PORTS}
     depends_on:
       - user_service
       - schedule_service
       - meeting_service
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:${API_GATEWAY_SERVICE_PORTS%:*}/health" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
 
   user_service:
     build:
@@ -139,10 +146,17 @@ services:
     container_name: user_service
     env_file:
       - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5001:80"
+      - ${USER_SERVICE_PORTS}
     depends_on:
       - user_postgres
+    #    healthcheck:
+    #      test: [ "CMD", "curl", "-f", "http://localhost:${USER_SERVICE_PORTS%:*}/health" ]
+    #      interval: 30s
+    #      timeout: 10s
+    #      retries: 3
 
   schedule_service:
     build:
@@ -151,10 +165,17 @@ services:
     container_name: schedule_service
     env_file:
       - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5002:80"
+      - ${SCHEDULE_SERVICE_PORTS}
     depends_on:
       - mongodb
+    #    healthcheck:
+    #      test: [ "CMD", "curl", "-f", "http://localhost:${SCHEDULE_SERVICE_PORTS%:*}/health" ]
+    #      interval: 30s
+    #      timeout: 10s
+    #      retries: 3
 
   meeting_service:
     build:
@@ -163,11 +184,18 @@ services:
     container_name: meeting_service
     env_file:
       - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5003:80"
+      - ${MEETING_SERVICE_PORTS}
     depends_on:
       - meeting_postgres
       - rabbitmq
+    #    healthcheck:
+    #      test: [ "CMD", "curl", "-f", "http://localhost:${MEETING_SERVICE_PORTS%:*}/health" ]
+    #      interval: 30s
+    #      timeout: 10s
+    #      retries: 3
 
   #---------------------- ELK -------------------------------
   elasticsearch:
