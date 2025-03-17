@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MeetingService.DomainModel\MeetingService.DomainModel.csproj" />
+    </ItemGroup>
+
 </Project>
