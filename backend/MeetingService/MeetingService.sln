@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.Api", "MeetingService.Api\MeetingService.Api.csproj", "{100E9E40-6976-47CD-9651-7D8224B1E3F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.Application", "MeetingService.Application\MeetingService.Application.csproj", "{F82EDC08-18C7-453B-B6B3-CE556C2CC393}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.DataAccess", "MeetingService.DataAccess\MeetingService.DataAccess.csproj", "{E7539BAF-F896-42BB-8B67-564AA8639B2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeetingService.DomainModel", "MeetingService.DomainModel\MeetingService.DomainModel.csproj", "{BA5A1AA5-31F8-4718-8192-83B60ACD0754}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{100E9E40-6976-47CD-9651-7D8224B1E3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100E9E40-6976-47CD-9651-7D8224B1E3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100E9E40-6976-47CD-9651-7D8224B1E3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100E9E40-6976-47CD-9651-7D8224B1E3F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82EDC08-18C7-453B-B6B3-CE556C2CC393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82EDC08-18C7-453B-B6B3-CE556C2CC393}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82EDC08-18C7-453B-B6B3-CE556C2CC393}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82EDC08-18C7-453B-B6B3-CE556C2CC393}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7539BAF-F896-42BB-8B67-564AA8639B2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7539BAF-F896-42BB-8B67-564AA8639B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7539BAF-F896-42BB-8B67-564AA8639B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7539BAF-F896-42BB-8B67-564AA8639B2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA5A1AA5-31F8-4718-8192-83B60ACD0754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA5A1AA5-31F8-4718-8192-83B60ACD0754}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA5A1AA5-31F8-4718-8192-83B60ACD0754}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA5A1AA5-31F8-4718-8192-83B60ACD0754}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
