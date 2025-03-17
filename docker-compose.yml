@@ -1,5 +1,4 @@
-﻿#---------------------- SERVICES ----------------------------
-services:
+﻿services:
   #---------------------- DATABASES -------------------------
   user_postgres:
     image: postgres:latest
