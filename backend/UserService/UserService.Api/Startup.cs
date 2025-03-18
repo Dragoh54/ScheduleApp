@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using UserService.DataAccess.Database;
+using UserService.DataAccess.Extensions;
+
 namespace UserService.Api;
 
 public class Startup
@@ -12,6 +16,10 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
+        
+        services.AddDbContext<UserServiceDbContext>(options =>
+            options.UseNpgsql(Configuration.GetConnectionString("UserServiceDbContext")));
+        services.AddRepositories();
 
         services.AddSwaggerGen();
     }
