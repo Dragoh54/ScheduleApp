@@ -12,7 +12,7 @@
     ports:
       - ${USER_SERVICE_POSTGRES_PORTS}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - user_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
@@ -36,7 +36,7 @@
     ports:
       - ${MEETING_SERVICE_POSTGRES_PORTS}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - meeting_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
@@ -94,7 +94,22 @@
       interval: 5s
       timeout: 5s
       retries: 5
-        
+      
+  #---------------------- PG-ADMIN --------------------------
+  pgadmin4:
+    container_name: pgadmin4
+    image: dpage/pgadmin4:latest
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "${PGADMIN_PORTS}"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin/data
+    restart: always
+  
   #---------------------- MESSAGE-BROKER --------------------
   rabbitmq:
     image: rabbitmq:3.10.7-management
@@ -267,9 +282,11 @@ networks:
     
 #---------------------- VOLUMES -----------------------------
 volumes:
-  postgres_data:
+  user_postgres_data:
+  meeting_postgres_data:
   redis_data:
   mongodb_data:
   rabbitmq_data:
   elasticsearch_data:
   kibana_data:
+  pgadmin_data:
