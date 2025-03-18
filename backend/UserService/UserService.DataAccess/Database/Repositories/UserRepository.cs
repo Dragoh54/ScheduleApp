@@ -20,4 +20,16 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
         
         return user;
     }
+
+    public async Task<IEnumerable<UserEntity>?> GetDeletedUsersAsync(CancellationToken cancellationToken)
+    {
+        var res = await _dbSet
+            .AsNoTracking()
+            .IgnoreQueryFilters()
+            .Where(u => !u.IsDeleted)
+            .ToListAsync(cancellationToken);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        return res;
+    }
 }

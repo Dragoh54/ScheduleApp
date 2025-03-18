@@ -6,6 +6,7 @@ public class RefreshToken : IdEntity
     public string Token { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime ExpiresAt { get; set; }
+    public bool IsUsed { get; set; } = false;
     
     public RefreshToken() {}
 
