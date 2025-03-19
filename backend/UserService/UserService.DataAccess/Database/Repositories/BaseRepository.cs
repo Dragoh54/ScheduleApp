@@ -4,7 +4,8 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class BaseRepository<T> : IBaseRepository<T> where T : IdEntity
+public class BaseRepository<T> : IBaseRepository<T> 
+    where T : IdEntity
 {
     protected readonly UserServiceDbContext _dbContext;
     protected readonly DbSet<T> _dbSet;
@@ -29,7 +30,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : IdEntity
     {
         var entity = await _dbSet
             .AsNoTracking()
-            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(b => b.Id.Equals(id), cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         

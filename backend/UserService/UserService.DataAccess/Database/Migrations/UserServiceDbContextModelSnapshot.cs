@@ -39,10 +39,6 @@ namespace UserService.DataAccess.Database.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -57,12 +53,34 @@ namespace UserService.DataAccess.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("RoleName")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            RoleName = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            RoleName = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            RoleName = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                            RoleName = 3
+                        });
                 });
 
             modelBuilder.Entity("UserService.DataAccess.Models.UserEntity", b =>
@@ -113,6 +131,44 @@ namespace UserService.DataAccess.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@example.com",
+                            FirstName = "Admin",
+                            IsDeleted = false,
+                            LastName = "User",
+                            PasswordHash = "$2a$11$4bXMllRFUJRrb8EJo6SKeuy67FKbLeIAVYajYuf8nhfzrfL5ysi1i",
+                            UpdatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "user1@example.com",
+                            FirstName = "John",
+                            IsDeleted = false,
+                            LastName = "Doe",
+                            PasswordHash = "$2a$11$TEeLJ.A6HS0IbmwMgUtMhuhV3n5BtXigmqjd.ztVYiWHNkQkgkM.e",
+                            UpdatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "user1"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "user2@example.com",
+                            FirstName = "Jane",
+                            IsDeleted = false,
+                            LastName = "Doe",
+                            PasswordHash = "$2a$11$9wY6zAlywOqX2Wd15b1XsOThs8.43Ejd7EcOxgwYqrC5/VBBxloPG",
+                            UpdatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "user2"
+                        });
                 });
 
             modelBuilder.Entity("UserService.DataAccess.Models.UserRoles", b =>
@@ -128,6 +184,38 @@ namespace UserService.DataAccess.Database.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000002"),
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000002"),
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000003"),
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000002")
+                        });
                 });
 
             modelBuilder.Entity("UserService.DataAccess.Models.UserRoles", b =>

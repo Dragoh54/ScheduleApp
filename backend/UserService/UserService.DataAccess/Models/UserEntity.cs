@@ -17,8 +17,9 @@ public class UserEntity : IdEntity
     
     public UserEntity() {}
 
-    public UserEntity(string username, string email, string passwordHash, string firstName, string lastName, DateTime createdAt)
+    public UserEntity(Guid id, string username, string email, string passwordHash, string firstName, string lastName, DateTime createdAt)
     {
+        Id = id;
         Username = username;
         Email = email;
         PasswordHash = passwordHash;

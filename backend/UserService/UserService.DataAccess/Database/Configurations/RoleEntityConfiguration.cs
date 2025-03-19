@@ -11,7 +11,7 @@ public class RoleEntityConfiguration : IEntityTypeConfiguration<RoleEntity>
         builder.HasKey(r => r.Id);
         
         builder.Property(r => r.Id).IsRequired();
-        builder.Property(r => r.Role).IsRequired();
+        builder.Property(r => r.RoleName).IsRequired();
         
         builder.HasMany(r => r.UserRoles)
             .WithOne()

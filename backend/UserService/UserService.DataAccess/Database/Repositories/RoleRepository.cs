@@ -15,7 +15,7 @@ public class RoleRepository : BaseRepository<RoleEntity>, IRoleRepository
     {
         var item = await _dbContext.Roles
             .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Role == role, cancellationToken);
+            .FirstOrDefaultAsync(r => r.RoleName == role, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         

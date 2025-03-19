@@ -13,6 +13,11 @@ public class Startup
         Configuration = configuration;
     }
 
+    public void ConfigureBuilder(WebApplicationBuilder builder)
+    {
+        builder.Configuration.AddJsonFile("secrets.json", optional: false, reloadOnChange: true);
+    }
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
@@ -20,6 +25,7 @@ public class Startup
         services.AddDbContext<UserServiceDbContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("UserServiceDbContext")));
         services.AddRepositories();
+        services.AddJwt();
 
         services.AddSwaggerGen();
     }
