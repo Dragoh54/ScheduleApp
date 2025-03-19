@@ -402,3 +402,6 @@ FodyWeavers.xsd
 
 # enviroment variables
 *.env
+
+# Secrets
+**/Api/secrets.json

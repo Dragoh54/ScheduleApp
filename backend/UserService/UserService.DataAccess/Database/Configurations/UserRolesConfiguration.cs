@@ -13,9 +13,6 @@ public class UserRolesConfiguration : IEntityTypeConfiguration<UserRoles>
         builder.Property(ur => ur.RoleId).IsRequired();
         builder.Property(ur => ur.UserId).IsRequired();
         
-        builder.Property(ur => ur.User).IsRequired();
-        builder.Property(ur => ur.Role).IsRequired();
-        
         builder.HasOne(ur => ur.User)
             .WithMany(u => u.UserRoles)
             .HasForeignKey(ur => ur.UserId);
