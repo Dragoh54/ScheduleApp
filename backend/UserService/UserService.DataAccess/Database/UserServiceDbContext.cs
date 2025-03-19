@@ -10,7 +10,6 @@ public class UserServiceDbContext(DbContextOptions<UserServiceDbContext> options
 {
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<RoleEntity> Roles { get; set; }
-    public DbSet<UserRoles> UserRoles { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
