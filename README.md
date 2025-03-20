@@ -70,6 +70,7 @@
   {
     "ConnectionStrings": {
     "UserServiceDbContext": "connection string"
-    }
+    },
+    "JWTSecretKey": "Jwt secret key"
   }
 ```
