@@ -1,23 +1,21 @@
 ﻿namespace UserService.Application.Dto;
 
-public class UserDto
+public class UpdateUserDto
 {
     public Guid Id { get; set; }
     public string Username { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
 
-    public UserDto()
+    public UpdateUserDto()
     {
         
     }
 
-    public UserDto(Guid id, string username, string email, string firstName, string lastName)
+    public UpdateUserDto(Guid id, string username, string firstName, string lastName)
     {
         Id = id;
         Username = username;
-        Email = email;
         FirstName = firstName;
         LastName = lastName;
     }

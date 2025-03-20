@@ -1,16 +1,16 @@
 ﻿namespace UserService.Application.Dto;
 
-public class LoginDto
+public class LoginUserDto
 {
     public string Password { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
 
-    public LoginDto()
+    public LoginUserDto()
     {
         
     }
 
-    public LoginDto(string email, string password)
+    public LoginUserDto(string email, string password)
     {
         Email = email;
         Password = password;

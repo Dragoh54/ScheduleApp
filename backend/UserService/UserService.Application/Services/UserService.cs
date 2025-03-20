@@ -9,63 +9,95 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Services;
 
-public class UserService : IUserService
+public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork) : IUserService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IPasswordHasher _passwordHasher;
-
-    public UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-        _passwordHasher = passwordHasher;
-    }
-    
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken);
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this id doesn't exist!");
+        }
+        
+        return candidate.Adapt<UserDto>();
     }
 
-    public Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken)
+    public async Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
+
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this email doesn't exist!");
+        }
+        
+        return candidate.Adapt<UserDto>();
     }
 
     public async Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var candidates = await unitOfWork.UserRepository.GetAll(cancellationToken);
+        if (!candidates.Any())
+        {
+            throw new NotFoundException("No users found");
+        }
+        
+        return candidates.Adapt<IEnumerable<UserDto>>();
     }
 
     public async Task<UserDto> RegisterUser(RegisterDto registerDto, CancellationToken cancellationToken)
     {
-        var candidate = await _unitOfWork.UserRepository.GetByEmailAsync(registerDto.Email, cancellationToken);
+        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(registerDto.Email, cancellationToken);
 
         if (candidate is not null)
         {
             throw new AlreadyExistsException("User with this email already exists!");
         }
         
-        var hashedPassword = _passwordHasher.Generate(registerDto.Password, cancellationToken);
+        var hashedPassword = passwordHasher.Generate(registerDto.Password, cancellationToken);
         var user = new UserEntity(registerDto.Username, registerDto.Email, hashedPassword, registerDto.FirstName, registerDto.LastName);
         
-        await _unitOfWork.UserRepository.Add(user, cancellationToken);
-        await _unitOfWork.SaveChangesAsync();
+        await unitOfWork.UserRepository.Add(user, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
         cancellationToken.ThrowIfCancellationRequested();
 
         return user.Adapt<UserDto>();
     }
 
-    public async Task<string> Login(LoginDto loginDto, CancellationToken cancellationToken)
+    public async Task<string> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<UserDto> UpdateUser(UserDto userDto, CancellationToken cancellationToken)
+    public async Task<UserDto> UpdateUser(UpdateUserDto userDto, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken);
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this id doesn't exist!");
+        }
+        
+        userDto.Adapt(candidate);
+        
+        await unitOfWork.UserRepository.Update(candidate, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return candidate.Adapt<UserDto>();
     }
 
-    public async Task<UserDto> DeleteUser(UserDto userDto, CancellationToken cancellationToken)
+    public async Task<UserDto> DeleteUser(DeleteUserDto userDto, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken);
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this id doesn't exist!");
+        }
+        
+        await unitOfWork.UserRepository.Delete(candidate, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return candidate.Adapt<UserDto>();
     }
 }
