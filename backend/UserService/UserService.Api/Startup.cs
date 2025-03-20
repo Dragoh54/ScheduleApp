@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
+using UserService.Application.Extensions;
 using UserService.Application.Mapper;
 using UserService.Application.Validator;
 using UserService.Application.Validator.UserValidators;
@@ -40,11 +41,7 @@ public class Startup
         
         services.AddControllers();
         
-        services.AddControllersWithViews(options =>
-        {
-            options.Filters.Add<ValidationFilter>();
-        });
-        services.AddScoped<IValidator<RegisterDto>, RegisterUserValidator>();
+        services.AddValidation();
         
         services.AddSwaggerGen();
     }
