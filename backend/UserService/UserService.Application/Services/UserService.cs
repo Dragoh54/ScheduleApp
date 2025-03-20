@@ -9,7 +9,7 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Services;
 
-public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork) : IUserService
+public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork, IJwtProvider jwtProvider) : IUserService
 {
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
@@ -64,9 +64,53 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
         return user.Adapt<UserDto>();
     }
 
-    public async Task<string> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
+    public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken);
+
+        if (userByEmail is null)
+        {
+            throw new NotFoundException("Cannot found user with this email");
+        }
+
+        var result = passwordHasher.Verify(loginUserDto.Password, userByEmail.PasswordHash, cancellationToken);
+
+        if (!result)
+        {
+            throw new BadRequestException("Failed to login");
+        }
+
+        var token = jwtProvider.GenerateAccessToken(userByEmail, cancellationToken);
+        var refreshToken = jwtProvider.GenerateRefreshToken(userByEmail, cancellationToken);
+        
+        if (refreshToken is null || token is null)
+        {
+            throw new UnauthorizedAccessException("Failed to generate tokens.");
+        }
+        
+        await unitOfWork.RefreshTokenRepository.Add(refreshToken, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return (token, refreshToken.Id.ToString());
+    }
+
+    public async Task<bool> Logout(string token, CancellationToken cancellationToken)
+    {
+        var refreshToken = unitOfWork.RefreshTokenRepository.Get(Guid.Parse(token), cancellationToken).Result;
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (refreshToken is null)
+        {
+            throw new NotFoundException("Refresh token not found");
+        }
+
+        refreshToken.IsUsed = true;
+
+        await unitOfWork.RefreshTokenRepository.Update(refreshToken, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task<UserDto> UpdateUser(UpdateUserDto userDto, CancellationToken cancellationToken)

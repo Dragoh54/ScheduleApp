@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Options;
+using UserService.Api.Filters;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
 using UserService.DataAccess.Handlers.Jwt;
@@ -8,7 +11,7 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("users")]
-public class UserController
+public class UserController : Controller
 {
     private readonly JwtOptions _jwtOptions;
     private readonly IUserService _service;
@@ -24,6 +27,39 @@ public class UserController
     {
         var resultUser = await _service.RegisterUser(user, cancellationToken);
         return Results.Ok(resultUser);
+    }
+    
+    [HttpPost("/login")]
+    [ServiceFilter(typeof(AllowAnonymousOnlyFilter))]
+    public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
+    {
+        var (token, refreshToken) = await _service.Login(user, cancellationToken);
+        
+        HttpContext.Response.Cookies.Append("tasty-cookies", token, new CookieOptions()
+        {
+            Domain = "localhost",
+            Secure = true,
+            HttpOnly = true,
+            MaxAge = TimeSpan.FromMinutes(_jwtOptions.ExpiresMinutes)
+        });
+
+        HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", refreshToken, new CookieOptions()
+        {
+            Domain = "localhost",
+            Secure = true,
+            HttpOnly = true,
+            MaxAge = TimeSpan.FromDays(_jwtOptions.ExpiresDays)
+        });
+
+        return Results.Ok(new { Token = token, RefreshToken = refreshToken });
+    }
+    
+    [HttpPost("/logout")]
+    [Authorize]
+    public async Task<IResult> Logout(CancellationToken cancellationToken)
+    {
+        //TODO: Add method
+        return Results.Ok(true);
     }
 
     [HttpGet]

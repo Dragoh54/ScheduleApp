@@ -9,7 +9,8 @@ public interface IUserService
     Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken);
     
     Task<UserDto> RegisterUser(RegisterDto registerDto, CancellationToken cancellationToken);
-    Task<string> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken);
+    Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken);
+    Task<bool> Logout(string token, CancellationToken cancellationToken);
     
     Task<UserDto> UpdateUser(UpdateUserDto userDto, CancellationToken cancellationToken);
     Task<UserDto> DeleteUser(DeleteUserDto userDto, CancellationToken cancellationToken);

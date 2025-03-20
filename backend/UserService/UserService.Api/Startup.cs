@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using UserService.Api.Filters;
 using UserService.Api.Interfaces;
 using UserService.Api.Middlewares;
 using UserService.Application.Dto;
@@ -40,6 +41,8 @@ public class Startup
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserService, Application.Services.UserService>();
         
+        services.AddScoped<AllowAnonymousOnlyFilter>();
+        
         services.AddControllers();
         
         services.AddValidation();
@@ -64,6 +67,13 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            MinimumSameSitePolicy = SameSiteMode.Strict,
+            HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+            Secure = CookieSecurePolicy.Always,
+        });
         
         app.UseEndpoints(endpoints =>
         {
