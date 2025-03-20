@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using UserService.Api.Interfaces;
+using UserService.Api.Middlewares;
 using UserService.Application.Dto;
 using UserService.Application.Extensions;
 using UserService.Application.Mapper;
@@ -55,6 +56,8 @@ public class Startup
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthentication();
+
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
         
         if (env.IsDevelopment())
         {
