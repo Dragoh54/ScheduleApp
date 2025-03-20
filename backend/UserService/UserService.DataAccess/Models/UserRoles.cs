@@ -19,4 +19,12 @@ public class UserRoles
         User = user;
         Role = role;
     }
+    
+    public UserRoles(UserEntity user, RoleEntity role)
+    {
+        UserId = user.Id;
+        RoleId = role.Id;
+        User = user;
+        Role = role;
+    }
 }

@@ -14,15 +14,12 @@ public static class DataSeeder
         [
             new UserEntity
             {
-                //Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 Id = Guid.NewGuid(),
                 Username = "admin",
                 Email = "admin@example.com",
                 PasswordHash = passwordHasher.Generate("admin", new CancellationToken()),
                 FirstName = "Admin",
                 LastName = "User",
-                //CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                //UpdatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 IsDeleted = false,
@@ -31,15 +28,12 @@ public static class DataSeeder
 
             new UserEntity
             {
-                //Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
                 Id = Guid.NewGuid(),
                 Username = "user1",
                 Email = "user1@example.com",
                 PasswordHash = passwordHasher.Generate("1234", new CancellationToken()),
                 FirstName = "John",
                 LastName = "Doe",
-                // CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                // UpdatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 IsDeleted = false,
@@ -48,15 +42,12 @@ public static class DataSeeder
 
             new UserEntity
             {
-                //Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
                 Id = Guid.NewGuid(),
                 Username = "user2",
                 Email = "user2@example.com",
                 PasswordHash = passwordHasher.Generate("1234", new CancellationToken()),
                 FirstName = "Jane",
                 LastName = "Doe",
-                // CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                // UpdatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 CreatedAt =  DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 IsDeleted = false,
@@ -71,28 +62,24 @@ public static class DataSeeder
         [
             new RoleEntity
             {
-                //Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 Id = Guid.NewGuid(),
                 RoleName = Role.Guest
             },
 
             new RoleEntity
             {
-                // Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
                 Id = Guid.NewGuid(),
                 RoleName = Role.User
             },
 
             new RoleEntity
             {
-                //Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
                 Id = Guid.NewGuid(),
                 RoleName = Role.OrganizationAdmin
             },
 
             new RoleEntity
             {
-                //Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
                 Id = Guid.NewGuid(),
                 RoleName = Role.Admin
             }

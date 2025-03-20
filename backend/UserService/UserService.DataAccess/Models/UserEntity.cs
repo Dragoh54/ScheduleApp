@@ -1,3 +1,5 @@
+using UserService.DataAccess.Enums;
+
 namespace UserService.DataAccess.Models;
 
 public class UserEntity : IdEntity
@@ -17,7 +19,7 @@ public class UserEntity : IdEntity
     
     public UserEntity() {}
 
-    public UserEntity(Guid id, string username, string email, string passwordHash, string firstName, string lastName, DateTime createdAt)
+    public UserEntity(Guid id, string username, string email, string passwordHash, string firstName, string lastName, DateTime createdAt, ICollection<UserRoles> userRoles)
     {
         Id = id;
         Username = username;
@@ -27,5 +29,19 @@ public class UserEntity : IdEntity
         LastName = lastName;
         CreatedAt = createdAt;
         UpdatedAt = createdAt;
+        UserRoles = userRoles;
+    }
+
+    public UserEntity(string username, string email, string passwordHash, string firstName, string lastName)
+    {
+        Id = Guid.NewGuid();
+        Username = username;
+        Email = email;
+        PasswordHash = passwordHash;
+        FirstName = firstName;
+        LastName = lastName;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+        UserRoles.Add(new UserRoles(this, new RoleEntity(Role.User)));
     }
 }

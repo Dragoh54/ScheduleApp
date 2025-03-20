@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using UserService.Api.Interfaces;
 using UserService.DataAccess.Database;
+using UserService.DataAccess.Database.UnitOfWork;
 using UserService.DataAccess.Extensions;
+using UserService.DataAccess.Interfaces.UnitOfWork;
 
 namespace UserService.Api;
 
@@ -27,6 +30,12 @@ public class Startup
         services.AddRepositories();
         services.AddJwt();
 
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserService, Application.Services.UserService>();
+        
+        services.AddEndpointsApiExplorer();
+        services.AddControllers();
+        
         services.AddSwaggerGen();
     }
 
@@ -35,10 +44,20 @@ public class Startup
         app.UseSwagger();
         app.UseSwaggerUI();
         
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseAuthentication();
+        
         if (env.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
     }
 }
