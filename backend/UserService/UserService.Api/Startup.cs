@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using UserService.Api.Extensions;
 using UserService.Api.Filters;
 using UserService.Api.Interfaces;
 using UserService.Api.Middlewares;
@@ -11,6 +12,7 @@ using UserService.Application.Validator.UserValidators;
 using UserService.DataAccess.Database;
 using UserService.DataAccess.Database.UnitOfWork;
 using UserService.DataAccess.Extensions;
+using UserService.DataAccess.Handlers.Jwt;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 
 namespace UserService.Api;
@@ -31,7 +33,11 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddEndpointsApiExplorer();
+        services.Configure<JwtOptions>(Configuration.GetSection(nameof(JwtOptions)));
+
+        services.AddControllersWithViews();
+
+        services.AddApiAuthenfication(Configuration);
         
         services.AddDbContext<UserServiceDbContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("UserServiceDbContext")));
@@ -43,9 +49,9 @@ public class Startup
         
         services.AddScoped<AllowAnonymousOnlyFilter>();
         
-        services.AddControllers();
-        
         services.AddValidation();
+        
+        services.AddControllers();
         
         services.AddSwaggerGen();
     }
@@ -59,6 +65,7 @@ public class Startup
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthentication();
+        app.UseAuthorization();
 
         app.UseMiddleware<ExceptionHandlerMiddleware>();
         

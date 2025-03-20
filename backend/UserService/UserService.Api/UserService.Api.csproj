@@ -26,9 +26,4 @@
       <ProjectReference Include="..\UserService.Application\UserService.Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Extensions\" />
-      <Folder Include="Requirements\" />
-    </ItemGroup>
-
 </Project>

@@ -22,14 +22,14 @@ public class UserController : Controller
         _jwtOptions = jwtOptions.Value;
     }
     
-    [HttpPost("/register")]
+    [HttpPost("register")]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
         var resultUser = await _service.RegisterUser(user, cancellationToken);
         return Results.Ok(resultUser);
     }
     
-    [HttpPost("/login")]
+    [HttpPost("login")]
     [ServiceFilter(typeof(AllowAnonymousOnlyFilter))]
     public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
     {
@@ -54,15 +54,21 @@ public class UserController : Controller
         return Results.Ok(new { Token = token, RefreshToken = refreshToken });
     }
     
-    [HttpPost("/logout")]
+    [HttpPost("logout")]
     [Authorize]
     public async Task<IResult> Logout(CancellationToken cancellationToken)
     {
-        //TODO: Add method
-        return Results.Ok(true);
+        string? refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
+        var result = await _service.Logout(refreshToken, cancellationToken);
+
+        HttpContext.Response.Cookies.Delete("tasty-cookies");
+        HttpContext.Response.Cookies.Delete("not-a-refresh-token-cookies");
+        
+        return Results.Ok(result);
     }
 
     [HttpGet]
+    [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUsers(CancellationToken cancellationToken)
     {
         var resultUsers = await _service.GetUsers(cancellationToken);
@@ -70,6 +76,7 @@ public class UserController : Controller
     }
     
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var resultUsers = await _service.GetUserById(id, cancellationToken);
@@ -77,13 +84,15 @@ public class UserController : Controller
     }
     
     [HttpGet("find")]
+    [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUserByEmail([FromQuery] string email,CancellationToken cancellationToken)
     {
         var resultUsers = await _service.GetUserByEmail(email, cancellationToken);
         return Results.Ok(resultUsers);
     }
 
-    [HttpPut("/update")]
+    [HttpPut("update")]
+    [Authorize]
     public async Task<IResult> UpdateUser(UpdateUserDto user, CancellationToken cancellationToken)
     {
         var resultUser = await _service.UpdateUser(user, cancellationToken);
@@ -91,14 +100,23 @@ public class UserController : Controller
     }
 
     
-    [HttpDelete("/delete")]
-    public async Task<IResult> Register([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)
+    [HttpDelete("delete")]
+    [Authorize(Policy = "Admin")]
+    public async Task<IResult> DeleteUser([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)
     {
         var deletedUser = await _service.DeleteUser(user, cancellationToken);
         return Results.Ok(deletedUser);
     }
+    
+    [HttpPost("soft-delete")]
+    [Authorize]
+    public async Task<IResult> SoftDeleteUser([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)
+    {
+        var deletedUser = await _service.SoftDelete(user, cancellationToken);
+        return Results.Ok(deletedUser);
+    }
 
-    [HttpGet("/health")]
+    [HttpGet("health")]
     public async Task<IResult> GetHealth()
     {
         return Results.Ok("Healthy");

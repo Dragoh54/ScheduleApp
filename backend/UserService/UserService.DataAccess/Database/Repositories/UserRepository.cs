@@ -13,6 +13,8 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
     public async Task<UserEntity?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
+            .Include(u => u.UserRoles) 
+            .ThenInclude(ur => ur.Role)
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         

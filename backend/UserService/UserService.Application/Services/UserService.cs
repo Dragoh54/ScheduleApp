@@ -144,4 +144,22 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
         
         return candidate.Adapt<UserDto>();
     }
+
+    public async Task<UserDto> SoftDelete(DeleteUserDto userDto, CancellationToken cancellationToken)
+    {
+        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken);
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this id doesn't exist!");
+        }
+        
+        candidate.IsDeleted = true;
+        candidate.DeletedAt = DateTime.Now;
+        
+        await unitOfWork.UserRepository.Update(candidate, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return candidate.Adapt<UserDto>();
+    }
 }

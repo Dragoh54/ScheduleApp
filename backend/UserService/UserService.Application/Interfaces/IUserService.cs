@@ -14,4 +14,5 @@ public interface IUserService
     
     Task<UserDto> UpdateUser(UpdateUserDto userDto, CancellationToken cancellationToken);
     Task<UserDto> DeleteUser(DeleteUserDto userDto, CancellationToken cancellationToken);
+    Task<UserDto> SoftDelete(DeleteUserDto userDto, CancellationToken cancellationToken);
 }
