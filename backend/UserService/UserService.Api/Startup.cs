@@ -1,5 +1,10 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using UserService.Api.Interfaces;
+using UserService.Application.Dto;
+using UserService.Application.Mapper;
+using UserService.Application.Validator;
+using UserService.Application.Validator.UserValidators;
 using UserService.DataAccess.Database;
 using UserService.DataAccess.Database.UnitOfWork;
 using UserService.DataAccess.Extensions;
@@ -33,8 +38,13 @@ public class Startup
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserService, Application.Services.UserService>();
         
-        services.AddEndpointsApiExplorer();
         services.AddControllers();
+        
+        services.AddControllersWithViews(options =>
+        {
+            options.Filters.Add<ValidationFilter>();
+        });
+        services.AddScoped<IValidator<RegisterDto>, RegisterUserValidator>();
         
         services.AddSwaggerGen();
     }
