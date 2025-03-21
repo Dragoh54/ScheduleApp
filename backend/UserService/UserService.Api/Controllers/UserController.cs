@@ -87,7 +87,7 @@ public class UserController : Controller
     [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUserByEmail([FromQuery] string email,CancellationToken cancellationToken)
     {
-        var resultUsers = await _service.GetUserByEmailWithRoles(email, cancellationToken);
+        var resultUsers = await _service.GetUserByEmail(email, cancellationToken);
         return Results.Ok(resultUsers);
     }
 

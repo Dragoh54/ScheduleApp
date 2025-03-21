@@ -15,15 +15,6 @@ public class UserDto
     {
         
     }
-
-    public UserDto(Guid id, string username, string email, string firstName, string lastName)
-    {
-        Id = id;
-        Username = username;
-        Email = email;
-        FirstName = firstName;
-        LastName = lastName;
-    }
     
     public UserDto(Guid id, string username, string email, string firstName, string lastName, List<UserRoles> roles)
     {

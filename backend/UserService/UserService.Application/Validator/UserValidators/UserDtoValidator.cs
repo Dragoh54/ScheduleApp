@@ -47,5 +47,9 @@ public class UserDtoValidator : AbstractValidator<UserDto>
             .WithMessage("LastName is required.")
             .MaximumLength(256)
             .WithMessage("LastName must not exceed 256 characters.");
+        
+        RuleFor(user => user.Roles)
+            .NotNull()
+            .WithMessage("Roles is required.");
     }
 }

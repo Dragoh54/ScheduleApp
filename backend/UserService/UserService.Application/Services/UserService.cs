@@ -44,18 +44,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
         
         return candidate.Adapt<UserDto>();
     }
-
-    public async Task<UserDto> GetUserByEmailWithRoles(string email, CancellationToken cancellationToken)
-    {
-        var candidate = await unitOfWork.UserRepository.GetByEmailWithRolesAsync(email, cancellationToken);
-
-        if (candidate is null)
-        {
-            throw new AlreadyExistsException("User with this email doesn't exist!");
-        }
-        
-        return candidate.Adapt<UserDto>();
-    }
+    
 
     public async Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken)
     {
@@ -70,7 +59,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<UserDto> RegisterUser(RegisterDto registerDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetByEmailWithRolesAsync(registerDto.Email, cancellationToken);
+        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(registerDto.Email, cancellationToken);
 
         if (candidate is not null)
         {
@@ -89,7 +78,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
-        var userByEmail = await unitOfWork.UserRepository.GetByEmailWithRolesAsync(loginUserDto.Email, cancellationToken);
+        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken);
 
         if (userByEmail is null)
         {
@@ -177,7 +166,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
         }
         
         candidate.IsDeleted = true;
-        candidate.DeletedAt = DateTime.Now;
+        candidate.DeletedAt = DateTime.UtcNow;
         
         await unitOfWork.UserRepository.Update(candidate, cancellationToken);
         await unitOfWork.SaveChangesAsync();
