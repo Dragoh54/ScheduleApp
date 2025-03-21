@@ -1,5 +1,4 @@
 ﻿using UserService.DataAccess.Enums;
-using UserService.DataAccess.Handlers.JwtUtilities;
 using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.DataSeeder;
@@ -8,8 +7,6 @@ public static class DataSeeder
 {
     public static List<UserEntity> GenerateUsers()
     {
-        var passwordHasher = new PasswordHasher();
-        
         return
         [
             new UserEntity
@@ -17,7 +14,7 @@ public static class DataSeeder
                 Id = Guid.NewGuid(),
                 Username = "admin",
                 Email = "admin@example.com",
-                PasswordHash = passwordHasher.Generate("admin", new CancellationToken()),
+                PasswordHash = "$2a$11$fMotE2uso.Vl/dInRwOYE.CVTYpLLW9bRv/JxwOcFuISgyclU/XKS",
                 FirstName = "Admin",
                 LastName = "User",
                 CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
@@ -31,7 +28,7 @@ public static class DataSeeder
                 Id = Guid.NewGuid(),
                 Username = "user1",
                 Email = "user1@example.com",
-                PasswordHash = passwordHasher.Generate("1234", new CancellationToken()),
+                PasswordHash = "$2a$11$Vmq/dCwgmETEykLr31YlZez.vX2akujpnGBJoXsRFSL9n112KwOLK",
                 FirstName = "John",
                 LastName = "Doe",
                 CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
@@ -45,7 +42,7 @@ public static class DataSeeder
                 Id = Guid.NewGuid(),
                 Username = "user2",
                 Email = "user2@example.com",
-                PasswordHash = passwordHasher.Generate("1234", new CancellationToken()),
+                PasswordHash = "$2a$11$fP8SA4QPz5bfUeIS5ZH8LOE8VXKYY1JH6JYfIk5iCCqs6PyV6d8La",
                 FirstName = "Jane",
                 LastName = "Doe",
                 CreatedAt =  DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),

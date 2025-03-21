@@ -5,17 +5,14 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>cd1fc555-4893-488c-89f9-860f55a9f684</UserSecretsId>
+        <DockerfileContext>..\..\..</DockerfileContext>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="..\..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
 </Project>

@@ -75,9 +75,9 @@ public class UserController : Controller
         return Results.Ok(resultUsers);
     }
     
-    [HttpGet("{id:guid}")]
+    [HttpGet("get")]
     [Authorize(Policy = "Admin")]
-    public async Task<IResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IResult> GetUser([FromQuery] Guid id, CancellationToken cancellationToken)
     {
         var resultUsers = await _service.GetUserById(id, cancellationToken);
         return Results.Ok(resultUsers);
@@ -87,7 +87,7 @@ public class UserController : Controller
     [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUserByEmail([FromQuery] string email,CancellationToken cancellationToken)
     {
-        var resultUsers = await _service.GetUserByEmail(email, cancellationToken);
+        var resultUsers = await _service.GetUserByEmailWithRoles(email, cancellationToken);
         return Results.Ok(resultUsers);
     }
 

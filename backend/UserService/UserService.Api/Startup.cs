@@ -45,7 +45,7 @@ public class Startup
         services.AddJwt();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IUserService, Application.Services.UserService>();
+        services.AddApplicationServices();
         
         services.AddScoped<AllowAnonymousOnlyFilter>();
         

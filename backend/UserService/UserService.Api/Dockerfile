@@ -8,6 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["backend/UserService/UserService.Api/UserService.Api.csproj", "backend/UserService/UserService.Api/"]
+COPY ["backend/UserService/UserService.DataAccess/UserService.DataAccess.csproj", "backend/UserService/UserService.DataAccess/"]
+COPY ["backend/UserService/UserService.Application/UserService.Application.csproj", "backend/UserService/UserService.Application/"]
 RUN dotnet restore "backend/UserService/UserService.Api/UserService.Api.csproj"
 COPY . .
 WORKDIR "/src/backend/UserService/UserService.Api"

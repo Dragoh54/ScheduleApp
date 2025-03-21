@@ -22,9 +22,32 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
         return candidate.Adapt<UserDto>();
     }
 
+    public async Task<UserDto> GetUserByIdWithRoles(Guid id, CancellationToken cancellationToken)
+    {
+        var candidate = await unitOfWork.UserRepository.GetWithRolesAsync(id, cancellationToken);
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this id doesn't exist!");
+        }
+        
+        return candidate.Adapt<UserDto>();
+    }
+
     public async Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken)
     {
         var candidate = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
+
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this email doesn't exist!");
+        }
+        
+        return candidate.Adapt<UserDto>();
+    }
+
+    public async Task<UserDto> GetUserByEmailWithRoles(string email, CancellationToken cancellationToken)
+    {
+        var candidate = await unitOfWork.UserRepository.GetByEmailWithRolesAsync(email, cancellationToken);
 
         if (candidate is null)
         {
@@ -47,7 +70,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<UserDto> RegisterUser(RegisterDto registerDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(registerDto.Email, cancellationToken);
+        var candidate = await unitOfWork.UserRepository.GetByEmailWithRolesAsync(registerDto.Email, cancellationToken);
 
         if (candidate is not null)
         {
@@ -66,7 +89,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
-        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken);
+        var userByEmail = await unitOfWork.UserRepository.GetByEmailWithRolesAsync(loginUserDto.Email, cancellationToken);
 
         if (userByEmail is null)
         {
