@@ -4,7 +4,7 @@ namespace UserService.Api.Interfaces;
 
 public interface IUserService
 {
-    Task<UserDto>  GetUserById(Guid id, CancellationToken cancellationToken);
+    Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken);
     Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken);
     Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken);
     

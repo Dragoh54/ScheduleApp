@@ -10,6 +10,18 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
     {
     }
 
+    public async Task<IEnumerable<UserEntity>?> GetAllWithRoles(CancellationToken cancellationToken)
+    {
+        var users = await _dbContext.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return users;
+    }
+
     public async Task<UserEntity?> GetWithRolesAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
