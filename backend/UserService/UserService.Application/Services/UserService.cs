@@ -13,7 +13,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 {
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetWithRolesAsync(id, cancellationToken);
+        var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken);
         if (candidate is null)
         {
             throw new AlreadyExistsException("User with this id doesn't exist!");
@@ -37,7 +37,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken)
     {
-        var candidates = await unitOfWork.UserRepository.GetAllWithRoles(cancellationToken)
+        var candidates = await unitOfWork.UserRepository.Get(cancellationToken)
             ?? throw new NotFoundException("Users not found!");
         
         if (!candidates.Any())

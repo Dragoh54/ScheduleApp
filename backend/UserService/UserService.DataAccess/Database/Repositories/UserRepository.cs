@@ -10,7 +10,7 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
     {
     }
 
-    public async Task<IEnumerable<UserEntity>?> GetAllWithRoles(CancellationToken cancellationToken)
+    public new async Task<IEnumerable<UserEntity>?> Get(CancellationToken cancellationToken)
     {
         var users = await _dbContext.Users
             .Include(u => u.UserRoles)
@@ -22,7 +22,7 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
         return users;
     }
 
-    public async Task<UserEntity?> GetWithRolesAsync(Guid id, CancellationToken cancellationToken)
+    public new async Task<UserEntity?> Get(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
             .Include(u => u.UserRoles) 

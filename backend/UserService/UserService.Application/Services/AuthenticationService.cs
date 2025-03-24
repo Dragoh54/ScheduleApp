@@ -59,7 +59,7 @@ public class AuthenticationService(IPasswordHasher passwordHasher, IUnitOfWork u
             return false;
         }
         
-        var refreshToken = unitOfWork.TokenModelRepository.Get(Guid.Parse(token), cancellationToken).Result;
+        var refreshToken = unitOfWork.TokenModelRepository.GetByToken(token, cancellationToken).Result;
         cancellationToken.ThrowIfCancellationRequested();
 
         if (refreshToken is null)

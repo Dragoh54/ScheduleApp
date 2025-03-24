@@ -51,7 +51,7 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         var token = new TokenModel()
         {
             Id = Guid.NewGuid(),
-            Token = Guid.NewGuid().ToString().Split("-")[0],
+            Token = Guid.NewGuid().ToString().Replace("-", string.Empty),
             TokenType = Token.Refresh,
             UserId = user.Id,
             CreatedAt = DateTime.UtcNow,
