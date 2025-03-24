@@ -8,20 +8,20 @@ public class UnitOfWork : IUnitOfWork
     private readonly UserServiceDbContext _dbContext;
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
-    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly ITokenModelRepository _tokenModelRepository;
     
     private bool _disposed = false;
     
     public IUserRepository UserRepository => _userRepository;
-    public IRefreshTokenRepository RefreshTokenRepository => _refreshTokenRepository;
+    public ITokenModelRepository TokenModelRepository => _tokenModelRepository;
     public IRoleRepository RoleRepository => _roleRepository;
 
-    public UnitOfWork(UserServiceDbContext dbContext, IUserRepository userRepository, IRoleRepository roleRepository, IRefreshTokenRepository refreshTokenRepository)
+    public UnitOfWork(UserServiceDbContext dbContext, IUserRepository userRepository, IRoleRepository roleRepository, ITokenModelRepository tokenModelRepository)
     {
         _dbContext = dbContext;
         _userRepository = userRepository;
         _roleRepository = roleRepository;
-        _refreshTokenRepository = refreshTokenRepository;
+        _tokenModelRepository = tokenModelRepository;
     }
     
     public async Task SaveChangesAsync()

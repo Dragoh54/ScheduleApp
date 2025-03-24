@@ -4,15 +4,15 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class RefreshTokenRepository : BaseRepository<RefreshToken>, IRefreshTokenRepository
+public class TokenModelModelRepository : BaseRepository<TokenModel>, ITokenModelRepository
 {
-    public RefreshTokenRepository(UserServiceDbContext dbContext) : base(dbContext)
+    public TokenModelModelRepository(UserServiceDbContext dbContext) : base(dbContext)
     {
     }
 
-    public async Task<RefreshToken?> GetByUserId(Guid userId, CancellationToken cancellationToken)
+    public async Task<TokenModel?> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
-        var token = await _dbContext.RefreshTokens
+        var token = await _dbContext.Tokens
             .AsNoTracking()
             .FirstOrDefaultAsync(rt => rt.UserId == userId, cancellationToken);
         

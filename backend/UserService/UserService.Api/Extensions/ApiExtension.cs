@@ -11,7 +11,7 @@ public static class ApiExtension
 {
     public static void AddApiAuthenfication(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtOptions = configuration["JWTSecretKey"];
+        var jwtOptions = configuration["JWTSecretKey"] ?? throw new NullReferenceException("JWTSecretKey is null");
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -24,16 +24,6 @@ public static class ApiExtension
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions))
-                };
-
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies["tasty-cookies"];
-
-                        return Task.CompletedTask;
-                    }
                 };
             });
 

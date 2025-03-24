@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UserService.DataAccess.Database;
@@ -11,9 +12,11 @@ using UserService.DataAccess.Database;
 namespace UserService.DataAccess.Database.Migrations
 {
     [DbContext(typeof(UserServiceDbContext))]
-    partial class UserServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250324065152_NewTokenModel")]
+    partial class NewTokenModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,22 +41,22 @@ namespace UserService.DataAccess.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("df15b981-6275-49c1-b94c-0de7eba98bac"),
+                            Id = new Guid("bd90067f-362e-4d85-a869-4242e8f6a70d"),
                             RoleName = 0
                         },
                         new
                         {
-                            Id = new Guid("f63116d0-a0f4-4cdb-aae4-1d635f655f12"),
+                            Id = new Guid("00b87896-bb05-4bf2-bd15-9558c0173f9a"),
                             RoleName = 1
                         },
                         new
                         {
-                            Id = new Guid("9eee284a-57b4-496c-8ca6-660c6d848d6a"),
+                            Id = new Guid("d0a4ffe3-1343-4b5b-895d-4a0121b2190a"),
                             RoleName = 2
                         },
                         new
                         {
-                            Id = new Guid("1c1b9d23-49e4-4ab1-b970-ce17d67b3035"),
+                            Id = new Guid("e1c125ab-67ed-4267-9664-0688bc6e64ff"),
                             RoleName = 3
                         });
                 });
@@ -83,7 +86,7 @@ namespace UserService.DataAccess.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tokens");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("UserService.DataAccess.Models.UserEntity", b =>
@@ -138,38 +141,38 @@ namespace UserService.DataAccess.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("20bf313c-eb72-42e7-8346-6e1a7667c6fc"),
-                            CreatedAt = new DateTime(2025, 3, 24, 6, 54, 42, 427, DateTimeKind.Utc).AddTicks(9087),
+                            Id = new Guid("10925bb9-81d6-4a50-927e-8f28a2d4a6f0"),
+                            CreatedAt = new DateTime(2025, 3, 24, 6, 51, 52, 8, DateTimeKind.Utc).AddTicks(1781),
                             Email = "admin@example.com",
                             FirstName = "Admin",
                             IsDeleted = false,
                             LastName = "User",
                             PasswordHash = "$2a$11$fMotE2uso.Vl/dInRwOYE.CVTYpLLW9bRv/JxwOcFuISgyclU/XKS",
-                            UpdatedAt = new DateTime(2025, 3, 24, 6, 54, 42, 427, DateTimeKind.Utc).AddTicks(9206),
+                            UpdatedAt = new DateTime(2025, 3, 24, 6, 51, 52, 8, DateTimeKind.Utc).AddTicks(1889),
                             Username = "admin"
                         },
                         new
                         {
-                            Id = new Guid("b2f3c585-7a76-46e1-95e4-5862fb21b50f"),
-                            CreatedAt = new DateTime(2025, 3, 24, 6, 54, 42, 427, DateTimeKind.Utc).AddTicks(9430),
+                            Id = new Guid("279afb52-89e7-48a5-bae5-3c60e40b91fc"),
+                            CreatedAt = new DateTime(2025, 3, 24, 6, 51, 52, 8, DateTimeKind.Utc).AddTicks(2154),
                             Email = "user1@example.com",
                             FirstName = "John",
                             IsDeleted = false,
                             LastName = "Doe",
                             PasswordHash = "$2a$11$Vmq/dCwgmETEykLr31YlZez.vX2akujpnGBJoXsRFSL9n112KwOLK",
-                            UpdatedAt = new DateTime(2025, 3, 24, 6, 54, 42, 427, DateTimeKind.Utc).AddTicks(9430),
+                            UpdatedAt = new DateTime(2025, 3, 24, 6, 51, 52, 8, DateTimeKind.Utc).AddTicks(2154),
                             Username = "user1"
                         },
                         new
                         {
-                            Id = new Guid("937efb8c-804a-429a-871b-33bfc4efec3e"),
-                            CreatedAt = new DateTime(2025, 3, 24, 6, 54, 42, 427, DateTimeKind.Utc).AddTicks(9432),
+                            Id = new Guid("fec513fd-cb5b-4352-8434-27fe702825c5"),
+                            CreatedAt = new DateTime(2025, 3, 24, 6, 51, 52, 8, DateTimeKind.Utc).AddTicks(2156),
                             Email = "user2@example.com",
                             FirstName = "Jane",
                             IsDeleted = false,
                             LastName = "Doe",
                             PasswordHash = "$2a$11$fP8SA4QPz5bfUeIS5ZH8LOE8VXKYY1JH6JYfIk5iCCqs6PyV6d8La",
-                            UpdatedAt = new DateTime(2025, 3, 24, 6, 54, 42, 427, DateTimeKind.Utc).AddTicks(9433),
+                            UpdatedAt = new DateTime(2025, 3, 24, 6, 51, 52, 8, DateTimeKind.Utc).AddTicks(2156),
                             Username = "user2"
                         });
                 });
@@ -191,33 +194,33 @@ namespace UserService.DataAccess.Database.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("20bf313c-eb72-42e7-8346-6e1a7667c6fc"),
-                            RoleId = new Guid("f63116d0-a0f4-4cdb-aae4-1d635f655f12")
+                            UserId = new Guid("10925bb9-81d6-4a50-927e-8f28a2d4a6f0"),
+                            RoleId = new Guid("00b87896-bb05-4bf2-bd15-9558c0173f9a")
                         },
                         new
                         {
-                            UserId = new Guid("20bf313c-eb72-42e7-8346-6e1a7667c6fc"),
-                            RoleId = new Guid("9eee284a-57b4-496c-8ca6-660c6d848d6a")
+                            UserId = new Guid("10925bb9-81d6-4a50-927e-8f28a2d4a6f0"),
+                            RoleId = new Guid("d0a4ffe3-1343-4b5b-895d-4a0121b2190a")
                         },
                         new
                         {
-                            UserId = new Guid("20bf313c-eb72-42e7-8346-6e1a7667c6fc"),
-                            RoleId = new Guid("1c1b9d23-49e4-4ab1-b970-ce17d67b3035")
+                            UserId = new Guid("10925bb9-81d6-4a50-927e-8f28a2d4a6f0"),
+                            RoleId = new Guid("e1c125ab-67ed-4267-9664-0688bc6e64ff")
                         },
                         new
                         {
-                            UserId = new Guid("b2f3c585-7a76-46e1-95e4-5862fb21b50f"),
-                            RoleId = new Guid("f63116d0-a0f4-4cdb-aae4-1d635f655f12")
+                            UserId = new Guid("279afb52-89e7-48a5-bae5-3c60e40b91fc"),
+                            RoleId = new Guid("00b87896-bb05-4bf2-bd15-9558c0173f9a")
                         },
                         new
                         {
-                            UserId = new Guid("b2f3c585-7a76-46e1-95e4-5862fb21b50f"),
-                            RoleId = new Guid("9eee284a-57b4-496c-8ca6-660c6d848d6a")
+                            UserId = new Guid("279afb52-89e7-48a5-bae5-3c60e40b91fc"),
+                            RoleId = new Guid("d0a4ffe3-1343-4b5b-895d-4a0121b2190a")
                         },
                         new
                         {
-                            UserId = new Guid("937efb8c-804a-429a-871b-33bfc4efec3e"),
-                            RoleId = new Guid("f63116d0-a0f4-4cdb-aae4-1d635f655f12")
+                            UserId = new Guid("fec513fd-cb5b-4352-8434-27fe702825c5"),
+                            RoleId = new Guid("00b87896-bb05-4bf2-bd15-9558c0173f9a")
                         });
                 });
 

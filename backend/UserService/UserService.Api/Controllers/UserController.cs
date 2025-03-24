@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -31,19 +32,11 @@ public class UserController : Controller
     }
     
     [HttpPost("login")]
-    [ServiceFilter(typeof(AllowAnonymousOnlyFilter))]
+    [AllowAnonymous]
     public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
     {
         var (token, refreshToken) = await _service.Login(user, cancellationToken);
         
-        HttpContext.Response.Cookies.Append("tasty-cookies", token, new CookieOptions()
-        {
-            Domain = "localhost",
-            Secure = true,
-            HttpOnly = true,
-            MaxAge = TimeSpan.FromMinutes(_jwtOptions.ExpiresMinutes)
-        });
-
         HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", refreshToken, new CookieOptions()
         {
             Domain = "localhost",
@@ -55,6 +48,16 @@ public class UserController : Controller
         return Results.Ok(new { Token = token, RefreshToken = refreshToken });
     }
     
+    [HttpGet("check-auth")]
+    public IActionResult CheckAuthHeader()
+    {
+        if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeader))
+        {
+            return Ok($"Authorization header: {authHeader}");
+        }
+        return BadRequest("Authorization header is missing!");
+    }
+    
     [HttpPost("logout")]
     [Authorize]
     public async Task<IResult> Logout(CancellationToken cancellationToken)
@@ -62,7 +65,6 @@ public class UserController : Controller
         string? refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
         var result = await _service.Logout(refreshToken, cancellationToken);
 
-        HttpContext.Response.Cookies.Delete("tasty-cookies");
         HttpContext.Response.Cookies.Delete("not-a-refresh-token-cookies");
         
         return Results.Ok(result);

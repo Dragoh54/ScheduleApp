@@ -3,7 +3,7 @@
 public interface IUnitOfWork : IDisposable
 {
     IUserRepository UserRepository { get; }
-    IRefreshTokenRepository RefreshTokenRepository { get; }
+    ITokenModelRepository TokenModelRepository { get; }
     IRoleRepository RoleRepository { get; }
     Task SaveChangesAsync();
 }

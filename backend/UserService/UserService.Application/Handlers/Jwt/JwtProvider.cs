@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using UserService.DataAccess.Enums;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Models;
 
@@ -45,9 +46,9 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         return tokenValue;
     }
 
-    public RefreshToken GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
+    public TokenModel GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = new RefreshToken(Guid.NewGuid(), user.Id,
+        var token = new TokenModel(Guid.NewGuid(), Token.Refresh, user.Id,
             DateTime.UtcNow.Date, DateTime.UtcNow.AddDays(_jwtOptions.ExpiresDays));
         cancellationToken.ThrowIfCancellationRequested();
         

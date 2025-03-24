@@ -10,7 +10,7 @@ public static class ServiceCollectionExtension
     public static void AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<ITokenModelRepository, TokenModelModelRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
     }
 }

@@ -91,7 +91,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
             throw new UnauthorizedAccessException("Failed to generate tokens.");
         }
         
-        await unitOfWork.RefreshTokenRepository.Add(refreshToken, cancellationToken);
+        await unitOfWork.TokenModelRepository.Add(refreshToken, cancellationToken);
         await unitOfWork.SaveChangesAsync();
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -100,7 +100,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<bool> Logout(string token, CancellationToken cancellationToken)
     {
-        var refreshToken = unitOfWork.RefreshTokenRepository.Get(Guid.Parse(token), cancellationToken).Result;
+        var refreshToken = unitOfWork.TokenModelRepository.Get(Guid.Parse(token), cancellationToken).Result;
         cancellationToken.ThrowIfCancellationRequested();
 
         if (refreshToken is null)
@@ -110,7 +110,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
         refreshToken.IsUsed = true;
 
-        await unitOfWork.RefreshTokenRepository.Update(refreshToken, cancellationToken);
+        await unitOfWork.TokenModelRepository.Update(refreshToken, cancellationToken);
         await unitOfWork.SaveChangesAsync();
 
         return true;
