@@ -7,11 +7,6 @@ public interface IUserService
     Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken);
     Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken);
     Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken);
-    
-    Task<UserDto> RegisterUser(RegisterDto registerDto, CancellationToken cancellationToken);
-    Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken);
-    Task<bool> Logout(string token, CancellationToken cancellationToken);
-    
     Task<UserDto> UpdateUser(UpdateUserDto userDto, CancellationToken cancellationToken);
     Task<UserDto> DeleteUser(DeleteUserDto userDto, CancellationToken cancellationToken);
     Task<UserDto> SoftDelete(DeleteUserDto userDto, CancellationToken cancellationToken);

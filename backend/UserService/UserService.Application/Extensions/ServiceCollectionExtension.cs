@@ -16,7 +16,8 @@ public static class ServiceCollectionExtension
     public static void AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, Services.UserService>();
-        services.AddScoped<IRefreshTokenService, TokenService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IRoleService, RoleService>();
     }
     

@@ -20,4 +20,15 @@ public class TokenModelModelRepository : BaseRepository<TokenModel>, ITokenModel
         
         return token;
     }
+
+    public async Task<TokenModel?> GetByToken(string token, CancellationToken cancellationToken)
+    {
+        var result = await _dbContext.Tokens
+            .AsNoTracking()
+            .FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return result;
+    }
 }

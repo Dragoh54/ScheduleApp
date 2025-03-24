@@ -13,61 +13,14 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("users")]
+[Authorize]
 public class UserController : Controller
 {
-    private readonly JwtOptions _jwtOptions;
     private readonly IUserService _service;
 
-    public UserController(IUserService service, IOptions<JwtOptions> jwtOptions)
+    public UserController(IUserService service)
     {
         _service = service;
-        _jwtOptions = jwtOptions.Value;
-    }
-    
-    [HttpPost("register")]
-    public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
-    {
-        var resultUser = await _service.RegisterUser(user, cancellationToken);
-        return Results.Ok(resultUser);
-    }
-    
-    [HttpPost("login")]
-    [AllowAnonymous]
-    public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
-    {
-        var (token, refreshToken) = await _service.Login(user, cancellationToken);
-        
-        HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", refreshToken, new CookieOptions()
-        {
-            Domain = "localhost",
-            Secure = true,
-            HttpOnly = true,
-            MaxAge = TimeSpan.FromDays(_jwtOptions.ExpiresDays)
-        });
-
-        return Results.Ok(new { Token = token, RefreshToken = refreshToken });
-    }
-    
-    [HttpGet("check-auth")]
-    public IActionResult CheckAuthHeader()
-    {
-        if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeader))
-        {
-            return Ok($"Authorization header: {authHeader}");
-        }
-        return BadRequest("Authorization header is missing!");
-    }
-    
-    [HttpPost("logout")]
-    [Authorize]
-    public async Task<IResult> Logout(CancellationToken cancellationToken)
-    {
-        string? refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
-        var result = await _service.Logout(refreshToken, cancellationToken);
-
-        HttpContext.Response.Cookies.Delete("not-a-refresh-token-cookies");
-        
-        return Results.Ok(result);
     }
 
     [HttpGet]
@@ -117,11 +70,5 @@ public class UserController : Controller
     {
         var deletedUser = await _service.SoftDelete(user, cancellationToken);
         return Results.Ok(deletedUser);
-    }
-
-    [HttpGet("health")]
-    public async Task<IResult> GetHealth()
-    {
-        return Results.Ok("Healthy");
     }
 }

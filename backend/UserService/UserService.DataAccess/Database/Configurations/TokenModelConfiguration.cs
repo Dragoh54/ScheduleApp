@@ -10,7 +10,7 @@ public class TokenModelConfiguration : IEntityTypeConfiguration<TokenModel>
     {
         builder.HasKey(rt => rt.Id);
 
-        builder.Property(t => t.Token).IsRequired();
+        builder.Property(t => t.TokenType).IsRequired();
         builder.Property(rt => rt.UserId).IsRequired();
         builder.Property(rt => rt.ExpiresAt).IsRequired()
             .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));

@@ -48,8 +48,16 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
 
     public TokenModel GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = new TokenModel(Guid.NewGuid(), Token.Refresh, user.Id,
-            DateTime.UtcNow.Date, DateTime.UtcNow.AddDays(_jwtOptions.ExpiresDays));
+        var token = new TokenModel()
+        {
+            Id = Guid.NewGuid(),
+            Token = Guid.NewGuid().ToString().Split("-")[0],
+            TokenType = Token.Refresh,
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.ExpiresMinutes),
+            IsUsed = false,
+        };
         cancellationToken.ThrowIfCancellationRequested();
         
         return token;

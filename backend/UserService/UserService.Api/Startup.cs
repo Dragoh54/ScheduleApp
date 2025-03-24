@@ -55,31 +55,7 @@ public class Startup
         
         services.AddControllers();
         
-        services.AddSwaggerGen(options =>
-        {
-            var jwtSecurityScheme = new OpenApiSecurityScheme()
-            {
-                BearerFormat = "Jwt",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-                Reference = new OpenApiReference()
-                {
-                    Id = JwtBearerDefaults.AuthenticationScheme,
-                    Type = ReferenceType.SecurityScheme
-                }
-            };
-            
-            options.AddSecurityDefinition("Bearer", jwtSecurityScheme);
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement()
-            {
-                {
-                    jwtSecurityScheme, 
-                    Array.Empty<string>()
-                }
-            });
-        });
+        services.AddSwaggerGenAuthenticationExtension();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, string[] args)
