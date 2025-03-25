@@ -57,14 +57,4 @@ public class AuthenticationController : Controller
         
         return Results.Ok(result);
     }
-    
-    [HttpPost("/refresh")]
-    [AllowAnonymous]
-    public async Task<IResult> Refresh(CancellationToken cancellationToken)
-    {
-        string? refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
-        var token = await _tokenService.RefreshAccessToken(refreshToken, cancellationToken);
-        
-        return Results.Ok(token);
-    }
 }

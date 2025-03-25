@@ -1,18 +1,39 @@
-﻿using UserService.Api.Interfaces;
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using MimeKit.Text;
+using UserService.Api.Interfaces;
+using UserService.Application.Dto.EmailDtos;
+using UserService.Application.Handlers.Email;
 
 namespace UserService.Application.Services;
 
-public class EmailService : IEmailService
+public class EmailService(IOptions<EmailSettings> settings) : IEmailService
 {
-    public Task<bool> SendEmail()
+    private readonly EmailSettings _settings = settings.Value;
+    public async Task<bool> SendEmailAsync(ConfirmEmailDto emailDto, CancellationToken cancellationToken)
     {
-        try
+        var emailMessage = new MimeMessage();
+ 
+        emailMessage.From.Add(new MailboxAddress(_settings.FromName, _settings.FromAddress));
+        emailMessage.To.Add(new MailboxAddress("", emailDto.Email));
+        emailMessage.Subject = emailDto.Subject;
+        emailMessage.Body = new TextPart(TextFormat.Html)
         {
-            throw new NotImplementedException();
-        }
-        catch
+            Text = emailDto.Body
+        };
+             
+        using (var client = new SmtpClient())
         {
-            throw new NotImplementedException();
+            await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.EnableSsl, cancellationToken);
+            await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword, cancellationToken);
+            await client.SendAsync(emailMessage, cancellationToken);
+            
+            await client.DisconnectAsync(true, cancellationToken);
         }
+        
+        return true;
     }
 }

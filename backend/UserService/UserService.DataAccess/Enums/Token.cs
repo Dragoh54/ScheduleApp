@@ -3,5 +3,6 @@
 public enum Token
 {
     None,
-    Refresh
+    Refresh,
+    EmailConfirmation
 }

@@ -1,6 +1,19 @@
-﻿namespace UserService.Api.Controllers;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using UserService.Api.Interfaces;
 
-public class TokenController
+namespace UserService.Api.Controllers;
+
+[ApiController]
+public class TokenController(ITokenService tokenService) : Controller
 {
-    
+    [HttpPost("/refresh")]
+    [AllowAnonymous]
+    public async Task<IResult> Refresh(CancellationToken cancellationToken)
+    {
+        string? refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
+        var token = await tokenService.RefreshAccessToken(refreshToken, cancellationToken);
+        
+        return Results.Ok(token);
+    }
 }

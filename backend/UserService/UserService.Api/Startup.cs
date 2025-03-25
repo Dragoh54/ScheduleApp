@@ -8,6 +8,7 @@ using UserService.Api.Interfaces;
 using UserService.Api.Middlewares;
 using UserService.Application.Dto;
 using UserService.Application.Extensions;
+using UserService.Application.Handlers.Email;
 using UserService.Application.Mapper;
 using UserService.Application.Validator;
 using UserService.Application.Validator.UserValidators;
@@ -36,6 +37,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.Configure<JwtOptions>(Configuration.GetSection(nameof(JwtOptions)));
+        services.Configure<EmailSettings>(Configuration.GetSection(nameof(EmailSettings)));
 
         services.AddControllersWithViews();
 

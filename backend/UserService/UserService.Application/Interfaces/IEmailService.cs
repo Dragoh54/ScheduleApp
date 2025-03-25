@@ -1,6 +1,8 @@
-﻿namespace UserService.Api.Interfaces;
+﻿using UserService.Application.Dto.EmailDtos;
+
+namespace UserService.Api.Interfaces;
 
 public interface IEmailService
 {
-    public Task<bool> SendEmail();
+    public Task<bool> SendEmailAsync(ConfirmEmailDto emailDto, CancellationToken cancellationToken);
 }
