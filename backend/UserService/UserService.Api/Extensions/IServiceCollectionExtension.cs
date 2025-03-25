@@ -23,7 +23,7 @@ public static class IServiceCollectionExtension
                 }
             };
             
-            options.AddSecurityDefinition("Bearer", jwtSecurityScheme);
+            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, jwtSecurityScheme);
             options.AddSecurityRequirement(new OpenApiSecurityRequirement()
             {
                 {

@@ -20,6 +20,7 @@ public static class DataSeeder
                 CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 IsDeleted = false,
+                IsConfirmed = true,
                 UserRoles = new List<UserRoles>()
             },
 
@@ -34,6 +35,7 @@ public static class DataSeeder
                 CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 IsDeleted = false,
+                IsConfirmed = true,
                 UserRoles = new List<UserRoles>()
             },
 
@@ -48,6 +50,7 @@ public static class DataSeeder
                 CreatedAt =  DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 IsDeleted = false,
+                IsConfirmed = false,
                 UserRoles = new List<UserRoles>()
             }
         ];

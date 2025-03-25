@@ -54,7 +54,6 @@ public class UserController : Controller
         var resultUser = await _service.UpdateUser(user, cancellationToken);
         return Results.Ok(resultUser);
     }
-
     
     [HttpDelete("delete")]
     [Authorize(Policy = "Admin")]

@@ -4,7 +4,7 @@ namespace UserService.Application.Services;
 
 public class EmailService : IEmailService
 {
-    public void SendEmail()
+    public Task<bool> SendEmail()
     {
         try
         {

@@ -2,5 +2,5 @@
 
 public interface IEmailService
 {
-    public void SendEmail();
+    public Task<bool> SendEmail();
 }

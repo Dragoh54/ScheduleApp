@@ -13,7 +13,12 @@
     <ItemGroup>
       <PackageReference Include="FluentValidation" Version="11.11.0" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+      <PackageReference Include="MailKit" Version="4.11.0" />
       <PackageReference Include="Mapster" Version="7.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Dto\EmailDtos\" />
     </ItemGroup>
 
 </Project>

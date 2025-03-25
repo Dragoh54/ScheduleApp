@@ -11,7 +11,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.HasKey(u => u.Id);
         
         builder.Property(u => u.Id).IsRequired();
-        
+        builder.Property(u=>u.IsConfirmed).IsRequired();
         builder.Property(u => u.Username).HasMaxLength(100).IsRequired(); 
         builder.Property(u => u.Email).HasMaxLength(100).IsRequired();
         builder.Property(u => u.PasswordHash).HasMaxLength(256).IsRequired();
@@ -27,7 +27,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
             .IsRequired();
         
         builder.HasQueryFilter(u => !u.IsDeleted);
-        builder.Property(u => u.IsDeleted).HasDefaultValue(false).IsRequired();
+        builder.Property(u => u.IsDeleted).IsRequired();
         
         builder.HasMany(u => u.UserRoles)
             .WithOne()

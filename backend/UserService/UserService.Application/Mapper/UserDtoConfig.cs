@@ -24,6 +24,7 @@ public class UserDtoConfig
         
         TypeAdapterConfig<UpdateUserDto, UserEntity>
             .NewConfig()
+            .Map(dest => dest.UpdatedAt, src => DateTime.UtcNow)
             .Ignore(dest => dest.Email) 
             .Ignore(dest => dest.PasswordHash); 
     }
