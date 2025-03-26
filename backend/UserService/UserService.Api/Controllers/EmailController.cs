@@ -28,9 +28,9 @@ public class EmailController(IEmailService emailService, IAuthenticationService 
     }
     
     [HttpGet("receive", Name = "EmailConfirmation")]
-    public async Task<IActionResult> ConfirmEmailReceive([FromQuery] ConfirmEmailDto confirmEmailRequest, CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmEmailReceive([FromQuery] ConfirmEmailDto confirmEmailDto, CancellationToken cancellationToken)
     {
-        var token = await authService.ConfirmEmailReceiveAsync(confirmEmailRequest, cancellationToken);
+        var token = await authService.ConfirmEmailReceiveAsync(confirmEmailDto, cancellationToken);
     
         return Ok($"Email confirmed!\nToken: {token}");
     }

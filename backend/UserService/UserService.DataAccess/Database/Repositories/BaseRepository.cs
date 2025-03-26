@@ -59,9 +59,11 @@ public class BaseRepository<T> : IBaseRepository<T>
         cancellationToken.ThrowIfCancellationRequested();
     }
 
-    public async Task Delete(T item, CancellationToken cancellationToken)
+    public async Task<bool> Delete(T item, CancellationToken cancellationToken)
     {
         _dbSet.Remove(item);
         cancellationToken.ThrowIfCancellationRequested();
+
+        return true;
     }
 }

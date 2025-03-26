@@ -18,6 +18,7 @@ public class AuthenticationService(
     IUnitOfWork unitOfWork, 
     ITokenService tokenService, 
     IEmailService emailService,
+    IUserService userService,
     IJwtProvider jwtProvider
     ) : IAuthenticationService
 {
@@ -93,26 +94,42 @@ public class AuthenticationService(
         }
         
         var email = await tokenService.GetEmailFromToken(accessToken, cancellationToken);
-        
         var user  = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        
         if (user is null)
         {
             throw new NotFoundException("User not found");
         }
 
-        var confirmToken = jwtProvider.GenerateToken(user, Token.EmailConfirmation, cancellationToken);
-        confirmToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmToken));
-        
-        //TODO: ADD TOKEN TO DATABASE
-        
+        var confirmToken = await tokenService.GenerateEmailConfirmationToken(user, cancellationToken);
         SendEmailAsync(email, confirmToken, "No reply", callbackUrl, cancellationToken);
 
         return confirmToken;
     }
 
-    public Task<string> ConfirmEmailReceiveAsync(ConfirmEmailDto confirmEmailRequest, CancellationToken cancellationToken)
+    public async Task<string> ConfirmEmailReceiveAsync(ConfirmEmailDto confirmEmailDto, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(confirmEmailDto.Email, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (candidate is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        
+        var success = await tokenService.DeleteToken(confirmEmailDto.Token, cancellationToken);
+
+        if (!success)
+        {
+            throw new BadRequestException("Failed to delete confirmation token");
+        }
+        
+        candidate.IsConfirmed = true;
+        await unitOfWork.UserRepository.Update(candidate, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+
+        return confirmEmailDto.Token;
     }
 
     public Task<string> ForgotPasswordAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken)

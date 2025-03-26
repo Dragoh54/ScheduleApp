@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
 using UserService.Application.Dto.TokenDtos;
@@ -52,8 +53,15 @@ public class TokenService : ITokenService
 
     public async Task<string> GenerateEmailConfirmationToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = _jwtProvider.GenerateTokenModel(user, Token.EmailConfirmation, cancellationToken);
+        var confirmToken = _jwtProvider.GenerateToken(user, Token.EmailConfirmation, cancellationToken);
+        if (confirmToken is null)
+        {
+            throw new UnauthorizedAccessException("Failed to generate token.");
+        }
         
+        confirmToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmToken));
+        
+        var token = _jwtProvider.GenerateTokenModel(user, confirmToken, Token.EmailConfirmation, cancellationToken);
         if (token is null)
         {
             throw new UnauthorizedAccessException("Failed to generate token.");
@@ -63,7 +71,7 @@ public class TokenService : ITokenService
         await _unitOfWork.SaveChangesAsync();
         cancellationToken.ThrowIfCancellationRequested();
         
-        return token.Token;
+        return confirmToken;
     }
 
     public async Task<string> RefreshAccessToken(string? refreshToken, CancellationToken cancellationToken)
@@ -112,5 +120,21 @@ public class TokenService : ITokenService
         cancellationToken.ThrowIfCancellationRequested();
 
         return emailClaim.Value;
+    }
+
+    public async Task<bool> DeleteToken(string token, CancellationToken cancellationToken)
+    {
+        var candidate = await _unitOfWork.TokenModelRepository.GetByToken(token, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (candidate is null)
+        {
+            throw new BadRequestException("Invalid token");
+        }
+        
+        var success = await _unitOfWork.TokenModelRepository.Delete(candidate, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return success;
     }
 }

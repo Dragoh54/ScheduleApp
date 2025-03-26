@@ -8,5 +8,6 @@ public interface IJwtProvider
 {
     public string GenerateToken(UserEntity user, Token tokenType, CancellationToken cancellationToken);
     public TokenModel GenerateTokenModel(UserEntity user, Token tokenType, CancellationToken cancellationToken);
+    public TokenModel GenerateTokenModel(UserEntity user, string token, Token tokenType, CancellationToken cancellationToken);
     public ClaimsPrincipal ValidateToken(string token);
 }

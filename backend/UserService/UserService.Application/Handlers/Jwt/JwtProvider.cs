@@ -64,7 +64,24 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         
         return result;
     }
-    
+
+    public TokenModel GenerateTokenModel(UserEntity user, string token, Token tokenType, CancellationToken cancellationToken)
+    {
+        var result = new TokenModel()
+        {
+            Id = Guid.NewGuid(),
+            Token = token,
+            TokenType = tokenType,
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = GetExpirationDate(tokenType),
+            IsUsed = false,
+        };
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return result;
+    }
+
     public ClaimsPrincipal ValidateToken(string token)
     {
         var tokenValidationParameters = new TokenValidationParameters

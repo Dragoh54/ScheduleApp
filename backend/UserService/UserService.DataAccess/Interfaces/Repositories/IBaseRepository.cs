@@ -7,5 +7,5 @@ public interface IBaseRepository<T>
     public Task<T> Add(T item, CancellationToken cancellationToken);
     public Task<T?> Update(T item, CancellationToken cancellationToken);
     public Task SaveAsync(CancellationToken cancellationToken);
-    public Task Delete(T item, CancellationToken cancellationToken);
+    public Task<bool> Delete(T item, CancellationToken cancellationToken);
 }
