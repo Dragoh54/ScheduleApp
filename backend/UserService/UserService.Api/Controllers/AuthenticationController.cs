@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
+using UserService.Application.Dto.EmailDtos;
 using UserService.DataAccess.Handlers.Jwt;
 
 namespace UserService.Api.Controllers;
@@ -31,7 +32,6 @@ public class AuthenticationController : Controller
     }
     
     [HttpPost("login")]
-    [AllowAnonymous]
     public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
     {
         var (token, refreshToken) = await _authService.Login(user, cancellationToken);
@@ -56,6 +56,27 @@ public class AuthenticationController : Controller
 
         HttpContext.Response.Cookies.Delete("not-a-refresh-token-cookies");
         
+        return Results.Ok(result);
+    }
+    
+    [HttpPost("forgot-password")]
+    public async Task<IResult> ForgotPassword([FromQuery] string email, CancellationToken cancellationToken)
+    {
+        var callbackUrl = Url.RouteUrl(
+            "ResetPassword",
+            values: null,
+            protocol: Request.Scheme);
+    
+        var token = await _authService.ForgotPasswordAsync(email, callbackUrl!, cancellationToken);
+    
+        return Results.Ok(token);
+    }
+
+    [HttpGet("reset-password", Name = "ResetPassword")]
+    public async Task<IResult> ResetPassword([FromQuery]ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
+    {
+        var result = await _authService.ResetPasswordAsync(resetPasswordDto, cancellationToken);
+    
         return Results.Ok(result);
     }
 }

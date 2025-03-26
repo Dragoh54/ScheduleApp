@@ -102,13 +102,13 @@ public class AuthenticationService(
             throw new NotFoundException("User not found");
         }
         
-        var confirmToken = await tokenService.GenerateEmailConfirmationToken(user, cancellationToken);
+        var confirmToken = await tokenService.GenerateEmailToken(user, Token.EmailConfirmation, cancellationToken);
         var confirmationLink = GenerateConfirmationLink(callbackUrl, email, confirmToken);
         
-        SendEmailAsync(
-            email,
-            "Подтверждение email",
-            confirmationLink,
+        await emailService.SendEmailAsync(
+            email, 
+            "No-reply",
+            $"To confirm email visit this link -> {confirmationLink}.", 
             cancellationToken);
 
         return confirmToken;
@@ -133,14 +133,55 @@ public class AuthenticationService(
         return "Email successfully confirmed!";
     }
 
-    public Task<string> ForgotPasswordAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken)
+    public async Task<string> ForgotPasswordAsync(string? email, string callbackUrl, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(email))
+        {
+            throw new BadRequestException("invalid email address");
+        }
+        
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
+    
+        if (user is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        
+        var resetPass = await tokenService.GenerateEmailToken(user, Token.ResetPassword, cancellationToken);
+        var confirmationLink = GenerateConfirmationLink(callbackUrl, email, resetPass);
+        
+        await emailService.SendEmailAsync(
+            email, 
+            "Reset password",
+            $"""
+               <h1>Reset password</h1>
+               <p>Go thought this kink to reset:</p>
+               <a href="{confirmationLink}">Reset!</a>
+               <p>This link active only 24 hours.</p>
+               """, 
+            cancellationToken);
+
+        return resetPass;
     }
 
-    public Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordRequest, CancellationToken cancellationToken)
+    public async Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordRequest, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(resetPasswordRequest.Email, cancellationToken);
+        if (user is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        
+        await tokenService.DeleteToken(resetPasswordRequest.Token, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        user.PasswordHash = passwordHasher.Generate(resetPasswordRequest.Password, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+    
+        await unitOfWork.UserRepository.Update(user, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return $"Password successfully reset!\n Password: {resetPasswordRequest.Password}";
     }
     
     private string GenerateConfirmationLink(string baseUrl, string email, string token)
@@ -155,11 +196,5 @@ public class AuthenticationService(
         };
     
         return uriBuilder.ToString();
-    }
-    
-    private void SendEmailAsync(string email, string title, string callbackUrl, CancellationToken cancellationToken)
-    {
-        emailService.SendEmailAsync(email, title,
-            $"To confirm email visit this link -> {callbackUrl}.", cancellationToken);
     }
 }

@@ -10,6 +10,6 @@ public interface IAuthenticationService
     Task<bool> Logout(string? token, CancellationToken cancellationToken);
     Task<string> ConfirmEmailSendAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken);
     Task<string> ConfirmEmailReceiveAsync(ConfirmEmailDto confirmEmailRequest, CancellationToken cancellationToken);
-    Task<string> ForgotPasswordAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken);
+    Task<string> ForgotPasswordAsync(string? email, string callbackUrl, CancellationToken cancellationToken);
     Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordRequest, CancellationToken cancellationToken);
 }

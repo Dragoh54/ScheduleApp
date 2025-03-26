@@ -14,7 +14,7 @@ public class EmailController(IEmailService emailService, IAuthenticationService 
 {
     [HttpPost("send")]
     [AllowAnonymous]
-    public async Task<IActionResult> ConfirmEmailSend(CancellationToken cancellationToken)
+    public async Task<IResult> ConfirmEmailSend(CancellationToken cancellationToken)
     {
         var accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);;
         var callbackUrl = Url.RouteUrl(
@@ -24,14 +24,14 @@ public class EmailController(IEmailService emailService, IAuthenticationService 
     
         var token = await authService.ConfirmEmailSendAsync(accessToken, callbackUrl!, cancellationToken);
     
-        return Ok(token);
+        return Results.Ok(token);
     }
     
     [HttpGet("receive", Name = "EmailConfirmation")]
-    public async Task<IActionResult> ConfirmEmailReceive([FromQuery] ConfirmEmailDto confirmEmailDto, CancellationToken cancellationToken)
+    public async Task<IResult> ConfirmEmailReceive([FromQuery] ConfirmEmailDto confirmEmailDto, CancellationToken cancellationToken)
     {
         var token = await authService.ConfirmEmailReceiveAsync(confirmEmailDto, cancellationToken);
     
-        return Ok($"Email confirmed!\nToken: {token}");
+        return Results.Ok($"Email confirmed!\nToken: {token}");
     }
 }

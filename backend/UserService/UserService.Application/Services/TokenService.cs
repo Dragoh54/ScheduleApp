@@ -51,9 +51,9 @@ public class TokenService : ITokenService
         return token.Token;
     }
 
-    public async Task<string> GenerateEmailConfirmationToken(UserEntity user, CancellationToken cancellationToken)
+    public async Task<string> GenerateEmailToken(UserEntity user, Token tokenType, CancellationToken cancellationToken)
     {
-        var confirmToken = _jwtProvider.GenerateToken(user, Token.EmailConfirmation, cancellationToken);
+        var confirmToken = _jwtProvider.GenerateToken(user, tokenType, cancellationToken);
         if (confirmToken is null)
         {
             throw new UnauthorizedAccessException("Failed to generate token.");
@@ -61,7 +61,7 @@ public class TokenService : ITokenService
         
         confirmToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmToken));
         
-        var token = _jwtProvider.GenerateTokenModel(user, confirmToken, Token.EmailConfirmation, cancellationToken);
+        var token = _jwtProvider.GenerateTokenModel(user, confirmToken, tokenType, cancellationToken);
         if (token is null)
         {
             throw new UnauthorizedAccessException("Failed to generate token.");
@@ -73,7 +73,7 @@ public class TokenService : ITokenService
         
         return confirmToken;
     }
-
+    
     public async Task<string> RefreshAccessToken(string? refreshToken, CancellationToken cancellationToken)
     {
         if (refreshToken is null)
