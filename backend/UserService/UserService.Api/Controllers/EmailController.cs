@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using UserService.Api.Interfaces;
@@ -8,17 +9,29 @@ using UserService.Application.Handlers.Email;
 namespace UserService.Api.Controllers;
 
 [ApiController]
-public class EmailController(IEmailService emailService, IUserService userService, IConfiguration configuration) : Controller
+[Route("confirmation")]
+public class EmailController(IEmailService emailService, IAuthenticationService authService, IConfiguration configuration) : Controller
 {
-    private readonly IUserService _userService = userService;
-    private readonly IConfiguration _configuration = configuration;
-
-    [HttpPost("confirmation/send")]
+    [HttpPost("send")]
     [AllowAnonymous]
-    public async Task<IActionResult> ConfirmEmailSend([FromQuery]ConfirmEmailDto confirmEmailDto,  CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmEmailSend(CancellationToken cancellationToken)
     {
-        var success = await emailService.SendEmailAsync(confirmEmailDto, cancellationToken);
-
-        return Ok(success);
+        var accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);;
+        var callbackUrl = Url.RouteUrl(
+            "EmailConfirmation",
+            values: null,
+            protocol: Request.Scheme);
+    
+        var token = await authService.ConfirmEmailSendAsync(accessToken, callbackUrl!, cancellationToken);
+    
+        return Ok(token);
+    }
+    
+    [HttpGet("receive", Name = "EmailConfirmation")]
+    public async Task<IActionResult> ConfirmEmailReceive([FromQuery] ConfirmEmailDto confirmEmailRequest, CancellationToken cancellationToken)
+    {
+        var token = await authService.ConfirmEmailReceiveAsync(confirmEmailRequest, cancellationToken);
+    
+        return Ok($"Email confirmed!\nToken: {token}");
     }
 }

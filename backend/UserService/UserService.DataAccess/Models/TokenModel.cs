@@ -5,6 +5,7 @@ namespace UserService.DataAccess.Models;
 public class TokenModel : IdEntity
 {
     public Guid UserId { get; set; }
+    public UserEntity User { get; set; }
     public string Token { get; set; } = string.Empty;
     public Token TokenType { get; set; }
     public DateTime CreatedAt { get; set; }

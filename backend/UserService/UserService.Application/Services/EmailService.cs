@@ -13,16 +13,16 @@ namespace UserService.Application.Services;
 public class EmailService(IOptions<EmailSettings> settings) : IEmailService
 {
     private readonly EmailSettings _settings = settings.Value;
-    public async Task<bool> SendEmailAsync(ConfirmEmailDto emailDto, CancellationToken cancellationToken)
+    public async Task SendEmailAsync(string mailTo, string subject, string message, CancellationToken cancellationToken)
     {
         var emailMessage = new MimeMessage();
  
         emailMessage.From.Add(new MailboxAddress(_settings.FromName, _settings.FromAddress));
-        emailMessage.To.Add(new MailboxAddress("", emailDto.Email));
-        emailMessage.Subject = emailDto.Subject;
+        emailMessage.To.Add(new MailboxAddress("", mailTo));
+        emailMessage.Subject = subject;
         emailMessage.Body = new TextPart(TextFormat.Html)
         {
-            Text = emailDto.Body
+            Text = message
         };
              
         using (var client = new SmtpClient())
@@ -33,7 +33,5 @@ public class EmailService(IOptions<EmailSettings> settings) : IEmailService
             
             await client.DisconnectAsync(true, cancellationToken);
         }
-        
-        return true;
     }
 }

@@ -26,6 +26,9 @@ public class AuthenticationController : Controller
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
         var resultUser = await _authService.Register(user, cancellationToken);
+
+        //var emailToken = _tokenService.GenerateEmailConfirmationToken(resultUser, cancellationToken);
+        
         return Results.Ok(resultUser);
     }
     
@@ -40,7 +43,7 @@ public class AuthenticationController : Controller
             Domain = "localhost",
             Secure = true,
             HttpOnly = true,
-            MaxAge = TimeSpan.FromDays(_jwtOptions.ExpiresDays)
+            MaxAge = TimeSpan.FromDays(_jwtOptions.RefreshExpiresDays)
         });
 
         return Results.Ok(new { Token = token, RefreshToken = refreshToken });

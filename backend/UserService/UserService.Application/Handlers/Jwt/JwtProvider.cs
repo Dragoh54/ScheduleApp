@@ -1,10 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using UserService.DataAccess.Enums;
+using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Models;
 
@@ -16,7 +18,7 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
     
     private readonly string _secretKey = configuration["JWTSecretKey"] ?? throw new NullReferenceException();
     
-    public string GenerateAccessToken(UserEntity user, CancellationToken cancellationToken)
+    public string GenerateToken(UserEntity user, Token tokenType, CancellationToken cancellationToken)
     {
         List<Claim> claims=
         [
@@ -37,7 +39,7 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         var token = new JwtSecurityToken(
             claims: claims,
             signingCredentials: signingCredentials,
-            expires: DateTime.Now.AddMinutes(_jwtOptions.ExpiresMinutes)
+            expires: GetExpirationDate(tokenType)
         );
         
         var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
@@ -46,21 +48,53 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         return tokenValue;
     }
 
-    public TokenModel GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
+    public TokenModel GenerateTokenModel(UserEntity user, Token tokenType, CancellationToken cancellationToken)
     {
-        var token = new TokenModel()
+        var result = new TokenModel()
         {
             Id = Guid.NewGuid(),
-            Token = Guid.NewGuid().ToString().Replace("-", string.Empty),
-            TokenType = Token.Refresh,
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            TokenType = tokenType,
             UserId = user.Id,
             CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.ExpiresMinutes),
+            ExpiresAt = GetExpirationDate(tokenType),
             IsUsed = false,
         };
         cancellationToken.ThrowIfCancellationRequested();
         
-        return token;
+        return result;
+    }
+    
+    public ClaimsPrincipal ValidateToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey))
+        };
         
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+        
+        if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new SecurityTokenException("Invalid token");
+        }
+        
+        return principal;
+    }
+
+    private DateTime GetExpirationDate(Token tokenType)
+    {
+        return tokenType switch
+        {
+            Token.Access => DateTime.UtcNow.AddMinutes(_jwtOptions.AccessExpiresMinutes),
+            Token.Refresh => DateTime.UtcNow.AddDays(_jwtOptions.RefreshExpiresDays),
+            Token.EmailConfirmation => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
+            _ => throw new BadRequestException("Invalid token type")
+        };
     }
 }

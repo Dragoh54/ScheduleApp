@@ -1,7 +1,11 @@
-﻿using Mapster;
+﻿using System.Text;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
+using UserService.Application.Dto.EmailDtos;
+using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
@@ -9,7 +13,13 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Services;
 
-public class AuthenticationService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork, ITokenService tokenService, IJwtProvider jwtProvider) : IAuthenticationService
+public class AuthenticationService(
+    IPasswordHasher passwordHasher, 
+    IUnitOfWork unitOfWork, 
+    ITokenService tokenService, 
+    IEmailService emailService,
+    IJwtProvider jwtProvider
+    ) : IAuthenticationService
 {
     public async Task<UserDto> Register(RegisterDto registerDto, CancellationToken cancellationToken)
     {
@@ -73,5 +83,54 @@ public class AuthenticationService(IPasswordHasher passwordHasher, IUnitOfWork u
         await unitOfWork.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<string> ConfirmEmailSendAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            throw new BadRequestException("Invalid access token");
+        }
+        
+        var email = await tokenService.GetEmailFromToken(accessToken, cancellationToken);
+        
+        var user  = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
+        if (user is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        var confirmToken = jwtProvider.GenerateToken(user, Token.EmailConfirmation, cancellationToken);
+        confirmToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmToken));
+        
+        //TODO: ADD TOKEN TO DATABASE
+        
+        SendEmailAsync(email, confirmToken, "No reply", callbackUrl, cancellationToken);
+
+        return confirmToken;
+    }
+
+    public Task<string> ConfirmEmailReceiveAsync(ConfirmEmailDto confirmEmailRequest, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string> ForgotPasswordAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordRequest, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+    
+    private void SendEmailAsync(string email, string token, string title, string callbackUrl, CancellationToken cancellationToken)
+    {
+        var sb = new StringBuilder(callbackUrl);
+        sb.Append($"?{nameof(email)}={email}&{nameof(token)}={token}");
+
+        emailService.SendEmailAsync(email, title,
+            $"To confirm email visit this link -> {sb}.", cancellationToken);
     }
 }

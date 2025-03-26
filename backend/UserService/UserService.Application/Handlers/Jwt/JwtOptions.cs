@@ -2,6 +2,7 @@
 
 public class JwtOptions
 {
-    public int ExpiresMinutes { get; set; }
-    public int ExpiresDays { get; set; }
+    public int AccessExpiresMinutes { get; set; }
+    public int RefreshExpiresDays { get; set; }
+    public int EmailConfirmationExpiresHours { get; set; }
 }

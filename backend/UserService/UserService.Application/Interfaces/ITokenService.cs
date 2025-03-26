@@ -8,6 +8,7 @@ public interface ITokenService
 {
     Task<string> GenerateAccessToken(UserEntity user, CancellationToken cancellationToken);
     Task<string> GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken);
+    Task<string> GenerateEmailConfirmationToken(UserEntity user, CancellationToken cancellationToken);
     Task<string> RefreshAccessToken(string? refreshToken, CancellationToken cancellationToken);
-    Task<bool> DeleteRefreshToken(string refreshToken, CancellationToken cancellationToken);
+    Task<string> GetEmailFromToken(string token, CancellationToken cancellationToken);
 }

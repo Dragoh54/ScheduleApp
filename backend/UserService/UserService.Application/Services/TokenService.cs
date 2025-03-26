@@ -1,6 +1,9 @@
-﻿using UserService.Api.Interfaces;
+﻿using System.Security.Claims;
+using System.Text;
+using UserService.Api.Interfaces;
 using UserService.Application.Dto;
 using UserService.Application.Dto.TokenDtos;
+using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
@@ -21,7 +24,7 @@ public class TokenService : ITokenService
 
     public async Task<string> GenerateAccessToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = _jwtProvider.GenerateAccessToken(user, cancellationToken);
+        var token = _jwtProvider.GenerateToken(user, Token.Access, cancellationToken);
         
         if (token is null)
         {
@@ -33,7 +36,23 @@ public class TokenService : ITokenService
 
     public async Task<string> GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = _jwtProvider.GenerateRefreshToken(user, cancellationToken);
+        var token = _jwtProvider.GenerateTokenModel(user, Token.Refresh, cancellationToken);
+        
+        if (token is null)
+        {
+            throw new UnauthorizedAccessException("Failed to generate token.");
+        }
+        
+        await _unitOfWork.TokenModelRepository.Add(token, cancellationToken);
+        await _unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return token.Token;
+    }
+
+    public async Task<string> GenerateEmailConfirmationToken(UserEntity user, CancellationToken cancellationToken)
+    {
+        var token = _jwtProvider.GenerateTokenModel(user, Token.EmailConfirmation, cancellationToken);
         
         if (token is null)
         {
@@ -75,8 +94,23 @@ public class TokenService : ITokenService
         return accessToken;
     }
 
-    public async Task<bool> DeleteRefreshToken(string refreshToken, CancellationToken cancellationToken)
+    public async Task<string> GetEmailFromToken(string token, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var principal = _jwtProvider.ValidateToken(token);
+        if (principal == null)
+        {
+            throw new BadRequestException("Invalid or expired token");
+        }
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        var emailClaim = principal.FindFirst(ClaimTypes.Email);
+        if (emailClaim == null || string.IsNullOrEmpty(emailClaim.Value))
+        {
+            throw new BadRequestException("Email claim not found in token");
+        }
+        
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return emailClaim.Value;
     }
 }
