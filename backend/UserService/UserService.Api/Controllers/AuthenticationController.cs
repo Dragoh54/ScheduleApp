@@ -71,9 +71,16 @@ public class AuthenticationController : Controller
     
         return Results.Ok(token);
     }
-
+    
     [HttpGet("reset-password", Name = "ResetPassword")]
-    public async Task<IResult> ResetPassword([FromQuery]ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
+    public async Task<IResult> OnResetPassword([FromQuery] ConfirmEmailDto resetPasswordRequest, CancellationToken cancellationToken)
+    {
+        var success = await _authService.ValidateResetPasswordAsync(resetPasswordRequest, cancellationToken);
+        return Results.Ok(success);
+    }
+    
+    [HttpPost("reset-password")]
+    public async Task<IResult> ResetPassword([FromForm] ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
     {
         var result = await _authService.ResetPasswordAsync(resetPasswordDto, cancellationToken);
     

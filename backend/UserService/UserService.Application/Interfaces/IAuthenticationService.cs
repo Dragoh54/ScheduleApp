@@ -8,8 +8,11 @@ public interface IAuthenticationService
     Task<UserDto> Register(RegisterDto registerDto, CancellationToken cancellationToken);
     Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken);
     Task<bool> Logout(string? token, CancellationToken cancellationToken);
+    
     Task<string> ConfirmEmailSendAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken);
     Task<string> ConfirmEmailReceiveAsync(ConfirmEmailDto confirmEmailRequest, CancellationToken cancellationToken);
+    
     Task<string> ForgotPasswordAsync(string? email, string callbackUrl, CancellationToken cancellationToken);
-    Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordRequest, CancellationToken cancellationToken);
+    Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken);
+    Task<bool> ValidateResetPasswordAsync(ConfirmEmailDto resetPasswordRequestDto, CancellationToken cancellationToken);
 }

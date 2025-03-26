@@ -108,7 +108,12 @@ public class AuthenticationService(
         await emailService.SendEmailAsync(
             email, 
             "No-reply",
-            $"To confirm email visit this link -> {confirmationLink}.", 
+            $"""
+             <h1>Email confirmation</h1>
+             <p>Go thought this link to confirm:</p>
+             <a href="{confirmationLink}">Confirm!</a>
+             <p>This link active only 24 hours.</p>
+             """,
             cancellationToken);
 
         return confirmToken;
@@ -120,6 +125,18 @@ public class AuthenticationService(
         if (user is null)
         {
             throw new NotFoundException("User not found");
+        }
+        
+        var token = await unitOfWork.TokenModelRepository.GetByToken(dto.Token, cancellationToken);
+
+        if (token is null)
+        {
+            throw new NotFoundException("Token not found");
+        }
+
+        if (token.ExpiresAt < DateTime.UtcNow)
+        {
+            throw new NotFoundException("Token has expired");
         }
         
         await tokenService.DeleteToken(dto.Token, cancellationToken);
@@ -155,7 +172,7 @@ public class AuthenticationService(
             "Reset password",
             $"""
                <h1>Reset password</h1>
-               <p>Go thought this kink to reset:</p>
+               <p>Go thought this link to reset:</p>
                <a href="{confirmationLink}">Reset!</a>
                <p>This link active only 24 hours.</p>
                """, 
@@ -164,26 +181,50 @@ public class AuthenticationService(
         return resetPass;
     }
 
-    public async Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordRequest, CancellationToken cancellationToken)
+    public async Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(resetPasswordRequest.Email, cancellationToken);
+        if (resetPasswordDto.Password != resetPasswordDto.ConfirmPassword)
+        {
+            throw new BadRequestException("Passwords do not match");
+        }
+        
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(resetPasswordDto.Email, cancellationToken);
         if (user is null)
         {
             throw new NotFoundException("User not found");
         }
         
-        await tokenService.DeleteToken(resetPasswordRequest.Token, cancellationToken);
+        await tokenService.DeleteToken(resetPasswordDto.Token, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
-        user.PasswordHash = passwordHasher.Generate(resetPasswordRequest.Password, cancellationToken);
+        user.PasswordHash = passwordHasher.Generate(resetPasswordDto.Password, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
     
         await unitOfWork.UserRepository.Update(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         cancellationToken.ThrowIfCancellationRequested();
 
-        return $"Password successfully reset!\n Password: {resetPasswordRequest.Password}";
+        return $"Password successfully reset!\n Password: {resetPasswordDto.Password}";
     }
     
+    public async Task<bool> ValidateResetPasswordAsync(ConfirmEmailDto resetPasswordRequestDto, CancellationToken cancellationToken)
+    {
+        var token = await unitOfWork.TokenModelRepository.GetByToken(resetPasswordRequestDto.Token, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (token is null)
+        {
+            throw new NotFoundException("Token not found");
+        }
+
+        if (token.ExpiresAt < DateTime.UtcNow || token.IsUsed)
+        {
+            throw new BadRequestException("Token expired");
+        }
+        
+        return true;
+    }
+
+
     private string GenerateConfirmationLink(string baseUrl, string email, string token)
     {
         var query = HttpUtility.ParseQueryString(string.Empty);
