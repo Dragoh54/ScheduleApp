@@ -26,8 +26,6 @@ public class AuthenticationController : Controller
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
         var resultUser = await _authService.Register(user, cancellationToken);
-
-        //var emailToken = _tokenService.GenerateEmailConfirmationToken(resultUser, cancellationToken);
         
         return Results.Ok(resultUser);
     }

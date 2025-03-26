@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Web;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -85,7 +86,7 @@ public class AuthenticationService(
 
         return true;
     }
-
+    
     public async Task<string> ConfirmEmailSendAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(accessToken))
@@ -94,42 +95,42 @@ public class AuthenticationService(
         }
         
         var email = await tokenService.GetEmailFromToken(accessToken, cancellationToken);
-        var user  = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
-        
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
+    
         if (user is null)
         {
             throw new NotFoundException("User not found");
         }
-
+        
         var confirmToken = await tokenService.GenerateEmailConfirmationToken(user, cancellationToken);
-        SendEmailAsync(email, confirmToken, "No reply", callbackUrl, cancellationToken);
+        var confirmationLink = GenerateConfirmationLink(callbackUrl, email, confirmToken);
+        
+        SendEmailAsync(
+            email,
+            "Подтверждение email",
+            confirmationLink,
+            cancellationToken);
 
         return confirmToken;
     }
 
-    public async Task<string> ConfirmEmailReceiveAsync(ConfirmEmailDto confirmEmailDto, CancellationToken cancellationToken)
+    public async Task<string> ConfirmEmailReceiveAsync(ConfirmEmailDto dto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(confirmEmailDto.Email, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (candidate is null)
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(dto.Email, cancellationToken);
+        if (user is null)
         {
             throw new NotFoundException("User not found");
         }
         
-        var success = await tokenService.DeleteToken(confirmEmailDto.Token, cancellationToken);
-
-        if (!success)
-        {
-            throw new BadRequestException("Failed to delete confirmation token");
-        }
-        
-        candidate.IsConfirmed = true;
-        await unitOfWork.UserRepository.Update(candidate, cancellationToken);
+        await tokenService.DeleteToken(dto.Token, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        user.IsConfirmed = true;
+    
+        await unitOfWork.UserRepository.Update(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
 
-        return confirmEmailDto.Token;
+        return "Email successfully confirmed!";
     }
 
     public Task<string> ForgotPasswordAsync(string? accessToken, string callbackUrl, CancellationToken cancellationToken)
@@ -142,12 +143,23 @@ public class AuthenticationService(
         throw new NotImplementedException();
     }
     
-    private void SendEmailAsync(string email, string token, string title, string callbackUrl, CancellationToken cancellationToken)
+    private string GenerateConfirmationLink(string baseUrl, string email, string token)
     {
-        var sb = new StringBuilder(callbackUrl);
-        sb.Append($"?{nameof(email)}={email}&{nameof(token)}={token}");
-
+        var query = HttpUtility.ParseQueryString(string.Empty);
+        query["email"] = email;
+        query["token"] = HttpUtility.UrlEncode(token);
+    
+        var uriBuilder = new UriBuilder(baseUrl)
+        {
+            Query = query.ToString()
+        };
+    
+        return uriBuilder.ToString();
+    }
+    
+    private void SendEmailAsync(string email, string title, string callbackUrl, CancellationToken cancellationToken)
+    {
         emailService.SendEmailAsync(email, title,
-            $"To confirm email visit this link -> {sb}.", cancellationToken);
+            $"To confirm email visit this link -> {callbackUrl}.", cancellationToken);
     }
 }
