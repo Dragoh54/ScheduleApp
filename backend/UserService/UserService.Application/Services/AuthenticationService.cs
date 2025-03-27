@@ -26,7 +26,6 @@ public class AuthenticationService(
     public async Task<UserDto> Register(RegisterDto registerDto, CancellationToken cancellationToken)
     {
         var candidate = await unitOfWork.UserRepository.GetByEmailAsync(registerDto.Email, cancellationToken);
-
         if (candidate is not null)
         {
             throw new AlreadyExistsException("User with this email already exists!");
@@ -44,12 +43,8 @@ public class AuthenticationService(
 
     public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
-        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken);
-
-        if (userByEmail is null)
-        {
-            throw new NotFoundException("Cannot found user with this email");
-        }
+        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken)
+            ?? throw new NotFoundException("Cannot found user with this email");
 
         var result = passwordHasher.Verify(loginUserDto.Password, userByEmail.PasswordHash, cancellationToken);
 

@@ -14,23 +14,16 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 {
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken);
-        if (candidate is null)
-        {
-            throw new AlreadyExistsException("User with this id doesn't exist!");
-        }
+        var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken)
+            ?? throw new AlreadyExistsException("User with this id doesn't exist!");;
         
         return candidate.Adapt<UserDto>();
     }
 
     public async Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
-
-        if (candidate is null)
-        {
-            throw new AlreadyExistsException("User with this email doesn't exist!");
-        }
+        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken)
+            ?? throw new AlreadyExistsException("User with this email doesn't exist!");
         
         return candidate.Adapt<UserDto>();
     }
@@ -51,11 +44,8 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<UserDto> UpdateUser(UpdateUserDto userDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken);
-        if (candidate is null)
-        {
-            throw new AlreadyExistsException("User with this id doesn't exist!");
-        }
+        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken)
+            ?? throw new AlreadyExistsException("User with this id doesn't exist!");;
         
         userDto.Adapt(candidate);
         
@@ -68,11 +58,8 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<UserDto> DeleteUser(DeleteUserDto userDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken);
-        if (candidate is null)
-        {
-            throw new AlreadyExistsException("User with this id doesn't exist!");
-        }
+        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken)
+            ?? throw new AlreadyExistsException("User with this id doesn't exist!");
         
         await unitOfWork.UserRepository.Delete(candidate, cancellationToken);
         await unitOfWork.SaveChangesAsync();
@@ -83,11 +70,8 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<UserDto> SoftDelete(DeleteUserDto userDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken);
-        if (candidate is null)
-        {
-            throw new AlreadyExistsException("User with this id doesn't exist!");
-        }
+        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken)
+            ?? throw new AlreadyExistsException("User with this id doesn't exist!");
         
         candidate.IsDeleted = true;
         candidate.DeletedAt = DateTime.UtcNow;
@@ -101,24 +85,16 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
 
     public async Task<UserDto> AddAdminRole(Guid userId, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetWithTracking(userId, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
-        if (candidate is null)
-        {
-            throw new AlreadyExistsException("User with this id doesn't exist!");
-        }
-    
+        var candidate = await unitOfWork.UserRepository.GetWithTracking(userId, cancellationToken)
+            ?? throw new AlreadyExistsException("User with this id doesn't exist!");
+
         if (!candidate.IsConfirmed)
         {
             throw new BadRequestException("User is not confirmed!");
         }
     
-        var role = await unitOfWork.RoleRepository.GetByRole(Role.Admin, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
-        if (role is null)
-        {
-            throw new BadRequestException("Role does not exist!");
-        }
+        var role = await unitOfWork.RoleRepository.GetByRole(Role.Admin, cancellationToken)
+            ?? throw new BadRequestException("Role does not exist!");
         
         candidate.UserRoles.Add(new UserRoles { UserId = candidate.Id, RoleId = role.Id });
         candidate.UpdatedAt = DateTime.UtcNow;
