@@ -4,12 +4,9 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class TokenModelModelRepository : BaseRepository<TokenModel>, ITokenModelRepository
+public class TokenModelModelRepository(UserServiceDbContext dbContext)
+    : BaseRepository<TokenModel>(dbContext), ITokenModelRepository
 {
-    public TokenModelModelRepository(UserServiceDbContext dbContext) : base(dbContext)
-    {
-    }
-
     public async Task<TokenModel?> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
         var token = await _dbContext.Tokens

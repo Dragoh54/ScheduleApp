@@ -5,12 +5,8 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class RoleRepository : BaseRepository<RoleEntity>, IRoleRepository
+public class RoleRepository(UserServiceDbContext dbContext) : BaseRepository<RoleEntity>(dbContext), IRoleRepository
 {
-    public RoleRepository(UserServiceDbContext dbContext) : base(dbContext)
-    {
-    }
-
     public async Task<IEnumerable<RoleEntity>?> Get(CancellationToken cancellationToken)
     {
         var roles = await _dbContext.Roles

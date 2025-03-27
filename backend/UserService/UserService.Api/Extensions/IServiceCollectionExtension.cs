@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Models;
 
 namespace UserService.Api.Extensions;
 
-public static class IServiceCollectionExtension
+public static class ServiceCollectionExtension
 {
     public static void AddSwaggerGenAuthenticationExtension(this IServiceCollection services)
     {

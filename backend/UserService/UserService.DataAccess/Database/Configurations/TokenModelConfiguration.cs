@@ -19,5 +19,6 @@ public class TokenModelConfiguration : IEntityTypeConfiguration<TokenModel>
         builder.Property(rt => rt.IsUsed).HasDefaultValue(false);
         
         builder.HasQueryFilter(x => !x.User.IsDeleted);
+        builder.HasQueryFilter(x => !x.IsUsed);
     }
 }

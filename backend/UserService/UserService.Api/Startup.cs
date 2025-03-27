@@ -45,6 +45,12 @@ public class Startup
         
         services.AddDbContext<UserServiceDbContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("UserServiceDbContext")));
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = Configuration.GetConnectionString("Redis");
+            options.InstanceName = "UserService_";
+        });
+        
         services.AddRepositories();
         services.AddJwt();
 

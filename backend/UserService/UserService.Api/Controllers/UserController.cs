@@ -14,20 +14,13 @@ namespace UserService.Api.Controllers;
 [ApiController]
 [Route("users")]
 [Authorize]
-public class UserController : Controller
+public class UserController(IUserService service) : Controller
 {
-    private readonly IUserService _service;
-
-    public UserController(IUserService service)
-    {
-        _service = service;
-    }
-
     [HttpGet]
     [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUsers(CancellationToken cancellationToken)
     {
-        var resultUsers = await _service.GetUsers(cancellationToken);
+        var resultUsers = await service.GetUsers(cancellationToken);
         return Results.Ok(resultUsers);
     }
     
@@ -35,7 +28,7 @@ public class UserController : Controller
     [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUser([FromQuery] Guid id, CancellationToken cancellationToken)
     {
-        var resultUsers = await _service.GetUserById(id, cancellationToken);
+        var resultUsers = await service.GetUserById(id, cancellationToken);
         return Results.Ok(resultUsers);
     }
     
@@ -43,7 +36,7 @@ public class UserController : Controller
     [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUserByEmail([FromQuery] string email,CancellationToken cancellationToken)
     {
-        var resultUsers = await _service.GetUserByEmail(email, cancellationToken);
+        var resultUsers = await service.GetUserByEmail(email, cancellationToken);
         return Results.Ok(resultUsers);
     }
 
@@ -51,7 +44,7 @@ public class UserController : Controller
     [Authorize(Policy = "Admin")]
     public async Task<IResult> AddAdminRoleToUser([FromQuery] Guid userId, CancellationToken cancellationToken)
     {
-        var resultUser = await _service.AddAdminRole(userId, cancellationToken);
+        var resultUser = await service.AddAdminRole(userId, cancellationToken);
         return Results.Ok(resultUser);
     }
 
@@ -59,7 +52,7 @@ public class UserController : Controller
     [Authorize]
     public async Task<IResult> UpdateUser(UpdateUserDto user, CancellationToken cancellationToken)
     {
-        var resultUser = await _service.UpdateUser(user, cancellationToken);
+        var resultUser = await service.UpdateUser(user, cancellationToken);
         return Results.Ok(resultUser);
     }
     
@@ -67,7 +60,7 @@ public class UserController : Controller
     [Authorize(Policy = "Admin")]
     public async Task<IResult> DeleteUser([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)
     {
-        var deletedUser = await _service.DeleteUser(user, cancellationToken);
+        var deletedUser = await service.DeleteUser(user, cancellationToken);
         return Results.Ok(deletedUser);
     }
     
@@ -75,7 +68,7 @@ public class UserController : Controller
     [Authorize]
     public async Task<IResult> SoftDeleteUser([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)
     {
-        var deletedUser = await _service.SoftDelete(user, cancellationToken);
+        var deletedUser = await service.SoftDelete(user, cancellationToken);
         return Results.Ok(deletedUser);
     }
 }

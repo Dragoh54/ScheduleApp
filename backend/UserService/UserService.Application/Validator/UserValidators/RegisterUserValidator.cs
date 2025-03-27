@@ -32,8 +32,6 @@ public class RegisterUserValidator : AbstractValidator<RegisterDto>
             .WithMessage("Email is must not be empty.")
             .NotNull()
             .WithMessage("Email is required.")
-            .MaximumLength(100)
-            .WithMessage("Email must not exceed 100 characters.")
             .EmailAddress();
         
         RuleFor(user => user.FirstName)

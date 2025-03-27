@@ -9,8 +9,8 @@ public class BaseRepository<T> : IBaseRepository<T>
 {
     protected readonly UserServiceDbContext _dbContext;
     protected readonly DbSet<T> _dbSet;
-    
-    public BaseRepository(UserServiceDbContext dbContext)
+
+    protected BaseRepository(UserServiceDbContext dbContext)
     {
         _dbContext = dbContext;
         _dbSet = _dbContext.Set<T>();

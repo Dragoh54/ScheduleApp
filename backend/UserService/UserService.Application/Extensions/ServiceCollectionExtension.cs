@@ -2,8 +2,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
+using UserService.Application.Dto.EmailDtos;
+using UserService.Application.Dto.RoleDto;
 using UserService.Application.Services;
 using UserService.Application.Validator;
+using UserService.Application.Validator.EmailValidators;
+using UserService.Application.Validator.RoleValidators;
 using UserService.Application.Validator.UserValidators;
 using UserService.DataAccess.Handlers.Jwt;
 using UserService.DataAccess.Handlers.JwtUtilities;
@@ -34,6 +38,11 @@ public static class ServiceCollectionExtension
         services.AddScoped<IValidator<RegisterDto>, RegisterUserValidator>();
         services.AddScoped<IValidator<UpdateUserDto>, UpdateUserValidator>();
         services.AddScoped<IValidator<UserDto>, UserDtoValidator>();
+        
+        services.AddScoped<IValidator<EmailTokenDto>, EmailTokenValidator>();
+        services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordValidator>();
+
+        services.AddScoped<IValidator<RoleDto>, RoleDtoValidator>();
     }
     
     public static void AddJwt(this IServiceCollection services)

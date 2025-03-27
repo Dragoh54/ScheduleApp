@@ -46,6 +46,21 @@
       interval: 5s
       timeout: 5s
       retries: 5
+      
+  user_redis:
+    image: redis:latest
+    container_name: user_redis
+    env_file:
+      - .env
+    ports:
+      - ${USER_SERVICE_REDIS_PORTS}
+    volumes:
+      - user_redis_data:/var/lib/redis/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   schedule_redis:
     image: redis:latest
@@ -55,7 +70,7 @@
     ports:
       - ${SCHEDULE_SERVICE_REDIS_PORTS}
     volumes:
-      - redis_data:/var/lib/redis/data
+      - schedule_redis_data:/var/lib/redis/data
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
@@ -70,7 +85,7 @@
     ports:
       - ${MEETING_SERVICE_REDIS_PORTS}
     volumes:
-      - redis_data:/var/lib/redis/data
+      - meeting_redis_data:/var/lib/redis/data
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
@@ -284,7 +299,9 @@ networks:
 volumes:
   user_postgres_data:
   meeting_postgres_data:
-  redis_data:
+  user_redis_data:
+  schedule_redis_data:
+  meeting_redis_data:
   mongodb_data:
   rabbitmq_data:
   elasticsearch_data:

@@ -129,26 +129,4 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
         
         return candidate.Adapt<UserDto>();
     }
-    
-    // public async Task<UserDto> AddAdminRole(Guid userId, CancellationToken cancellationToken)
-    // {
-    //     var candidate = await unitOfWork.UserRepository.GetWithTracking(userId, cancellationToken)
-    //         ?? throw new NotFoundException("User not found"); 
-    //
-    //     if (!candidate.IsConfirmed)
-    //         throw new BadRequestException("User is not confirmed!");
-    //
-    //     var role = await unitOfWork.RoleRepository.GetByRole(Role.Admin, cancellationToken)
-    //         ?? throw new NotFoundException("Role not found");
-    //     
-    //     var alreadyHasRole = candidate.UserRoles.Any(ur => ur.RoleId == role.Id);
-    //     if (alreadyHasRole)
-    //         throw new BadRequestException("User already has this role!");
-    //     
-    //     candidate.UserRoles.Add(new UserRoles { UserId = candidate.Id, RoleId = role.Id });
-    //     candidate.UpdatedAt = DateTime.UtcNow;
-    //
-    //     await unitOfWork.SaveChangesAsync();
-    //     return candidate.Adapt<UserDto>();
-    // }
 }

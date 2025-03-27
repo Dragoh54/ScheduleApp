@@ -11,7 +11,7 @@ public class TokenController(ITokenService tokenService) : Controller
     [AllowAnonymous]
     public async Task<IResult> Refresh(CancellationToken cancellationToken)
     {
-        string? refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
+        var refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
         var token = await tokenService.RefreshAccessToken(refreshToken, cancellationToken);
         
         return Results.Ok(token);

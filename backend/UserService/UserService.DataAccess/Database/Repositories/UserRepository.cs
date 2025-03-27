@@ -4,13 +4,9 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class UserRepository : BaseRepository<UserEntity>, IUserRepository
+public class UserRepository(UserServiceDbContext dbContext) : BaseRepository<UserEntity>(dbContext), IUserRepository
 {
-    public UserRepository(UserServiceDbContext dbContext) : base(dbContext)
-    {
-    }
-
-    public new async Task<IEnumerable<UserEntity>?> Get(CancellationToken cancellationToken)
+    public async Task<IEnumerable<UserEntity>?> Get(CancellationToken cancellationToken)
     {
         var users = await _dbContext.Users
             .Include(u => u.UserRoles)

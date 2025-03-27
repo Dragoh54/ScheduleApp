@@ -10,23 +10,15 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthenticationController : Controller
+public class AuthenticationController(IAuthenticationService authService, IOptions<JwtOptions> jwtOptions)
+    : Controller
 {
-    private readonly JwtOptions _jwtOptions;
-    private readonly IAuthenticationService _authService;
-    private readonly ITokenService _tokenService;
-    
-    public AuthenticationController(IAuthenticationService authService, ITokenService tokenService, IOptions<JwtOptions> jwtOptions)
-    {
-        _authService = authService;
-        _tokenService = tokenService;
-        _jwtOptions = jwtOptions.Value;
-    }
-    
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+
     [HttpPost("register")]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
-        var resultUser = await _authService.Register(user, cancellationToken);
+        var resultUser = await authService.Register(user, cancellationToken);
         
         return Results.Ok(resultUser);
     }
@@ -34,7 +26,7 @@ public class AuthenticationController : Controller
     [HttpPost("login")]
     public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
     {
-        var (token, refreshToken) = await _authService.Login(user, cancellationToken);
+        var (token, refreshToken) = await authService.Login(user, cancellationToken);
         
         HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", refreshToken, new CookieOptions()
         {
@@ -51,8 +43,8 @@ public class AuthenticationController : Controller
     [Authorize]
     public async Task<IResult> Logout(CancellationToken cancellationToken)
     {
-        string? refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
-        var result = await _authService.Logout(refreshToken, cancellationToken);
+        var refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
+        var result = await authService.Logout(refreshToken, cancellationToken);
 
         HttpContext.Response.Cookies.Delete("not-a-refresh-token-cookies");
         
@@ -60,6 +52,7 @@ public class AuthenticationController : Controller
     }
     
     //TODO: ADD HANGFIRE FOR DELETING TOKENS IF THEY ARE EXPIRES
+    //TODO: ADD REDIS FOR TOKENS
     [HttpPost("forgot-password")]
     public async Task<IResult> ForgotPassword([FromQuery] string email, CancellationToken cancellationToken)
     {
@@ -68,22 +61,22 @@ public class AuthenticationController : Controller
             values: null,
             protocol: Request.Scheme);
     
-        var token = await _authService.ForgotPasswordAsync(email, callbackUrl!, cancellationToken);
+        var token = await authService.ForgotPasswordAsync(email, callbackUrl!, cancellationToken);
     
         return Results.Ok(token);
     }
     
     [HttpGet("reset-password", Name = "ResetPassword")]
-    public async Task<IResult> OnResetPassword([FromQuery] ConfirmEmailDto resetPasswordRequest, CancellationToken cancellationToken)
+    public async Task<IResult> OnResetPassword([FromQuery] EmailTokenDto resetPasswordRequest, CancellationToken cancellationToken)
     {
-        var success = await _authService.ValidateResetPasswordAsync(resetPasswordRequest, cancellationToken);
+        var success = await authService.ValidateResetPasswordAsync(resetPasswordRequest, cancellationToken);
         return Results.Ok(success);
     }
     
     [HttpPost("reset-password")]
     public async Task<IResult> ResetPassword([FromForm] ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
     {
-        var result = await _authService.ResetPasswordAsync(resetPasswordDto, cancellationToken);
+        var result = await authService.ResetPasswordAsync(resetPasswordDto, cancellationToken);
     
         return Results.Ok(result);
     }

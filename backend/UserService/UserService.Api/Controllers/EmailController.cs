@@ -10,14 +10,15 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("confirmation")]
-public class EmailController(IEmailService emailService, IAuthenticationService authService, IConfiguration configuration) : Controller
+public class EmailController(IAuthenticationService authService, IConfiguration configuration) : Controller
 {
     //TODO: ADD HANGFIRE FOR DELETING TOKENS IF THEY ARE EXPIRES
+    //TODO: ADD REDIS FOR TOKENS
     [HttpPost("send")]
     [AllowAnonymous]
     public async Task<IResult> ConfirmEmailSend(CancellationToken cancellationToken)
     {
-        var accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);;
+        var accessToken = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", string.Empty);;
         var callbackUrl = Url.RouteUrl(
             "EmailConfirmation",
             values: null,
@@ -29,9 +30,9 @@ public class EmailController(IEmailService emailService, IAuthenticationService 
     }
     
     [HttpGet("receive", Name = "EmailConfirmation")]
-    public async Task<IResult> ConfirmEmailReceive([FromQuery] ConfirmEmailDto confirmEmailDto, CancellationToken cancellationToken)
+    public async Task<IResult> ConfirmEmailReceive([FromQuery] EmailTokenDto emailTokenDto, CancellationToken cancellationToken)
     {
-        var token = await authService.ConfirmEmailReceiveAsync(confirmEmailDto, cancellationToken);
+        var token = await authService.ConfirmEmailReceiveAsync(emailTokenDto, cancellationToken);
     
         return Results.Ok($"Email confirmed!\nToken: {token}");
     }
