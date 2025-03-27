@@ -31,6 +31,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
         
         builder.HasMany(u => u.UserRoles)
             .WithOne()
-            .HasForeignKey(ur => ur.UserId);
+            .HasForeignKey(ur => ur.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

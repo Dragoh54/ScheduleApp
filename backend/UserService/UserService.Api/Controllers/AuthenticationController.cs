@@ -59,6 +59,7 @@ public class AuthenticationController : Controller
         return Results.Ok(result);
     }
     
+    //TODO: ADD HANGFIRE FOR DELETING TOKENS IF THEY ARE EXPIRES
     [HttpPost("forgot-password")]
     public async Task<IResult> ForgotPassword([FromQuery] string email, CancellationToken cancellationToken)
     {

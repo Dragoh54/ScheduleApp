@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
+using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces;
 using UserService.DataAccess.Interfaces.Auth;
@@ -97,4 +98,57 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
         
         return candidate.Adapt<UserDto>();
     }
+
+    public async Task<UserDto> AddAdminRole(Guid userId, CancellationToken cancellationToken)
+    {
+        var candidate = await unitOfWork.UserRepository.GetWithTracking(userId, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (candidate is null)
+        {
+            throw new AlreadyExistsException("User with this id doesn't exist!");
+        }
+    
+        if (!candidate.IsConfirmed)
+        {
+            throw new BadRequestException("User is not confirmed!");
+        }
+    
+        var role = await unitOfWork.RoleRepository.GetByRole(Role.Admin, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (role is null)
+        {
+            throw new BadRequestException("Role does not exist!");
+        }
+        
+        candidate.UserRoles.Add(new UserRoles { UserId = candidate.Id, RoleId = role.Id });
+        candidate.UpdatedAt = DateTime.UtcNow;
+        
+        await unitOfWork.UserRepository.Update(candidate, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return candidate.Adapt<UserDto>();
+    }
+    
+    // public async Task<UserDto> AddAdminRole(Guid userId, CancellationToken cancellationToken)
+    // {
+    //     var candidate = await unitOfWork.UserRepository.GetWithTracking(userId, cancellationToken)
+    //         ?? throw new NotFoundException("User not found"); 
+    //
+    //     if (!candidate.IsConfirmed)
+    //         throw new BadRequestException("User is not confirmed!");
+    //
+    //     var role = await unitOfWork.RoleRepository.GetByRole(Role.Admin, cancellationToken)
+    //         ?? throw new NotFoundException("Role not found");
+    //     
+    //     var alreadyHasRole = candidate.UserRoles.Any(ur => ur.RoleId == role.Id);
+    //     if (alreadyHasRole)
+    //         throw new BadRequestException("User already has this role!");
+    //     
+    //     candidate.UserRoles.Add(new UserRoles { UserId = candidate.Id, RoleId = role.Id });
+    //     candidate.UpdatedAt = DateTime.UtcNow;
+    //
+    //     await unitOfWork.SaveChangesAsync();
+    //     return candidate.Adapt<UserDto>();
+    // }
 }

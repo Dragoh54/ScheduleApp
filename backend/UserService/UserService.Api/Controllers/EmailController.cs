@@ -12,6 +12,7 @@ namespace UserService.Api.Controllers;
 [Route("confirmation")]
 public class EmailController(IEmailService emailService, IAuthenticationService authService, IConfiguration configuration) : Controller
 {
+    //TODO: ADD HANGFIRE FOR DELETING TOKENS IF THEY ARE EXPIRES
     [HttpPost("send")]
     [AllowAnonymous]
     public async Task<IResult> ConfirmEmailSend(CancellationToken cancellationToken)

@@ -4,7 +4,7 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Mapper;
 
-public class UserDtoConfig
+public class UserConfig
 {
     public static void RegisterMappings()
     {

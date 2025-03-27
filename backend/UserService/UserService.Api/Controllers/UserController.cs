@@ -47,6 +47,14 @@ public class UserController : Controller
         return Results.Ok(resultUsers);
     }
 
+    [HttpPut("add-admin-role")]
+    [Authorize(Policy = "Admin")]
+    public async Task<IResult> AddAdminRoleToUser([FromQuery] Guid userId, CancellationToken cancellationToken)
+    {
+        var resultUser = await _service.AddAdminRole(userId, cancellationToken);
+        return Results.Ok(resultUser);
+    }
+
     [HttpPut("update")]
     [Authorize]
     public async Task<IResult> UpdateUser(UpdateUserDto user, CancellationToken cancellationToken)

@@ -34,6 +34,18 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
         
         return user;
     }
+    
+    public async Task<UserEntity?> GetWithTracking(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await _dbContext.Users
+            .Include(u => u.UserRoles) 
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return user;
+    }
 
     public async Task<UserEntity?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {

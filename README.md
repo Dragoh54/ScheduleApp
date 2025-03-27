@@ -71,6 +71,15 @@
     "ConnectionStrings": {
     "UserServiceDbContext": "connection string"
     },
-    "JWTSecretKey": "Jwt secret key"
+    "JWTSecretKey": "Jwt secret key",
+      "EmailSettings": {
+        "SmtpServer": "smtp.gmail.com",
+        "SmtpPort": 465,
+        "SmtpUsername": "email",
+        "SmtpPassword": "key",
+        "FromName": "Schedule App",
+        "FromAddress": "email",
+        "EnableSsl": true
+      }
   }
 ```
