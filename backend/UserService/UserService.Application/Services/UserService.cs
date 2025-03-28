@@ -20,6 +20,7 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
         return candidate.Adapt<UserDto>();
     }
 
+    //TODO: ADD TO CACHE AND CHECK IF THEY EXIST IN CACHE
     public async Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken)
     {
         var candidate = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken)
@@ -29,6 +30,7 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
     }
     
 
+    //TODO: ADD TO CACHE AND CHECK IF THEY EXIST IN CACHE
     public async Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken)
     {
         var candidates = await unitOfWork.UserRepository.Get(cancellationToken)

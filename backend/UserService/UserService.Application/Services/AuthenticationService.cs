@@ -47,6 +47,7 @@ public class AuthenticationService(
         return user.Adapt<UserDto>();
     }
 
+    //TODO: ADD REFRESH TOKEN TO CACHE TO 24 HOURS OR LESS
     public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
         var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken)
@@ -65,6 +66,7 @@ public class AuthenticationService(
         return (token, refreshToken);
     }
 
+    //TODO: REMOVE REFRESH TOKEN FROM CACHE IF IT EXISTS
     public async Task<bool> Logout(string? token, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(token))
@@ -121,17 +123,12 @@ public class AuthenticationService(
         return confirmToken;
     }
 
-    //TODO: ADD USER TO CONFIRM TO REDIS TOO
     public async Task<string> ConfirmEmailReceiveAsync(EmailTokenDto tokenDto, CancellationToken cancellationToken)
     {
         var token = await cache.GetStringAsync(tokenDto.Email, cancellationToken)
             ?? throw new NotFoundException("Token is not found or expired");
         
-        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(tokenDto.Token));
-        if (token != decodedTokenFromDto)
-        {
-            throw new BadRequestException("Invalid token");
-        }
+        CheckTokens(token, tokenDto.Token);
 
         await cache.RemoveAsync(tokenDto.Email, cancellationToken);
         
@@ -177,14 +174,18 @@ public class AuthenticationService(
 
         return resetPass;
     }
-
+    
     public async Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(resetPasswordDto.Email, cancellationToken)
-            ?? throw new NotFoundException("User not found");
+        var token = await cache.GetStringAsync(resetPasswordDto.Email, cancellationToken)
+                    ?? throw new NotFoundException("Token is not found or expired");
         
-        await tokenService.DeleteToken(resetPasswordDto.Token, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
+        CheckTokens(token, resetPasswordDto.Token);
+
+        await cache.RemoveAsync(resetPasswordDto.Email, cancellationToken);
+        
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(resetPasswordDto.Email, cancellationToken)
+             ?? throw new NotFoundException("User not found");
         
         user.PasswordHash = passwordHasher.Generate(resetPasswordDto.Password, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
@@ -222,5 +223,14 @@ public class AuthenticationService(
         };
     
         return uriBuilder.ToString();
+    }
+
+    private void CheckTokens(string token, string encodedToke)
+    {
+        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToke));
+        if (token != decodedTokenFromDto)
+        {
+            throw new BadRequestException("Invalid token");
+        }
     }
 }

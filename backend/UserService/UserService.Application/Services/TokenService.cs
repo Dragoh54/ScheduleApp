@@ -50,11 +50,6 @@ public class TokenService(
         
         await cacheService.AddEmailTokenToCacheAsync(user.Email, confirmToken, tokenType, cancellationToken);
         
-        // await cache.SetStringAsync(user.Email, confirmToken, new DistributedCacheEntryOptions
-        // {
-        //     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(jwtProvider.GetTokenExistingTime(tokenType))
-        // }, cancellationToken);
-        
         confirmToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmToken));
         return confirmToken;
     }

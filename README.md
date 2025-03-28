@@ -72,7 +72,8 @@
 ```json
   {
     "ConnectionStrings": {
-    "UserServiceDbContext": "connection string"
+    "UserServiceDbContext": "connection string", 
+    "Redis": "localhost:"
     },
     "JWTSecretKey": "Jwt secret key",
       "EmailSettings": {

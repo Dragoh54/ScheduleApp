@@ -7,6 +7,7 @@ namespace UserService.Api.Controllers;
 [ApiController]
 public class TokenController(ITokenService tokenService) : Controller
 {
+    //TODO: ADD AND TAKE FROM CACHE
     [HttpPost("/refresh")]
     [AllowAnonymous]
     public async Task<IResult> Refresh(CancellationToken cancellationToken)

@@ -23,6 +23,7 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
         return Results.Ok(resultUser);
     }
     
+    //TODO: ADD HANGFIRE TO DELETE USED TOKENS
     [HttpPost("login")]
     public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
     {
@@ -52,7 +53,6 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
     }
     
     //TODO: ADD HANGFIRE FOR DELETING TOKENS IF THEY ARE EXPIRES
-    //TODO: ADD REDIS FOR TOKENS
     [HttpPost("forgot-password")]
     public async Task<IResult> ForgotPassword([FromQuery] string email, CancellationToken cancellationToken)
     {
