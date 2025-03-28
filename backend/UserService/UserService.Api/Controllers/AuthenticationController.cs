@@ -31,6 +31,7 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
         
         HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", refreshToken, new CookieOptions()
         {
+            SameSite = SameSiteMode.Lax,
             Domain = "localhost",
             Secure = true,
             HttpOnly = true,
@@ -52,7 +53,6 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
         return Results.Ok(result);
     }
     
-    //TODO: ADD HANGFIRE FOR DELETING TOKENS IF THEY ARE EXPIRES
     [HttpPost("forgot-password")]
     public async Task<IResult> ForgotPassword([FromQuery] string email, CancellationToken cancellationToken)
     {
@@ -80,4 +80,6 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
     
         return Results.Ok(result);
     }
+    
+    //TODO: ADD RESTORE ACCOUNT
 }

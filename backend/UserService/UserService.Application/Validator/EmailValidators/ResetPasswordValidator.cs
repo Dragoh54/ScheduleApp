@@ -29,7 +29,7 @@ public class ResetPasswordValidator : AbstractValidator<ResetPasswordDto>
             .WithMessage("Password must not be empty.")
             .NotNull()
             .WithMessage("Password is required.");
-        //TODO: FOR FUTURE
+        //TODO: FOR FUTURE CHECK LEGIT PASSWORD
             // .MinimumLength(8).WithMessage("Password must be at least 8 characters.")
             // .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
             // .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")

@@ -64,6 +64,7 @@ public class UserController(IUserService service) : Controller
         return Results.Ok(deletedUser);
     }
     
+    //TODO: ADD HANGFIRE TO DELETE OLD DELETED USERS
     [HttpPost("soft-delete")]
     [Authorize]
     public async Task<IResult> SoftDeleteUser([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)

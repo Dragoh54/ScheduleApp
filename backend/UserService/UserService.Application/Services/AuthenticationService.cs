@@ -46,8 +46,7 @@ public class AuthenticationService(
 
         return user.Adapt<UserDto>();
     }
-
-    //TODO: ADD REFRESH TOKEN TO CACHE TO 24 HOURS OR LESS
+    
     public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
         var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken)
@@ -65,8 +64,7 @@ public class AuthenticationService(
         
         return (token, refreshToken);
     }
-
-    //TODO: REMOVE REFRESH TOKEN FROM CACHE IF IT EXISTS
+    
     public async Task<bool> Logout(string? token, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(token))
