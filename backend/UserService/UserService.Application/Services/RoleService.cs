@@ -17,9 +17,9 @@ public class RoleService(IUnitOfWork unitOfWork) : IRoleService
         return result.Adapt<RoleDto>();
     }
 
-    public async Task<RoleDto> GetRoleByRoleName(Role role, CancellationToken cancellationToken)
+    public async Task<RoleDto> GetRoleByRoleName(Roles roles, CancellationToken cancellationToken)
     {
-        var result = await unitOfWork.RoleRepository.GetByRole(role, cancellationToken)
+        var result = await unitOfWork.RoleRepository.GetByRole(roles, cancellationToken)
                    ?? throw new NotFoundException("Role not found");
 
         return result.Adapt<RoleDto>();

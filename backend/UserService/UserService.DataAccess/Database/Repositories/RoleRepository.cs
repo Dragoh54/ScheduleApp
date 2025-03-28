@@ -32,13 +32,13 @@ public class RoleRepository(UserServiceDbContext dbContext) : BaseRepository<Rol
         return user;
     }
 
-    public async Task<RoleEntity?> GetByRole(Role role, CancellationToken cancellationToken)
+    public async Task<RoleEntity?> GetByRole(Roles roles, CancellationToken cancellationToken)
     {
         var item = await _dbContext.Roles
             .Include(r => r.UserRoles)
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.RoleName == role, cancellationToken);
+            .FirstOrDefaultAsync(r => r.RoleName == roles, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         

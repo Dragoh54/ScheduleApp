@@ -1,28 +1,38 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using UserService.Api.Interfaces;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 using UserService.DataAccess.Models;
+using UserService.DataAccess.RedisModels;
 
 namespace UserService.Application.Services;
 
-public class TokenService(IJwtProvider jwtProvider, IUnitOfWork unitOfWork) : ITokenService
+public class TokenService(
+    IJwtProvider jwtProvider, 
+    IDistributedCache cache, 
+    ICacheService cacheService,
+    IUnitOfWork unitOfWork
+    ) : ITokenService
 {
     public async Task<string> GenerateAccessToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = jwtProvider.GenerateToken(user, Token.Access, cancellationToken)
+        var token = jwtProvider.GenerateToken(user, TokenTypes.Access, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
         return token;
     }
 
+    //TODO: ADD REFRESH TOKEN TO CACHE
     public async Task<string> GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = jwtProvider.GenerateTokenModel(user, Token.Refresh, cancellationToken)
+        var token = jwtProvider.GenerateTokenModel(user, TokenTypes.Refresh, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
         await unitOfWork.TokenModelRepository.Add(token, cancellationToken);
@@ -31,24 +41,25 @@ public class TokenService(IJwtProvider jwtProvider, IUnitOfWork unitOfWork) : IT
         
         return token.Token;
     }
-
-    public async Task<string> GenerateEmailToken(UserEntity user, Token tokenType, CancellationToken cancellationToken)
+    
+    //TODO: ADD CHECK IF TOKEN ALREADY EXIST IN CACHE
+    public async Task<string> GenerateEmailToken(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
     {
         var confirmToken = jwtProvider.GenerateToken(user, tokenType, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
+        await cacheService.AddEmailTokenToCacheAsync(user.Email, confirmToken, tokenType, cancellationToken);
+        
+        // await cache.SetStringAsync(user.Email, confirmToken, new DistributedCacheEntryOptions
+        // {
+        //     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(jwtProvider.GetTokenExistingTime(tokenType))
+        // }, cancellationToken);
+        
         confirmToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmToken));
-        
-        var token = jwtProvider.GenerateTokenModel(user, confirmToken, tokenType, cancellationToken)
-            ?? throw new UnauthorizedAccessException("Failed to generate token.");
-        
-        await unitOfWork.TokenModelRepository.Add(token, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
-        cancellationToken.ThrowIfCancellationRequested();
-        
         return confirmToken;
     }
     
+    //TODO: ADD CHECK FROM CACHE VALUE IF IT EXIST
     public async Task<string> RefreshAccessToken(string? refreshToken, CancellationToken cancellationToken)
     {
         if (refreshToken is null)

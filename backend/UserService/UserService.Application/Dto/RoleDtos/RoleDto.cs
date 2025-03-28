@@ -4,15 +4,15 @@ namespace UserService.Application.Dto.RoleDto;
 
 public class RoleDto
 {
-    public Role RoleName { get; set; }
+    public Roles RoleName { get; set; }
 
     public RoleDto()
     {
         
     }
 
-    public RoleDto(Role role)
+    public RoleDto(Roles roles)
     {
-        RoleName = role;
+        RoleName = roles;
     }
 }

@@ -4,14 +4,14 @@ namespace UserService.DataAccess.Models;
 
 public class RoleEntity : IdEntity
 {
-    public Role RoleName { get; set; }
+    public Roles RoleName { get; set; }
     
     public ICollection<UserRoles> UserRoles { get; set; } = new List<UserRoles>();
     
     public RoleEntity(){}
 
-    public RoleEntity(Role roleName)
+    public RoleEntity(Roles rolesName)
     {
-        RoleName = roleName;
+        RoleName = rolesName;
     }
 }

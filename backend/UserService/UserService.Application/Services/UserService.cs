@@ -10,7 +10,7 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Services;
 
-public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork, IJwtProvider jwtProvider) : IUserService
+public class UserService(IUnitOfWork unitOfWork) : IUserService
 {
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
@@ -93,7 +93,7 @@ public class UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork,
             throw new BadRequestException("User is not confirmed!");
         }
     
-        var role = await unitOfWork.RoleRepository.GetByRole(Role.Admin, cancellationToken)
+        var role = await unitOfWork.RoleRepository.GetByRole(Roles.Admin, cancellationToken)
             ?? throw new BadRequestException("Role does not exist!");
         
         candidate.UserRoles.Add(new UserRoles { UserId = candidate.Id, RoleId = role.Id });

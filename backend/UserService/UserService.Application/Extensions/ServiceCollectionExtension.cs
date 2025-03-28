@@ -24,6 +24,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IEmailService, EmailService>(); 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<ICacheService, CacheService>();
     }
     
     public static void AddValidation(this IServiceCollection services)

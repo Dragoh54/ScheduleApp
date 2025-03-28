@@ -1,8 +1,12 @@
-﻿using System.Text;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 using System.Web;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Caching.Distributed;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto;
 using UserService.Application.Dto.EmailDtos;
@@ -11,6 +15,7 @@ using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 using UserService.DataAccess.Models;
+using UserService.DataAccess.RedisModels;
 
 namespace UserService.Application.Services;
 
@@ -19,6 +24,7 @@ public class AuthenticationService(
     IUnitOfWork unitOfWork, 
     ITokenService tokenService, 
     IEmailService emailService,
+    IDistributedCache cache,
     IUserService userService,
     IJwtProvider jwtProvider
     ) : IAuthenticationService
@@ -97,7 +103,8 @@ public class AuthenticationService(
             throw new NotFoundException("User not found");
         }
         
-        var confirmToken = await tokenService.GenerateEmailToken(user, Token.EmailConfirmation, cancellationToken);
+        var confirmToken = await tokenService.GenerateEmailToken(user, TokenTypes.EmailConfirmation, cancellationToken);
+        
         var link = GenerateEmailTokenLink(callbackUrl, email, confirmToken);
         
         await emailService.SendEmailAsync(
@@ -114,21 +121,23 @@ public class AuthenticationService(
         return confirmToken;
     }
 
+    //TODO: ADD USER TO CONFIRM TO REDIS TOO
     public async Task<string> ConfirmEmailReceiveAsync(EmailTokenDto tokenDto, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(tokenDto.Email, cancellationToken)
-            ?? throw new NotFoundException("User not found");
+        var token = await cache.GetStringAsync(tokenDto.Email, cancellationToken)
+            ?? throw new NotFoundException("Token is not found or expired");
         
-        var token = await unitOfWork.TokenModelRepository.GetByToken(tokenDto.Token, cancellationToken)
-            ?? throw new NotFoundException("Token not found");
-
-        if (token.ExpiresAt < DateTime.UtcNow)
+        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(tokenDto.Token));
+        if (token != decodedTokenFromDto)
         {
-            throw new NotFoundException("Token has expired");
+            throw new BadRequestException("Invalid token");
         }
+
+        await cache.RemoveAsync(tokenDto.Email, cancellationToken);
         
-        await tokenService.DeleteToken(tokenDto.Token, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(tokenDto.Email, cancellationToken)
+             ?? throw new NotFoundException("User not found");
+        
         user.IsConfirmed = true;
     
         await unitOfWork.UserRepository.Update(user, cancellationToken);
@@ -152,7 +161,7 @@ public class AuthenticationService(
             throw new NotFoundException("User not found");
         }
         
-        var resetPass = await tokenService.GenerateEmailToken(user, Token.ResetPassword, cancellationToken);
+        var resetPass = await tokenService.GenerateEmailToken(user, TokenTypes.ResetPassword, cancellationToken);
         var link = GenerateEmailTokenLink(callbackUrl, email, resetPass);
         
         await emailService.SendEmailAsync(

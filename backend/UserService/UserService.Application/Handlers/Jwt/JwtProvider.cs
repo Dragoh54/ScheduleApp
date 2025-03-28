@@ -18,7 +18,7 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
     
     private readonly string _secretKey = configuration["JWTSecretKey"] ?? throw new NullReferenceException();
     
-    public string GenerateToken(UserEntity user, Token tokenType, CancellationToken cancellationToken)
+    public string GenerateToken(UserEntity user, TokenTypes tokenTypesType, CancellationToken cancellationToken)
     {
         List<Claim> claims=
         [
@@ -39,47 +39,13 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         var token = new JwtSecurityToken(
             claims: claims,
             signingCredentials: signingCredentials,
-            expires: GetExpirationDate(tokenType)
+            expires: GetExpirationDate(tokenTypesType)
         );
         
         var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
         cancellationToken.ThrowIfCancellationRequested();
         
         return tokenValue;
-    }
-
-    public TokenModel GenerateTokenModel(UserEntity user, Token tokenType, CancellationToken cancellationToken)
-    {
-        var result = new TokenModel()
-        {
-            Id = Guid.NewGuid(),
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            TokenType = tokenType,
-            UserId = user.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = GetExpirationDate(tokenType),
-            IsUsed = false,
-        };
-        cancellationToken.ThrowIfCancellationRequested();
-        
-        return result;
-    }
-
-    public TokenModel GenerateTokenModel(UserEntity user, string token, Token tokenType, CancellationToken cancellationToken)
-    {
-        var result = new TokenModel()
-        {
-            Id = Guid.NewGuid(),
-            Token = token,
-            TokenType = tokenType,
-            UserId = user.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = GetExpirationDate(tokenType),
-            IsUsed = false,
-        };
-        cancellationToken.ThrowIfCancellationRequested();
-        
-        return result;
     }
 
     public ClaimsPrincipal ValidateToken(string token)
@@ -104,15 +70,61 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         return principal;
     }
 
-    private DateTime GetExpirationDate(Token tokenType)
+    public DateTime GetExpirationDate(TokenTypes tokenTypesType)
     {
-        return tokenType switch
+        return tokenTypesType switch
         {
-            Token.Access => DateTime.UtcNow.AddMinutes(_jwtOptions.AccessExpiresMinutes),
-            Token.Refresh => DateTime.UtcNow.AddDays(_jwtOptions.RefreshExpiresDays),
-            Token.EmailConfirmation => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
-            Token.ResetPassword => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
+            TokenTypes.Access => DateTime.UtcNow.AddMinutes(_jwtOptions.AccessExpiresMinutes),
+            TokenTypes.Refresh => DateTime.UtcNow.AddDays(_jwtOptions.RefreshExpiresDays),
+            TokenTypes.EmailConfirmation => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
+            TokenTypes.ResetPassword => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
             _ => throw new BadRequestException("Invalid token type")
         };
+    }
+
+    public int GetTokenExistingTime(TokenTypes tokenTypesType)
+    {
+        return tokenTypesType switch
+        {
+            TokenTypes.Access => _jwtOptions.AccessExpiresMinutes,
+            TokenTypes.Refresh => _jwtOptions.RefreshExpiresDays,
+            TokenTypes.EmailConfirmation => _jwtOptions.EmailConfirmationExpiresHours,
+            TokenTypes.ResetPassword => _jwtOptions.EmailConfirmationExpiresHours,
+            _ => throw new BadRequestException("Invalid token type")
+        };
+    }
+    
+    public TokenModel GenerateTokenModel(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
+    {
+        var result = new TokenModel()
+        {
+            Id = Guid.NewGuid(),
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            TokenType = tokenType,
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = GetExpirationDate(tokenType),
+            IsUsed = false,
+        };
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return result;
+    }
+    
+    public TokenModel GenerateTokenModel(UserEntity user, string token, TokenTypes tokenType, CancellationToken cancellationToken)
+    {
+        var result = new TokenModel()
+        {
+            Id = Guid.NewGuid(),
+            Token = token,
+            TokenType = tokenType,
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = GetExpirationDate(tokenType),
+            IsUsed = false,
+        };
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return result;
     }
 }

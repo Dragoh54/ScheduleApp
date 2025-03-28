@@ -63,25 +63,25 @@ public static class DataSeeder
             new RoleEntity
             {
                 Id = Guid.NewGuid(),
-                RoleName = Role.Guest
+                RoleName = Roles.Guest
             },
 
             new RoleEntity
             {
                 Id = Guid.NewGuid(),
-                RoleName = Role.User
+                RoleName = Roles.User
             },
 
             new RoleEntity
             {
                 Id = Guid.NewGuid(),
-                RoleName = Role.OrganizationAdmin
+                RoleName = Roles.OrganizationAdmin
             },
 
             new RoleEntity
             {
                 Id = Guid.NewGuid(),
-                RoleName = Role.Admin
+                RoleName = Roles.Admin
             }
         ];
     }

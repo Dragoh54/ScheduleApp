@@ -44,6 +44,6 @@ public class UserEntity : IdEntity
         LastName = lastName;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
-        UserRoles.Add(new UserRoles(this, new RoleEntity(Role.User)));
+        UserRoles.Add(new UserRoles(this, new RoleEntity(Roles.User)));
     }
 }

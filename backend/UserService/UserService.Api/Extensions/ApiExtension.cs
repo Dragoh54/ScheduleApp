@@ -31,8 +31,8 @@ public static class ApiExtension
 
         services.AddAuthorization(options =>
         {
-            string admin = Role.Admin.ToString();
-            string organizationAdmin = Role.OrganizationAdmin.ToString();
+            string admin = Roles.Admin.ToString();
+            string organizationAdmin = Roles.OrganizationAdmin.ToString();
 
             options.AddPolicy(admin, policy =>
             {
