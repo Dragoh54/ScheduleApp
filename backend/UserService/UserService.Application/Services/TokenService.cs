@@ -11,7 +11,6 @@ using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 using UserService.DataAccess.Models;
-using UserService.DataAccess.RedisModels;
 
 namespace UserService.Application.Services;
 
@@ -71,13 +70,15 @@ public class TokenService(
         {
             throw new UnauthorizedAccessException();
         }
-
-        token.Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        await unitOfWork.TokenModelRepository.Update(token, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
         
         var user = await unitOfWork.UserRepository.Get(token.UserId, cancellationToken)
-            ?? throw new UnauthorizedAccessException();
+                   ?? throw new UnauthorizedAccessException();
+
+        token.Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        token.UpdatedAt = DateTime.UtcNow;
+        
+        await unitOfWork.TokenModelRepository.Update(token, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
         
         var accessToken = await GenerateAccessToken(user, cancellationToken)
             ?? throw new BadRequestException("Failed to refresh token.");

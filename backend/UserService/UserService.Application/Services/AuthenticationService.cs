@@ -1,10 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using System.Web;
 using Mapster;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.Api.Interfaces;
@@ -15,7 +11,6 @@ using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 using UserService.DataAccess.Models;
-using UserService.DataAccess.RedisModels;
 
 namespace UserService.Application.Services;
 
@@ -206,6 +201,63 @@ public class AuthenticationService(
         }
         
         return true;
+    }
+
+    public async Task<string> RecoverAccountAsync(string? email, string callbackUrl, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            throw new BadRequestException("invalid email address");
+        }
+        
+        var user = await unitOfWork.UserRepository.GetDeletedUserByEmailAsync(email, cancellationToken);
+    
+        if (user is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        if (!user.IsConfirmed)
+        {
+            throw new BadRequestException("To recover account you must activated it in past time.");
+        }
+        
+        var resetPass = await tokenService.GenerateEmailToken(user, TokenTypes.RecoverAccount, cancellationToken);
+        var link = GenerateEmailTokenLink(callbackUrl, email, resetPass);
+        
+        await emailService.SendEmailAsync(
+            email, 
+            "Recover account",
+            $"""
+             <h1>Recover account</h1>
+             <p>Go thought this link to recover:</p>
+             <a href="{link}">Reset!</a>
+             <p>This link active only 1 hour.</p>
+             """, 
+            cancellationToken);
+
+        return resetPass;
+    }
+
+    public async Task<string> RestoreAccountAsync(EmailTokenDto emailTokenDto, CancellationToken cancellationToken)
+    {
+        var token = await cache.GetStringAsync(emailTokenDto.Email, cancellationToken)
+                    ?? throw new NotFoundException("Token is not found or expired");
+        
+        CheckTokens(token, emailTokenDto.Token);
+
+        await cache.RemoveAsync(emailTokenDto.Email, cancellationToken);
+        
+        var user = await unitOfWork.UserRepository.GetDeletedUserByEmailAsync(emailTokenDto.Email, cancellationToken)
+                   ?? throw new NotFoundException("User not found");
+        
+        user.IsDeleted = false;
+    
+        await unitOfWork.UserRepository.Update(user, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return "Account successfully recovered!";
     }
 
 

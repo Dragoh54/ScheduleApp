@@ -9,7 +9,7 @@ using UserService.DataAccess.Handlers.Jwt;
 namespace UserService.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("autentification")]
 public class AuthenticationController(IAuthenticationService authService, IOptions<JwtOptions> jwtOptions)
     : Controller
 {
@@ -82,4 +82,24 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
     }
     
     //TODO: ADD RESTORE ACCOUNT
+    [HttpPost("restore-account")]
+    public async Task<IResult> RestoreAccount([FromQuery] string email, CancellationToken cancellationToken)
+    {
+        var callbackUrl = Url.RouteUrl(
+            "RestoreAccount",
+            values: null,
+            protocol: Request.Scheme);
+    
+        var token = await authService.RecoverAccountAsync(email, callbackUrl!, cancellationToken);
+    
+        return Results.Ok(token);
+    }
+    
+    [HttpGet("restore-account", Name = "RestoreAccount")]
+    public async Task<IResult> OnRestoreAccount([FromQuery] EmailTokenDto restoreAccountRequest, CancellationToken cancellationToken)
+    {
+        var result = await authService.RestoreAccountAsync(restoreAccountRequest, cancellationToken);
+    
+        return Results.Ok(result);
+    }
 }

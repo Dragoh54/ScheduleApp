@@ -61,8 +61,19 @@ public class UserRepository(UserServiceDbContext dbContext) : BaseRepository<Use
         var res = await _dbSet
             .AsNoTracking()
             .IgnoreQueryFilters()
-            .Where(u => !u.IsDeleted)
+            .Where(u => u.IsDeleted)
             .ToListAsync(cancellationToken);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        return res;
+    }
+
+    public async Task<UserEntity?> GetDeletedUserByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        var res = await _dbSet
+            .AsNoTracking()
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(u => u.IsDeleted && u.Email == email, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         return res;

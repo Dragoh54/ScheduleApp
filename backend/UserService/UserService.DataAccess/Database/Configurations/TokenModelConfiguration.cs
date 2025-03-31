@@ -14,6 +14,10 @@ public class TokenModelConfiguration : IEntityTypeConfiguration<TokenModel>
         builder.Property(rt => rt.UserId).IsRequired();
         builder.Property(rt => rt.ExpiresAt).IsRequired()
             .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        builder.Property(rt => rt.CreatedAt).IsRequired()
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        builder.Property(rt => rt.UpdatedAt).IsRequired()
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         
         builder.HasQueryFilter(u => !u.IsUsed);
         builder.Property(rt => rt.IsUsed).HasDefaultValue(false);

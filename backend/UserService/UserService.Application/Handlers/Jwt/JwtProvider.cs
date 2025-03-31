@@ -78,6 +78,7 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
             TokenTypes.Refresh => DateTime.UtcNow.AddDays(_jwtOptions.RefreshExpiresDays),
             TokenTypes.EmailConfirmation => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
             TokenTypes.ResetPassword => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
+            TokenTypes.RecoverAccount => DateTime.UtcNow.AddHours(_jwtOptions.RecoverAccountExpiresHours),
             _ => throw new BadRequestException("Invalid token type")
         };
     }
@@ -90,6 +91,7 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
             TokenTypes.Refresh => _jwtOptions.RefreshExpiresDays,
             TokenTypes.EmailConfirmation => _jwtOptions.EmailConfirmationExpiresHours,
             TokenTypes.ResetPassword => _jwtOptions.EmailConfirmationExpiresHours,
+            TokenTypes.RecoverAccount => _jwtOptions.RecoverAccountExpiresHours,
             _ => throw new BadRequestException("Invalid token type")
         };
     }

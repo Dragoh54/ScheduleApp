@@ -6,5 +6,6 @@ public enum TokenTypes
     Access,
     Refresh,
     EmailConfirmation,
-    ResetPassword
+    ResetPassword,
+    RecoverAccount
 }

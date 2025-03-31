@@ -15,4 +15,8 @@ public interface IAuthenticationService
     Task<string> ForgotPasswordAsync(string? email, string callbackUrl, CancellationToken cancellationToken);
     Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken);
     Task<bool> ValidateResetPasswordAsync(EmailTokenDto resetPasswordRequestTokenDto, CancellationToken cancellationToken);
+    
+    //TODO: ADD RESTORE ACCOUNT
+    Task<string> RecoverAccountAsync(string? email, string callbackUrl, CancellationToken cancellationToken);
+    Task<string> RestoreAccountAsync(EmailTokenDto emailTokenDto, CancellationToken cancellationToken); 
 }
