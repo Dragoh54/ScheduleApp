@@ -53,6 +53,8 @@ public class Startup
         
         services.AddRepositories();
         services.AddJwt();
+        
+        services.AddMappingConfigs();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddApplicationServices();

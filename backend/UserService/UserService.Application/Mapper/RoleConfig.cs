@@ -9,10 +9,8 @@ public class RoleConfig
 {
     public static void RegisterMappings()
     {
-        TypeAdapterConfig<RoleDto, RoleEntity>.NewConfig()
-            .Map(dest => dest.RoleName, src => src.RoleName);
-        
-        TypeAdapterConfig<RoleEntity, RoleDto>.NewConfig()
+        TypeAdapterConfig<RoleEntity, RoleDto>
+            .NewConfig()
             .Map(dest => dest.RoleName, src => src.RoleName);
     }
 }

@@ -4,6 +4,7 @@ using UserService.Api.Interfaces;
 using UserService.Application.Dto;
 using UserService.Application.Dto.EmailDtos;
 using UserService.Application.Dto.RoleDto;
+using UserService.Application.Mapper;
 using UserService.Application.Services;
 using UserService.Application.Validator;
 using UserService.Application.Validator.EmailValidators;
@@ -50,5 +51,11 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+    }
+
+    public static void AddMappingConfigs(this IServiceCollection services)
+    {
+        RoleConfig.RegisterMappings();
+        UserConfig.RegisterMappings();
     }
 }

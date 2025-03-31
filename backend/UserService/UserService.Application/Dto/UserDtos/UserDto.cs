@@ -1,5 +1,6 @@
 ﻿using UserService.DataAccess.Models;
 using UserService.Application.Dto.RoleDto;
+using UserService.DataAccess.Enums;
 
 namespace UserService.Application.Dto;
 
@@ -11,7 +12,7 @@ public class UserDto
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime LastLoginAt { get; set; }
-    public List<RoleDto.RoleDto> Roles { get; set; } = new List<RoleDto.RoleDto>();
+    public IEnumerable<RoleDto.RoleDto> Roles { get; set; } = [];
 
     public UserDto()
     {
