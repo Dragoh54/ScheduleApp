@@ -11,5 +11,8 @@ public class RoleConfig
     {
         TypeAdapterConfig<RoleDto, RoleEntity>.NewConfig()
             .Map(dest => dest.RoleName, src => src.RoleName);
+        
+        TypeAdapterConfig<RoleEntity, RoleDto>.NewConfig()
+            .Map(dest => dest.RoleName, src => src.RoleName);
     }
 }

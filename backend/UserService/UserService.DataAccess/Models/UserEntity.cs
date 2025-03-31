@@ -11,7 +11,7 @@ public class UserEntity : IdEntity
     public string LastName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    
+    public DateTime LastLoginAt { get; set; }
     public bool IsConfirmed { get; set; } = false;
     
     public bool IsDeleted { get; set; } = false;

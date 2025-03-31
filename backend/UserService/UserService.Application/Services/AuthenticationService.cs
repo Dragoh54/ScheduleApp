@@ -57,6 +57,10 @@ public class AuthenticationService(
         var token = await tokenService.GenerateAccessToken(userByEmail, cancellationToken);
         var refreshToken = await tokenService.GenerateRefreshToken(userByEmail, cancellationToken);
         
+        userByEmail.LastLoginAt = DateTime.UtcNow;
+        await unitOfWork.UserRepository.Update(userByEmail, cancellationToken);
+        await unitOfWork.SaveChangesAsync();
+        
         return (token, refreshToken);
     }
     

@@ -22,6 +22,10 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
             .IsRequired();
         
+        builder.Property(u => u.LastLoginAt)
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            .IsRequired();
+        
         builder.Property(u => u.UpdatedAt)
             .HasConversion(u => u, u => DateTime.SpecifyKind(u, DateTimeKind.Utc))
             .IsRequired();
