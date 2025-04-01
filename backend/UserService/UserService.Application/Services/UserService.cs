@@ -32,7 +32,7 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
     {
         var (pageNumber, pageSize) = (request.PageNumber, request.PageSize);
         
-        var (items, totalCount) = await unitOfWork.UserRepository.Get(request.Filters, pageNumber, pageSize, cancellationToken);
+        var (items, totalCount) = await unitOfWork.UserRepository.Get(request.UserFilters, pageNumber, pageSize, cancellationToken);
 
         if (items is null)
         {

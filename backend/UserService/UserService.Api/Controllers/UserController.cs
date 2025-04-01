@@ -16,12 +16,10 @@ namespace UserService.Api.Controllers;
 [Authorize]
 public class UserController(IUserService service) : Controller
 {
-    //TODO: ADD PAGINATED
     [HttpGet]
     [Authorize(Policy = "Admin")]
     public async Task<IResult> GetUsers([FromQuery] PaginatedPageUsers query, CancellationToken cancellationToken)
     {
-        // var resultUsers = await service.GetUsers(cancellationToken);
         var resultUsers = await service.GetUsers(query, cancellationToken);
         return Results.Ok(resultUsers);
     }

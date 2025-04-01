@@ -2,7 +2,7 @@
 
 public class PaginatedPageUsers 
 {
-    public Filters Filters { get; set; } = new Filters();
+    public UserFilters UserFilters { get; set; } = new UserFilters();
     public int PageSize { get; set; } = 10;
     public int PageNumber { get; set; } = 1;
 
