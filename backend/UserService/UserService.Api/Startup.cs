@@ -6,6 +6,7 @@ using UserService.Api.Filters;
 using UserService.Api.Middlewares;
 using UserService.Application.Extensions;
 using UserService.Application.Handlers.Email;
+using UserService.Application.Mapper;
 using UserService.DataAccess.Database;
 using UserService.DataAccess.Database.UnitOfWork;
 using UserService.DataAccess.Extensions;
@@ -52,10 +53,10 @@ public class Startup
         });
         services.AddHangfireServer();
         
+        GeneralConfig.RegisterMappers();
+        
         services.AddRepositories();
         services.AddJwt();
-        
-        services.AddMappingConfigs();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddApplicationServices();

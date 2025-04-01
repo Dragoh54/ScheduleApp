@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Web;
+using Hangfire;
 using Mapster;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
@@ -106,16 +107,17 @@ public class AuthenticationService(
         
         var link = GenerateEmailTokenLink(callbackUrl, email, confirmToken);
         
-        await emailService.SendEmailAsync(
-            email, 
-            "No-reply",
-            $"""
-             <h1>Email confirmation</h1>
-             <p>Go thought this link to confirm:</p>
-             <a href="{link}">Confirm!</a>
-             <p>This link active only 24 hours.</p>
-             """,
-            cancellationToken);
+        BackgroundJob.Enqueue(() => 
+            emailService.SendEmailAsync(
+                email, 
+                "No-reply",
+                $"""
+                 <h1>Email confirmation</h1>
+                 <p>Go thought this link to confirm:</p>
+                 <a href="{link}">Confirm!</a>
+                 <p>This link active only 24 hours.</p>
+                 """,
+                cancellationToken));
 
         return confirmToken;
     }
@@ -157,17 +159,19 @@ public class AuthenticationService(
         
         var resetPass = await tokenService.GenerateEmailToken(user, TokenTypes.ResetPassword, cancellationToken);
         var link = GenerateEmailTokenLink(callbackUrl, email, resetPass);
-        
-        await emailService.SendEmailAsync(
-            email, 
-            "Reset password",
-            $"""
-               <h1>Reset password</h1>
-               <p>Go thought this link to reset:</p>
-               <a href="{link}">Reset!</a>
-               <p>This link active only 24 hours.</p>
-               """, 
-            cancellationToken);
+
+        BackgroundJob.Enqueue(() =>
+            emailService.SendEmailAsync(
+                email,
+                "Reset password",
+                $"""
+                 <h1>Reset password</h1>
+                 <p>Go thought this link to reset:</p>
+                 <a href="{link}">Reset!</a>
+                 <p>This link active only 24 hours.</p>
+                 """,
+                cancellationToken)
+        );
 
         return resetPass;
     }

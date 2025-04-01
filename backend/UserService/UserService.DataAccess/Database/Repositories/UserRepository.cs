@@ -107,4 +107,11 @@ public class UserRepository(UserServiceDbContext dbContext) : BaseRepository<Use
         cancellationToken.ThrowIfCancellationRequested();
         return res;
     }
+
+    public async Task<IEnumerable<UserEntity?>> GetOldUsersAsync(DateTime ago, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Users
+            .Where(u => u.LastLoginAt < ago)
+            .ToListAsync(cancellationToken);
+    }
 }

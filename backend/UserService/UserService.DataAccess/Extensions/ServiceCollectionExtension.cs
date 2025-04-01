@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using UserService.DataAccess.Database.Repositories;
 using UserService.DataAccess.Interfaces;
-using UserService.DataAccess.Interfaces.Auth;
 
 namespace UserService.DataAccess.Extensions;
 

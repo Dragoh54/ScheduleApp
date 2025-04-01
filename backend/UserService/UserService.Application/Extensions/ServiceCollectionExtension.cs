@@ -52,10 +52,4 @@ public static class ServiceCollectionExtension
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
     }
-
-    public static void AddMappingConfigs(this IServiceCollection services)
-    {
-        RoleConfig.RegisterMappings();
-        UserConfig.RegisterMappings();
-    }
 }

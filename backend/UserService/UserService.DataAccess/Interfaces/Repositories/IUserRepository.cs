@@ -12,4 +12,5 @@ public interface IUserRepository : IBaseRepository<UserEntity>
     public Task<UserEntity?> GetByEmailAsync(string email, CancellationToken cancellationToken);
     public Task<IEnumerable<UserEntity>?> GetDeletedUsersAsync(CancellationToken cancellationToken);
     public Task<UserEntity?> GetDeletedUserByEmailAsync(string email, CancellationToken cancellationToken);
+    public Task<IEnumerable<UserEntity?>> GetOldUsersAsync(DateTime ago, CancellationToken cancellationToken);
 }
