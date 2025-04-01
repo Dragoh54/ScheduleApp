@@ -14,8 +14,7 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
     : Controller
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
-
-    //TODO: ADD HANGFIRE TO SOFT-DELETE OLD USERS
+    
     [HttpPost("register")]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
@@ -24,7 +23,6 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
         return Results.Ok(resultUser);
     }
     
-    //TODO: ADD HANGFIRE TO DELETE USED TOKENS
     [HttpPost("login")]
     public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
     {

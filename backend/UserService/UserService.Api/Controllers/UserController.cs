@@ -24,25 +24,25 @@ public class UserController(IUserService service) : Controller
         return Results.Ok(resultUsers);
     }
     
-    [HttpGet("get")]
+    [HttpGet("{id:Guid}/get")]
     [Authorize(Policy = "Admin")]
-    public async Task<IResult> GetUser([FromQuery] Guid id, CancellationToken cancellationToken)
+    public async Task<IResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var resultUsers = await service.GetUserById(id, cancellationToken);
         return Results.Ok(resultUsers);
     }
     
-    [HttpGet("find")]
+    [HttpGet("{email}")]
     [Authorize(Policy = "Admin")]
-    public async Task<IResult> GetUserByEmail([FromQuery] string email,CancellationToken cancellationToken)
+    public async Task<IResult> GetUserByEmail([FromRoute] string email,CancellationToken cancellationToken)
     {
         var resultUsers = await service.GetUserByEmail(email, cancellationToken);
         return Results.Ok(resultUsers);
     }
 
-    [HttpPut("add-admin-role")]
+    [HttpPut("{userId:Guid}/add-admin-role")]
     [Authorize(Policy = "Admin")]
-    public async Task<IResult> AddAdminRoleToUser([FromQuery] Guid userId, CancellationToken cancellationToken)
+    public async Task<IResult> AddAdminRoleToUser([FromRoute] Guid userId, CancellationToken cancellationToken)
     {
         var resultUser = await service.AddAdminRole(userId, cancellationToken);
         return Results.Ok(resultUser);
@@ -54,14 +54,6 @@ public class UserController(IUserService service) : Controller
     {
         var resultUser = await service.UpdateUser(user, cancellationToken);
         return Results.Ok(resultUser);
-    }
-    
-    [HttpDelete("delete")]
-    [Authorize(Policy = "Admin")]
-    public async Task<IResult> DeleteUser([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)
-    {
-        var deletedUser = await service.DeleteUser(user, cancellationToken);
-        return Results.Ok(deletedUser);
     }
     
     [HttpPost("soft-delete")]

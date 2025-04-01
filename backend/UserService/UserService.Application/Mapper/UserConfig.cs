@@ -32,7 +32,8 @@ public class UserConfig
             .Ignore(dest => dest.Email)            
             .Ignore(dest => dest.UserRoles);
 
-        TypeAdapterConfig<UserEntity, UpdateUserDto>.NewConfig()
+        TypeAdapterConfig<UserEntity, UpdateUserDto>
+            .NewConfig()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Username, src => src.Username)
             .Map(dest => dest.FirstName, src => src.FirstName)
