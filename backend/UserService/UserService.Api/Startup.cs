@@ -1,17 +1,11 @@
-using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using UserService.Api.Extensions;
 using UserService.Api.Filters;
-using UserService.Api.Interfaces;
 using UserService.Api.Middlewares;
-using UserService.Application.Dto;
 using UserService.Application.Extensions;
 using UserService.Application.Handlers.Email;
-using UserService.Application.Mapper;
-using UserService.Application.Validator;
-using UserService.Application.Validator.UserValidators;
 using UserService.DataAccess.Database;
 using UserService.DataAccess.Database.UnitOfWork;
 using UserService.DataAccess.Extensions;
@@ -45,11 +39,18 @@ public class Startup
         
         services.AddDbContext<UserServiceDbContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("UserServiceDbContext")));
+        
         services.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = Configuration.GetConnectionString("Redis");
             options.InstanceName = "UserService_";
         });
+        
+        services.AddHangfire(options =>
+        {
+            options.UsePostgreSqlStorage(Configuration.GetConnectionString("Hangfire"));
+        });
+        services.AddHangfireServer();
         
         services.AddRepositories();
         services.AddJwt();
@@ -86,6 +87,9 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        
+        app.UseHangfireDashboard();
+        app.UseHangfireServer();
         
         app.UseCookiePolicy(new CookiePolicyOptions
         {

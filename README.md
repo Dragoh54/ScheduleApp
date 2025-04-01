@@ -73,7 +73,8 @@
   {
     "ConnectionStrings": {
     "UserServiceDbContext": "connection string", 
-    "Redis": "localhost:"
+    "Redis": "localhost:", 
+    "Hangfire": "connection string"
     },
     "JWTSecretKey": "Jwt secret key",
       "EmailSettings": {

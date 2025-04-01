@@ -17,12 +17,34 @@
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U USER_SERVICE_POSTGRES_USER -d USER_SERVICE_POSTGRES_PASSWORD -t 10',
+          'pg_isready -U ${USER_SERVICE_POSTGRES_USER} -d ${USER_SERVICE_POSTGRES_PASSWORD} -t 10',
         ]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  user_hangfire_postgres:
+    image: postgres:latest
+    container_name: user_hangfire_postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${HANGFIRE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${HANGFIRE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${HANGFIRE_POSTGRES_DB}
+    ports:
+      - ${HANGFIRE_POSTGRES_PORTS}
+    volumes:
+      - user_hangfire_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${HANGFIRE_POSTGRES_USER} -d ${HANGFIRE_POSTGRES_DB} -t 10'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   meeting_postgres:
     image: postgres:latest
@@ -41,7 +63,7 @@
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U MEETING_SERVICE_POSTGRES_USER -d MEETING_SERVICE_POSTGRES_PASSWORD -t 10',
+          'pg_isready -U ${MEETING_SERVICE_POSTGRES_USER} -d ${MEETING_SERVICE_POSTGRES_PASSWORD} -t 10',
         ]
       interval: 5s
       timeout: 5s
@@ -298,6 +320,7 @@ networks:
 #---------------------- VOLUMES -----------------------------
 volumes:
   user_postgres_data:
+  user_hangfire_postgres_data:
   meeting_postgres_data:
   user_redis_data:
   schedule_redis_data:
