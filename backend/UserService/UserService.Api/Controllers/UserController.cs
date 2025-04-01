@@ -16,11 +16,13 @@ namespace UserService.Api.Controllers;
 [Authorize]
 public class UserController(IUserService service) : Controller
 {
+    //TODO: ADD PAGINATED
     [HttpGet]
     [Authorize(Policy = "Admin")]
-    public async Task<IResult> GetUsers(CancellationToken cancellationToken)
+    public async Task<IResult> GetUsers([FromQuery] PaginatedPageUsers query, CancellationToken cancellationToken)
     {
-        var resultUsers = await service.GetUsers(cancellationToken);
+        // var resultUsers = await service.GetUsers(cancellationToken);
+        var resultUsers = await service.GetUsers(query, cancellationToken);
         return Results.Ok(resultUsers);
     }
     
@@ -64,7 +66,6 @@ public class UserController(IUserService service) : Controller
         return Results.Ok(deletedUser);
     }
     
-    //TODO: ADD HANGFIRE TO DELETE OLD DELETED USERS
     [HttpPost("soft-delete")]
     [Authorize]
     public async Task<IResult> SoftDeleteUser([FromQuery] DeleteUserDto user, CancellationToken cancellationToken)

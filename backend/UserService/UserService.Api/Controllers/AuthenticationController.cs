@@ -9,12 +9,13 @@ using UserService.DataAccess.Handlers.Jwt;
 namespace UserService.Api.Controllers;
 
 [ApiController]
-[Route("autentification")]
+[Route("authentication")]
 public class AuthenticationController(IAuthenticationService authService, IOptions<JwtOptions> jwtOptions)
     : Controller
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
+    //TODO: ADD HANGFIRE TO SOFT-DELETE OLD USERS
     [HttpPost("register")]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
@@ -81,7 +82,6 @@ public class AuthenticationController(IAuthenticationService authService, IOptio
         return Results.Ok(result);
     }
     
-    //TODO: ADD RESTORE ACCOUNT
     [HttpPost("restore-account")]
     public async Task<IResult> RestoreAccount([FromQuery] string email, CancellationToken cancellationToken)
     {

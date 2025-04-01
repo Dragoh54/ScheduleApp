@@ -28,6 +28,28 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
         return candidate.Adapt<UserDto>();
     }
     
+    public async Task<PaginatedListDto<UserDto>> GetUsers(PaginatedPageUsers request, CancellationToken cancellationToken)
+    {
+        var (pageNumber, pageSize) = (request.PageNumber, request.PageSize);
+        
+        var (items, totalCount) = await unitOfWork.UserRepository.Get(request.Filters, pageNumber, pageSize, cancellationToken);
+
+        if (items is null)
+        {
+            throw new NotFoundException("There are no users!");
+        }
+        
+        var users = items.Adapt<List<UserDto>>();
+
+        return new PaginatedListDto<UserDto>()
+        {
+            Items = users,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+    
     public async Task<IEnumerable<UserDto>> GetUsers(CancellationToken cancellationToken)
     {
         var candidates = await unitOfWork.UserRepository.Get(cancellationToken)

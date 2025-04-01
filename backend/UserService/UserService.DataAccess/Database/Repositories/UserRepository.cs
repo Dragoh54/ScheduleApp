@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UserService.Application.Dto;
 using UserService.DataAccess.Interfaces;
 using UserService.DataAccess.Models;
 
@@ -30,7 +31,35 @@ public class UserRepository(UserServiceDbContext dbContext) : BaseRepository<Use
         
         return user;
     }
-    
+
+    public async Task<(List<UserEntity>?, int)> Get(Filters filter, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var query = _dbContext.Users
+            .AsNoTracking()
+            .Where(a => string.IsNullOrEmpty(filter.Username) || a.Username.Contains(filter.Username))
+            .Where(a => string.IsNullOrEmpty(filter.Email) || a.Email.Contains(filter.Email))
+            .Where(a => string.IsNullOrEmpty(filter.FirstName) || a.FirstName.Contains(filter.FirstName))
+            .Where(a => string.IsNullOrEmpty(filter.LastName) || a.LastName.Contains(filter.LastName))
+            .Where(a => string.IsNullOrEmpty(filter.LastLoginAt) || a.LastLoginAt.Date == DateTime.Parse(filter.LastLoginAt).Date)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .AsQueryable();
+        
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .OrderBy(u => u.LastName) 
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return (items, totalCount);
+    }
+
     public async Task<UserEntity?> GetWithTracking(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
