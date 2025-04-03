@@ -10,7 +10,9 @@ using UserService.Application.Handlers.Email;
 
 namespace UserService.Application.Services;
 
-public class EmailService(IOptions<EmailSettings> settings) : IEmailService
+public class EmailService(
+    IOptions<EmailSettings> settings
+    ) : IEmailService
 {
     private readonly EmailSettings _settings = settings.Value;
     public async Task SendEmailAsync(string mailTo, string subject, string message, CancellationToken cancellationToken)

@@ -6,7 +6,10 @@ using UserService.DataAccess.Interfaces.Auth;
 
 namespace UserService.Application.Services;
 
-public class CacheService(IDistributedCache cache, IJwtProvider jwtProvider) : ICacheService
+public class CacheService(
+    IDistributedCache cache, 
+    IJwtProvider jwtProvider
+    ) : ICacheService
 {
     public async Task AddEmailTokenToCacheAsync(string email,string token, TokenTypes type, CancellationToken cancellationToken)
     {

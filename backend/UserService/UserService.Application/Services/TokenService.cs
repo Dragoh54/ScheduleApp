@@ -101,14 +101,14 @@ public class TokenService(
         return emailClaim.Value;
     }
 
-    public async Task<bool> DeleteToken(string token, CancellationToken cancellationToken)
+    public async Task<string> GetIdFromToken(string token, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.TokenModelRepository.GetByToken(token, cancellationToken)
-            ?? throw new BadRequestException("Invalid token");
-
-        var success = await unitOfWork.TokenModelRepository.Delete(candidate, cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
+        var principal = jwtProvider.ValidateToken(token)
+                        ?? throw new BadRequestException("Invalid or expired token");
         
-        return success;
+        var idClaim = principal.FindFirst("Id")
+                ?? throw new BadRequestException("Id claim not found in token");
+        
+        return idClaim.Value;
     }
 }

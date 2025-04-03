@@ -5,7 +5,9 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class UserRepository(UserServiceDbContext dbContext) : BaseRepository<UserEntity>(dbContext), IUserRepository
+public class UserRepository(
+    UserServiceDbContext dbContext
+    ) : BaseRepository<UserEntity>(dbContext), IUserRepository
 {
     public async Task<IEnumerable<UserEntity>?> Get(CancellationToken cancellationToken)
     {

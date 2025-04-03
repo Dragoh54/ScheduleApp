@@ -10,8 +10,10 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("authentication")]
-public class AuthenticationController(IAuthenticationService authService, IOptions<JwtOptions> jwtOptions)
-    : Controller
+public class AuthenticationController(
+    IAuthenticationService authService, 
+    IOptions<JwtOptions> jwtOptions
+    ) : Controller
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     

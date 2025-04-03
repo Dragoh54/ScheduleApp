@@ -8,7 +8,6 @@ public interface IJwtProvider
 {
     public string GenerateToken(UserEntity user, TokenTypes tokenTypesType, CancellationToken cancellationToken);
     public TokenModel GenerateTokenModel(UserEntity user, TokenTypes tokenTypesType, CancellationToken cancellationToken);
-    public TokenModel GenerateTokenModel(UserEntity user, string token, TokenTypes tokenTypesType, CancellationToken cancellationToken);
     public ClaimsPrincipal ValidateToken(string token);
     public DateTime GetExpirationDate(TokenTypes tokenTypesType);
     public int GetTokenExistingTime(TokenTypes tokenTypesType);

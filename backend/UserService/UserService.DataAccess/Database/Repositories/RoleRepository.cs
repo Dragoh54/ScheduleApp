@@ -5,7 +5,9 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class RoleRepository(UserServiceDbContext dbContext) : BaseRepository<RoleEntity>(dbContext), IRoleRepository
+public class RoleRepository(
+    UserServiceDbContext dbContext
+    ) : BaseRepository<RoleEntity>(dbContext), IRoleRepository
 {
     public async Task<IEnumerable<RoleEntity>?> Get(CancellationToken cancellationToken)
     {

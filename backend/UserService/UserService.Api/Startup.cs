@@ -15,16 +15,13 @@ using UserService.DataAccess.Interfaces.UnitOfWork;
 
 namespace UserService.Api;
 
-public class Startup
+public class Startup(
+    IConfiguration configuration
+    )
 {
-    public IConfiguration Configuration { get; }
+    private IConfiguration Configuration { get; } = configuration;
 
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-    public void ConfigureBuilder(WebApplicationBuilder builder)
+    public static void ConfigureBuilder(WebApplicationBuilder builder)
     {
         builder.Configuration.AddJsonFile("secrets.json", optional: false, reloadOnChange: true);
     }
@@ -38,20 +35,9 @@ public class Startup
 
         services.AddApiAuthenfication(Configuration);
         
-        services.AddDbContext<UserServiceDbContext>(options =>
-            options.UseNpgsql(Configuration.GetConnectionString("UserServiceDbContext")));
-        
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = Configuration.GetConnectionString("Redis");
-            options.InstanceName = "UserService_";
-        });
-        
-        services.AddHangfire(options =>
-        {
-            options.UsePostgreSqlStorage(Configuration.GetConnectionString("Hangfire"));
-        });
-        services.AddHangfireServer();
+        services.AddUserDbContext(configuration);
+        services.AddRedis(configuration);
+        services.AddHangfire(configuration);
         
         GeneralConfig.RegisterMappers();
         

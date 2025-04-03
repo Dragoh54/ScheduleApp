@@ -1,5 +1,4 @@
 ﻿using UserService.Application.Dto;
-using UserService.Application.Dto.TokenDtos;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Models;
 
@@ -14,5 +13,5 @@ public interface ITokenService
     Task<(string, string)> RefreshAccessToken(string? refreshToken, CancellationToken cancellationToken);
     
     Task<string> GetEmailFromToken(string token, CancellationToken cancellationToken);
-    Task<bool> DeleteToken(string token, CancellationToken cancellationToken);
+    Task<string> GetIdFromToken(string token, CancellationToken cancellationToken);
 }

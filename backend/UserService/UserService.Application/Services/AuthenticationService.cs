@@ -20,9 +20,7 @@ public class AuthenticationService(
     IUnitOfWork unitOfWork, 
     ITokenService tokenService, 
     IEmailService emailService,
-    IDistributedCache cache,
-    IUserService userService,
-    IJwtProvider jwtProvider
+    IDistributedCache cache
     ) : IAuthenticationService
 {
     public async Task<UserDto> Register(RegisterDto registerDto, CancellationToken cancellationToken)
@@ -39,6 +37,13 @@ public class AuthenticationService(
         await unitOfWork.UserRepository.Add(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         cancellationToken.ThrowIfCancellationRequested();
+        
+        BackgroundJob.Enqueue(() => 
+            emailService.SendEmailAsync(
+                user.Email, 
+                "Welcome!",
+                "<h1>You are successfully registered to SCHEDULE APP</h1>",
+                cancellationToken));
 
         return user.Adapt<UserDto>();
     }

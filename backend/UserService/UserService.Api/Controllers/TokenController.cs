@@ -8,7 +8,10 @@ using UserService.DataAccess.Interfaces.Auth;
 namespace UserService.Api.Controllers;
 
 [ApiController]
-public class TokenController(ITokenService tokenService, IOptions<JwtOptions> jwtOptions) : Controller
+public class TokenController(
+    ITokenService tokenService, 
+    IOptions<JwtOptions> jwtOptions
+    ) : Controller
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     

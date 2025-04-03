@@ -5,7 +5,10 @@ namespace UserService.Api.Requirements;
 
 public class RolePermissionHandler : AuthorizationHandler<RolePermissionRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RolePermissionRequirement requirement)
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context, 
+        RolePermissionRequirement requirement
+        )
     {
         var roleClaims = context.User
             .FindAll(claim => claim.Type == ClaimTypes.Role).ToList();

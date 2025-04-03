@@ -2,7 +2,9 @@
 
 namespace UserService.Api.Requirements;
 
-public record RolePermissionRequirement(string role) : IAuthorizationRequirement
+public record RolePermissionRequirement(
+    string Role
+    ) : IAuthorizationRequirement
 {
-    public string Role { get; } = role;
+    public string Role { get; } = Role;
 }

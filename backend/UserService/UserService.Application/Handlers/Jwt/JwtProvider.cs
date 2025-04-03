@@ -26,11 +26,10 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Name, user.Username)
         ];
-
-        foreach (var role in user.UserRoles)
-        {
-            claims.Add(new (ClaimTypes.Role, role.Role.RoleName.ToString()));
-        }
+        
+        claims.AddRange(user.UserRoles.Select(
+            role => new Claim(ClaimTypes.Role, role.Role.RoleName.ToString()))
+        );
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
@@ -102,23 +101,6 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         {
             Id = Guid.NewGuid(),
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            TokenType = tokenType,
-            UserId = user.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = GetExpirationDate(tokenType),
-            IsUsed = false,
-        };
-        cancellationToken.ThrowIfCancellationRequested();
-        
-        return result;
-    }
-    
-    public TokenModel GenerateTokenModel(UserEntity user, string token, TokenTypes tokenType, CancellationToken cancellationToken)
-    {
-        var result = new TokenModel()
-        {
-            Id = Guid.NewGuid(),
-            Token = token,
             TokenType = tokenType,
             UserId = user.Id,
             CreatedAt = DateTime.UtcNow,

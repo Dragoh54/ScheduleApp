@@ -24,7 +24,6 @@ public static class ServiceCollectionExtension
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IEmailService, EmailService>(); 
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<ICacheService, CacheService>();
     }
     
@@ -35,7 +34,6 @@ public static class ServiceCollectionExtension
             options.Filters.Add<ValidationFilter>();
         });
         
-        services.AddScoped<IValidator<DeleteUserDto>, DeleteUserValidator>();
         services.AddScoped<IValidator<LoginUserDto>, LoginUserValidator>();
         services.AddScoped<IValidator<RegisterDto>, RegisterUserValidator>();
         services.AddScoped<IValidator<UpdateUserDto>, UpdateUserValidator>();
@@ -43,7 +41,8 @@ public static class ServiceCollectionExtension
         
         services.AddScoped<IValidator<EmailTokenDto>, EmailTokenValidator>();
         services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordValidator>();
-
+        
+        services.AddScoped<IValidator<AddRoleDto>, AddRoleValidator>();
         services.AddScoped<IValidator<RoleDto>, RoleDtoValidator>();
     }
     
