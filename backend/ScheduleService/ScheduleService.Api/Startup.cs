@@ -1,4 +1,5 @@
-﻿using ScheduleService.Application.Mapping;
+﻿using Microsoft.AspNetCore.Diagnostics;
+using ScheduleService.Application.Mapping;
 
 namespace ScheduleService.Api;
 
@@ -32,6 +33,8 @@ public class Startup(
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
+        
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
         
         if (env.IsDevelopment())
         {
