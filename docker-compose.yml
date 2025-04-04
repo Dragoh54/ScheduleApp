@@ -116,7 +116,7 @@
 
   mongodb:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongodb
     env_file:
       - .env
     environment:
@@ -146,6 +146,21 @@
     volumes:
       - pgadmin_data:/var/lib/pgadmin/data
     restart: always
+    
+  #---------------------- MONGO_DB EXPRESS ------------------
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    env_file: .env
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "${MONGO_EXPRESS_PORT}"
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/"
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
   
   #---------------------- MESSAGE-BROKER --------------------
   rabbitmq:

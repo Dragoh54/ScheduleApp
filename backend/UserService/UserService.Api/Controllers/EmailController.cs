@@ -14,7 +14,7 @@ public class EmailController(
     IAuthenticationService authService
     ) : Controller
 {
-    [HttpPost("send")]
+    [HttpPost("sending")]
     [AllowAnonymous]
     public async Task<IResult> ConfirmEmailSend(CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ public class EmailController(
         return Results.Ok(token);
     }
     
-    [HttpGet("receive", Name = "EmailConfirmation")]
+    [HttpGet("receiving", Name = "EmailConfirmation")]
     public async Task<IResult> ConfirmEmailReceive([FromQuery] EmailTokenDto emailTokenDto, CancellationToken cancellationToken)
     {
         var result = await authService.ConfirmEmailReceiveAsync(emailTokenDto, cancellationToken);

@@ -32,7 +32,8 @@ public class UserController(
         return Results.Ok(resultUsers);
     }
     
-    [HttpPut("add-role")]
+    //TODO: REMOVE ID FROM AddRoleDto AND PUT IN ROUTE
+    [HttpPut("{id:Guid}/new-role")]
     [Authorize(Policy = "Admin")]
     public async Task<IResult> AddAdminRoleToUser([FromQuery] AddRoleDto addRoleDto, CancellationToken cancellationToken)
     {
@@ -40,7 +41,8 @@ public class UserController(
         return Results.Ok(resultUser);
     }
     
-    [HttpPut("update")]
+    //TODO: REMOVE ID FROM UpdateUserDto AND PUT IN ROUTE
+    [HttpPut("{id:Guid}")]
     [Authorize]
     public async Task<IResult> UpdateUser(UpdateUserDto user, CancellationToken cancellationToken)
     {
@@ -48,7 +50,7 @@ public class UserController(
         return Results.Ok(resultUser);
     }
 
-    [HttpPost("soft-delete")]
+    [HttpPost("soft-deletion")]
     [Authorize]
     public async Task<IResult> SoftDeleteUser(CancellationToken cancellationToken)
     {

@@ -17,7 +17,7 @@ public class AuthenticationController(
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     
-    [HttpPost("register")]
+    [HttpPost("registration")]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
         var resultUser = await authService.Register(user, cancellationToken);

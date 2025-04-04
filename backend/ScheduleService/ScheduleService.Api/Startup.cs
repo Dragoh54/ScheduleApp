@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using ScheduleService.Application.Mapping;
+﻿using ScheduleService.Application.Mapping;
+using ScheduleService.DataAccess.Extensions;
+using ExceptionHandlerMiddleware = ScheduleService.Api.Middlewares.ExceptionHandlerMiddleware;
 
 namespace ScheduleService.Api;
 
@@ -18,9 +19,12 @@ public class Startup(
     {
         services.AddControllersWithViews();
         
+        services.AddDatabase(Configuration);
+        
         GeneralConfig.RegisterMappers();
         
         services.AddControllers();
+        services.AddSwaggerGen();
         
         //services.AddSwaggerGenAuthenticationExtension();
     }
