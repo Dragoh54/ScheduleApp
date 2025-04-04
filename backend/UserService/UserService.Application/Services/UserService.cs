@@ -45,10 +45,15 @@ public class UserService(
         };
     }
 
-    public async Task<UserDto> UpdateUser(UpdateUserDto userDto, CancellationToken cancellationToken)
+    public async Task<UserDto> UpdateUser(Guid id, UpdateUserDto userDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.Get(userDto.Id, cancellationToken)
-            ?? throw new AlreadyExistsException("User with this id doesn't exist!");;
+        if (id == Guid.Empty)
+        {
+            throw new BadRequestException("Id cannot be empty!");
+        }
+        
+        var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken)
+                        ?? throw new AlreadyExistsException("User with this id doesn't exist!");;
         
         userDto.Adapt(candidate);
         
@@ -63,7 +68,7 @@ public class UserService(
     {
         var candidate = await unitOfWork.UserRepository.GetWithTracking(roleDto.UserId, cancellationToken)
                         ?? throw new AlreadyExistsException("User with this id doesn't exist!");
-
+    
         if (!candidate.IsConfirmed)
         {
             throw new BadRequestException("User is not confirmed!");

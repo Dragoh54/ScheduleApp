@@ -1,21 +1,20 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using UserService.Api.Interfaces;
 using UserService.Application.Dto.EmailDtos;
-using UserService.Application.Handlers.Email;
 
 namespace UserService.Api.Controllers;
 
 [ApiController]
-[Route("confirmation")]
-public class EmailController(
+[Route("confirmations")]
+public class ConfirmationController(
     IAuthenticationService authService
-    ) : Controller
+) : Controller
 {
-    [HttpPost("send")]
-    [AllowAnonymous]
+    /// <summary>
+    /// create link to confirm account and send to email
+    /// </summary>
+    [HttpPost]
     public async Task<IResult> ConfirmEmailSend(CancellationToken cancellationToken)
     {
         var accessToken = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", string.Empty);
@@ -29,7 +28,10 @@ public class EmailController(
         return Results.Ok(token);
     }
     
-    [HttpGet("receive", Name = "EmailConfirmation")]
+    /// <summary>
+    /// accept link from email and confirm account
+    /// </summary>
+    [HttpGet(Name = "EmailConfirmation")]
     public async Task<IResult> ConfirmEmailReceive([FromQuery] EmailTokenDto emailTokenDto, CancellationToken cancellationToken)
     {
         var result = await authService.ConfirmEmailReceiveAsync(emailTokenDto, cancellationToken);

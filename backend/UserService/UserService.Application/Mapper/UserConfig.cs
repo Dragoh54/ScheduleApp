@@ -34,7 +34,6 @@ public class UserConfig
 
         TypeAdapterConfig<UserEntity, UpdateUserDto>
             .NewConfig()
-            .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Username, src => src.Username)
             .Map(dest => dest.FirstName, src => src.FirstName)
             .Map(dest => dest.LastName, src => src.LastName);

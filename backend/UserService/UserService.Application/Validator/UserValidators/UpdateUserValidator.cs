@@ -11,10 +11,6 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserDto>
             .NotNull()
             .WithMessage("User is required.");
         
-        RuleFor(user => user.Id)
-            .NotNull()
-            .WithMessage("Id is required.");
-        
         RuleFor(user => user.Username)
             .NotEmpty()
             .WithMessage("Username is must not be empty.")

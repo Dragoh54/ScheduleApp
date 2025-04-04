@@ -8,6 +8,7 @@ using UserService.DataAccess.Interfaces.Auth;
 namespace UserService.Api.Controllers;
 
 [ApiController]
+[Route("tokens")]
 public class TokenController(
     ITokenService tokenService, 
     IOptions<JwtOptions> jwtOptions
@@ -15,7 +16,10 @@ public class TokenController(
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     
-    [HttpPost("/refresh")]
+    /// <summary>
+    /// Refresh access and refresh token
+    /// </summary>
+    [HttpPost]
     [AllowAnonymous]
     public async Task<IResult> Refresh(CancellationToken cancellationToken)
     {
