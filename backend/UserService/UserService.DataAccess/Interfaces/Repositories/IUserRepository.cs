@@ -1,7 +1,7 @@
-using UserService.Application.Dto;
 using UserService.DataAccess.Models;
+using UserService.DataAccess.Models.Pagination;
 
-namespace UserService.DataAccess.Interfaces;
+namespace UserService.DataAccess.Interfaces.Repositories;
 
 public interface IUserRepository : IBaseRepository<UserEntity>
 {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UserService.DataAccess.Interfaces;
+using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;

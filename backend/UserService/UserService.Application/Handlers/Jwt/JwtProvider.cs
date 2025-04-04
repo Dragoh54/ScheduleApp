@@ -5,12 +5,12 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using UserService.Application.Interfaces.Auth;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
-using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Models;
 
-namespace UserService.DataAccess.Handlers.Jwt;
+namespace UserService.Application.Handlers.Jwt;
 
 public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtOptions) : IJwtProvider
 {

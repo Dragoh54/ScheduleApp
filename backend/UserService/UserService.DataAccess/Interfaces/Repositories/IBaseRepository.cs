@@ -1,4 +1,4 @@
-namespace UserService.DataAccess.Interfaces;
+namespace UserService.DataAccess.Interfaces.Repositories;
 
 public interface IBaseRepository<T>
 {

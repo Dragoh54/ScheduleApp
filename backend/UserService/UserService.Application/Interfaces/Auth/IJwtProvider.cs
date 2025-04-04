@@ -2,7 +2,7 @@
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Models;
 
-namespace UserService.DataAccess.Interfaces.Auth;
+namespace UserService.Application.Interfaces.Auth;
 
 public interface IJwtProvider
 {

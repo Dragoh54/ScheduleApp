@@ -1,12 +1,9 @@
 ﻿using MailKit.Net.Smtp;
-using MailKit.Security;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
-using UserService.Api.Interfaces;
-using UserService.Application.Dto.EmailDtos;
 using UserService.Application.Handlers.Email;
+using UserService.Application.Interfaces.Services;
 
 namespace UserService.Application.Services;
 

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using UserService.Api.Interfaces;
-using UserService.DataAccess.Handlers.Jwt;
-using UserService.DataAccess.Interfaces.Auth;
+using UserService.Application.Handlers.Jwt;
+using UserService.Application.Interfaces.Services;
 
 namespace UserService.Api.Controllers;
 

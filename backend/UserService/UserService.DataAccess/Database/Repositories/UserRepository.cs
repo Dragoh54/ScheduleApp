@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UserService.Application.Dto;
-using UserService.DataAccess.Interfaces;
+using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Models;
+using UserService.DataAccess.Models.Pagination;
 
 namespace UserService.DataAccess.Database.Repositories;
 

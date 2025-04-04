@@ -1,7 +1,7 @@
-﻿using UserService.Application.Dto;
-using UserService.Application.Dto.EmailDtos;
+﻿using UserService.Application.Dto.EmailDtos;
+using UserService.Application.Dto.UserDtos;
 
-namespace UserService.Api.Interfaces;
+namespace UserService.Application.Interfaces.Services;
 
 public interface IAuthenticationService
 {

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UserService.Api.Interfaces;
-using UserService.Application.Dto;
 using UserService.Application.Dto.EmailDtos;
+using UserService.Application.Dto.RoleDtos;
+using UserService.Application.Dto.UserDtos;
+using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
 
 namespace UserService.Api.Controllers;

@@ -1,4 +1,6 @@
-﻿namespace UserService.DataAccess.Interfaces.UnitOfWork;
+﻿using UserService.DataAccess.Interfaces.Repositories;
+
+namespace UserService.DataAccess.Interfaces.UnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {

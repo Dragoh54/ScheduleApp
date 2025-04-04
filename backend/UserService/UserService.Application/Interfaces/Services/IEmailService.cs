@@ -1,6 +1,4 @@
-﻿using UserService.Application.Dto.EmailDtos;
-
-namespace UserService.Api.Interfaces;
+﻿namespace UserService.Application.Interfaces.Services;
 
 public interface IEmailService
 {

@@ -1,11 +1,11 @@
 ﻿using Mapster;
-using UserService.Application.Dto;
-using UserService.Application.Dto.RoleDto;
+using UserService.Application.Dto.RoleDtos;
+using UserService.Application.Dto.UserDtos;
 using UserService.DataAccess.Models;
 
 namespace UserService.Application.Mapper;
 
-public class UserConfig
+public static class UserConfig
 {
     public static void RegisterMappings()
     {

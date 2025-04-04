@@ -1,4 +1,4 @@
-﻿namespace UserService.Application.Dto;
+﻿namespace UserService.DataAccess.Models.Pagination;
 
 public class UserFilters
 {

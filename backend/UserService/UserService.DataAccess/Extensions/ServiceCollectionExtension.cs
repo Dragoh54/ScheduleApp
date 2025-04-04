@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.DataAccess.Database;
 using UserService.DataAccess.Database.Repositories;
-using UserService.DataAccess.Interfaces;
+using UserService.DataAccess.Interfaces.Repositories;
 
 namespace UserService.DataAccess.Extensions;
 

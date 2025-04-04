@@ -1,6 +1,6 @@
 ﻿using UserService.DataAccess.Enums;
 
-namespace UserService.Api.Interfaces;
+namespace UserService.Application.Interfaces.Services;
 
 public interface ICacheService
 {

@@ -1,4 +1,4 @@
-﻿using UserService.DataAccess.Interfaces;
+﻿using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 
 namespace UserService.DataAccess.Database.UnitOfWork;
@@ -10,7 +10,7 @@ public sealed class UnitOfWork(
     ITokenModelRepository tokenModelRepository
     ) : IUnitOfWork
 {
-    private bool _disposed = false;
+    private bool _disposed;
     
     public IUserRepository UserRepository { get; } = userRepository;
 

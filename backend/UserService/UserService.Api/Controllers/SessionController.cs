@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using UserService.Application.Dto;
-using UserService.DataAccess.Handlers.Jwt;
-using IAuthenticationService = UserService.Api.Interfaces.IAuthenticationService;
+using UserService.Application.Dto.UserDtos;
+using UserService.Application.Handlers.Jwt;
+using IAuthenticationService = UserService.Application.Interfaces.Services.IAuthenticationService;
 
 namespace UserService.Api.Controllers;
 

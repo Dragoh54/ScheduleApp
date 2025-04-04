@@ -1,4 +1,4 @@
-﻿namespace UserService.Application.Dto;
+﻿namespace UserService.Application.Dto.UserDtos;
 
 public class UpdateUserDto
 {

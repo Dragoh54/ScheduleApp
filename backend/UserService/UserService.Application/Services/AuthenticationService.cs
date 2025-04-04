@@ -4,12 +4,12 @@ using Hangfire;
 using Mapster;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
-using UserService.Api.Interfaces;
-using UserService.Application.Dto;
 using UserService.Application.Dto.EmailDtos;
+using UserService.Application.Dto.UserDtos;
+using UserService.Application.Interfaces.Auth;
+using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
-using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 using UserService.DataAccess.Models;
 

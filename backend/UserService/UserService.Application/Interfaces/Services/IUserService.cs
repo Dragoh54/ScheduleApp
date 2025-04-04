@@ -1,7 +1,8 @@
-﻿using UserService.Application.Dto;
-using UserService.DataAccess.Enums;
+﻿using UserService.Application.Dto.RoleDtos;
+using UserService.Application.Dto.UserDtos;
+using UserService.DataAccess.Models.Pagination;
 
-namespace UserService.Api.Interfaces;
+namespace UserService.Application.Interfaces.Services;
 
 public interface IUserService
 {

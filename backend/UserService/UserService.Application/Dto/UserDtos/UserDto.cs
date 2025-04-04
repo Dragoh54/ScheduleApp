@@ -1,8 +1,6 @@
-﻿using UserService.DataAccess.Models;
-using UserService.Application.Dto.RoleDto;
-using UserService.DataAccess.Enums;
+﻿using UserService.Application.Dto.RoleDtos;
 
-namespace UserService.Application.Dto;
+namespace UserService.Application.Dto.UserDtos;
 
 public class UserDto
 {
@@ -12,14 +10,14 @@ public class UserDto
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime LastLoginAt { get; set; }
-    public IEnumerable<RoleDto.RoleDto> Roles { get; set; } = [];
+    public IEnumerable<RoleDto> Roles { get; set; } = [];
 
     public UserDto()
     {
         
     }
     
-    public UserDto(Guid id, string username, string email, string firstName, string lastName, List<RoleDto.RoleDto> roles)
+    public UserDto(Guid id, string username, string email, string firstName, string lastName, List<RoleDto> roles)
     {
         Id = id;
         Username = username;

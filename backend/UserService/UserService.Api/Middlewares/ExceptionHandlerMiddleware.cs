@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
-using Microsoft.AspNetCore.Diagnostics;
 using UserService.DataAccess.Exceptions;
 
 namespace UserService.Api.Middlewares;

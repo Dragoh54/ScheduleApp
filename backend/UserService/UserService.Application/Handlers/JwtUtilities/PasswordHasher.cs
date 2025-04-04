@@ -1,6 +1,6 @@
-﻿using UserService.DataAccess.Interfaces.Auth;
+﻿using UserService.Application.Interfaces.Auth;
 
-namespace UserService.DataAccess.Handlers.JwtUtilities;
+namespace UserService.Application.Handlers.JwtUtilities;
 
 public class PasswordHasher : IPasswordHasher
 {

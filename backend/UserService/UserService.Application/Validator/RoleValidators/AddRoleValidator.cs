@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using UserService.Application.Dto;
+using UserService.Application.Dto.RoleDtos;
 
-namespace UserService.Application.Validator.UserValidators;
+namespace UserService.Application.Validator.RoleValidators;
 
-public class AddRoleValidator : AbstractValidator<Dto.AddRoleDto>
+public class AddRoleValidator : AbstractValidator<AddRoleDto>
 {
     public AddRoleValidator()
     {

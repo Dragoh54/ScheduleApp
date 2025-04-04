@@ -1,18 +1,17 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using UserService.Api.Interfaces;
-using UserService.Application.Dto;
 using UserService.Application.Dto.EmailDtos;
-using UserService.Application.Dto.RoleDto;
-using UserService.Application.Mapper;
+using UserService.Application.Dto.RoleDtos;
+using UserService.Application.Dto.UserDtos;
+using UserService.Application.Handlers.Jwt;
+using UserService.Application.Handlers.JwtUtilities;
+using UserService.Application.Interfaces.Auth;
+using UserService.Application.Interfaces.Services;
 using UserService.Application.Services;
 using UserService.Application.Validator;
 using UserService.Application.Validator.EmailValidators;
 using UserService.Application.Validator.RoleValidators;
 using UserService.Application.Validator.UserValidators;
-using UserService.DataAccess.Handlers.Jwt;
-using UserService.DataAccess.Handlers.JwtUtilities;
-using UserService.DataAccess.Interfaces.Auth;
 
 namespace UserService.Application.Extensions;
 

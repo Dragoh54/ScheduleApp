@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using UserService.Application.Dto.RoleDto;
+using UserService.Application.Dto.RoleDtos;
 
 namespace UserService.Application.Validator.RoleValidators;
 

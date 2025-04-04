@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using UserService.Api.Interfaces;
+using UserService.Application.Interfaces.Auth;
+using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
-using UserService.DataAccess.Interfaces.Auth;
 
 namespace UserService.Application.Services;
 

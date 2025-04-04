@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Storage;using UserService.DataAccess.Database.DataSeeder;
+﻿using Microsoft.EntityFrameworkCore;
 using UserService.DataAccess.Models;
 
 using static UserService.DataAccess.Database.DataSeeder.DataSeeder;

@@ -1,12 +1,11 @@
 ﻿using Mapster;
-using UserService.Api.Interfaces;
-using UserService.Application.Dto;
-using UserService.DataAccess.Enums;
+using UserService.Application.Dto.RoleDtos;
+using UserService.Application.Dto.UserDtos;
+using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Exceptions;
-using UserService.DataAccess.Interfaces;
-using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 using UserService.DataAccess.Models;
+using UserService.DataAccess.Models.Pagination;
 
 namespace UserService.Application.Services;
 
@@ -18,7 +17,7 @@ public class UserService(
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
         var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken)
-            ?? throw new AlreadyExistsException("User with this id doesn't exist!");;
+            ?? throw new AlreadyExistsException("User with this id doesn't exist!");
         
         return candidate.Adapt<UserDto>();
     }
@@ -53,7 +52,7 @@ public class UserService(
         }
         
         var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken)
-                        ?? throw new AlreadyExistsException("User with this id doesn't exist!");;
+                        ?? throw new AlreadyExistsException("User with this id doesn't exist!");
         
         userDto.Adapt(candidate);
         

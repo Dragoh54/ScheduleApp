@@ -1,14 +1,9 @@
 ﻿using UserService.DataAccess.Enums;
 
-namespace UserService.Application.Dto;
+namespace UserService.Application.Dto.RoleDtos;
 
 public class AddRoleDto
 {
-    public Guid UserId { get; set; }
-    public Roles Role { get; set; }
-
-    public AddRoleDto()
-    {
-        
-    }
+    public Guid UserId { get; init; }
+    public Roles Role { get; init; }
 }
