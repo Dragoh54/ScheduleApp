@@ -1,20 +1,19 @@
-﻿namespace ScheduleService.DomainModel.Models;
+﻿using ScheduleService.DomainModel.Intefaces;
 
-public class TimeSlot : GenericEntity
+namespace ScheduleService.DomainModel.Models;
+
+public class TimeSlot : IEntity
 {
+    public Guid Id { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
-    public int Duration { get; set; }
     
-    public string Name { get; set; } = string.Empty;
     
     public TimeSlot() { }
 
-    public TimeSlot(TimeOnly startTime, TimeOnly endTime, int duration, string name)
+    public TimeSlot(TimeOnly startTime, TimeOnly endTime)
     {
         StartTime = startTime;
         EndTime = endTime;
-        Duration = duration;
-        Name = name;
     }
 }

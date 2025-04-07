@@ -1,15 +1,13 @@
-﻿namespace ScheduleService.DomainModel.Models;
+﻿using ScheduleService.DomainModel.Intefaces;
 
-public class CalendarDay : GenericEntity
+namespace ScheduleService.DomainModel.Models;
+
+public class CalendarDay : IEntity
 {
+    public Guid Id { get; set; }
     public Guid UserId { get; set; }
     public DateOnly Date { get; set; }
-    
-    //if TemplateId is null then no template to this day
-    public Guid? TemplateId { get; set; }
-
     public List<TimeSlot>? CustomTimeSlots { get; set; }
-    public bool? IsCustomDayOff { get; set; }  
     
     public CalendarDay(){}
 
@@ -17,12 +15,5 @@ public class CalendarDay : GenericEntity
     {
         UserId = userId;
         Date = date;
-    }
-
-    public CalendarDay(Guid userId, DateOnly date, Guid? templateId)
-    {
-        UserId = userId;
-        Date = date;
-        TemplateId = templateId;
     }
 }

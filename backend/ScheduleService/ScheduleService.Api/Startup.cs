@@ -1,5 +1,6 @@
 ﻿using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;
+using ScheduleService.DataAccess.Settings;
 using ExceptionHandlerMiddleware = ScheduleService.Api.Middlewares.ExceptionHandlerMiddleware;
 
 namespace ScheduleService.Api;
@@ -19,7 +20,10 @@ public class Startup(
     {
         services.AddControllersWithViews();
         
+        services.Configure<MongoDbSettings>(configuration.GetSection(nameof(MongoDbSettings)));
+        
         services.AddDatabase(Configuration);
+        services.AddRepositories();
         
         GeneralConfig.RegisterMappers();
         

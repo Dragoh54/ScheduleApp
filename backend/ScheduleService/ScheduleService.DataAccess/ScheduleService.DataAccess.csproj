@@ -12,15 +12,16 @@
 
     <ItemGroup>
       <Folder Include="Indexes\" />
+      <Folder Include="UnitOfWork\" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-preview.2.25163.2" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.2.25163.2" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0-preview.2.25163.2" />
       <PackageReference Include="MongoDB.Bson" Version="3.3.0" />
       <PackageReference Include="MongoDB.Driver" Version="3.3.0" />
       <PackageReference Include="MongoDB.Driver.Core" Version="2.30.0" />
-      <PackageReference Include="MongoDB.EntityFrameworkCore" Version="8.2.3" />
     </ItemGroup>
 
 </Project>
