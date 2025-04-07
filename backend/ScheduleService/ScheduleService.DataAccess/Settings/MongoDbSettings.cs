@@ -1,7 +1,7 @@
 ﻿namespace ScheduleService.DataAccess.Settings;
 
-public class MongoDbSettings
+public record MongoDbSettings
 {
-    public string MongoConnectionString { get; set; } = string.Empty;
-    public string MongoDatabaseName { get; set; } = string.Empty;
+    public string MongoConnectionString { get; init; } = string.Empty;
+    public string MongoDatabaseName { get; init; } = string.Empty;
 }

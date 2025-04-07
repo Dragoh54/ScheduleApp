@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DataAccess.Repositories;
 using ScheduleService.DataAccess.Settings;
+using MongoCollectionSettings = ScheduleService.DataAccess.Settings.MongoCollectionSettings;
 
 namespace ScheduleService.DataAccess.Extensions;
 
@@ -28,7 +29,18 @@ public static class ServiceCollectionExtension
 
     public static void AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IAvailabilityTemplateRepository, AvailabilityTemplateRepository>();
-        services.AddScoped<ICalendarDayRepository, CalendarDayRepository>();
+        services.AddScoped<IAvailabilityTemplateRepository>(options => 
+        {
+            var database = options.GetRequiredService<IMongoDatabase>();
+            var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
+            return new AvailabilityTemplateRepository(database, settings.AvailabilityTemplates);
+        });
+
+        services.AddScoped<ICalendarDayRepository>(options => 
+        {
+            var database = options.GetRequiredService<IMongoDatabase>();
+            var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
+            return new CalendarDayRepository(database, settings.CalendarDays);
+        });
     }
 }

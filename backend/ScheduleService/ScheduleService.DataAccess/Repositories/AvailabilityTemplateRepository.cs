@@ -13,12 +13,12 @@ public class AvailabilityTemplateRepository(IMongoDatabase database, string coll
                 Builders<AvailabilityTemplate>.Filter.Eq(x => x.UserId, userId),
                     Builders<AvailabilityTemplate>.Filter.Eq(x => x.IsDefault, true));
         
-        return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
+        return await Collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<AvailabilityTemplate>> GetUserTemplatesAsync(Guid userId, CancellationToken cancellationToken)
     {
         var filter = Builders<AvailabilityTemplate>.Filter.Eq(x => x.UserId, userId);
-        return await _collection.Find(filter).ToListAsync(cancellationToken);
+        return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
 }

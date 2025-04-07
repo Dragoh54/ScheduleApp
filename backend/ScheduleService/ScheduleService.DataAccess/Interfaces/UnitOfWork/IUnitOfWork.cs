@@ -1,7 +1,11 @@
-﻿namespace ScheduleService.DataAccess.Interfaces.UnitOfWork;
+﻿using ScheduleService.DataAccess.Interfaces.Repositories;
 
+namespace ScheduleService.DataAccess.Interfaces.UnitOfWork;
+
+
+//TODO: ADD UNIT OF WORK
 public interface IUnitOfWork
 {
-    //TODO: ADD REPOS
-    Task SaveChangesAsync();
+    public IAvailabilityTemplateRepository AvailabilityTemplateRepository { get; }
+    public ICalendarDayRepository CalendarDayRepository { get; }
 }
