@@ -16,12 +16,12 @@ public class AvailabilityTemplateRepository(
             Builders<AvailabilityTemplate>.Filter.Eq(x => x.UserId, userId),
             Builders<AvailabilityTemplate>.Filter.Eq(x => x.IsDefault, true));
         
-        return await Collection.Find(dbContext.Session, filter).FirstOrDefaultAsync(cancellationToken);
+        return await Collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<AvailabilityTemplate>> GetUserTemplatesAsync(Guid userId, CancellationToken cancellationToken)
     {
         var filter = Builders<AvailabilityTemplate>.Filter.Eq(x => x.UserId, userId);
-        return await Collection.Find(dbContext.Session, filter).ToListAsync(cancellationToken);
+        return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
 }

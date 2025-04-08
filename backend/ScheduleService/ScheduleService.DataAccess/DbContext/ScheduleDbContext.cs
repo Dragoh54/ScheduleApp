@@ -1,31 +1,38 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
+using ScheduleService.DataAccess.Indexes;
 using ScheduleService.DataAccess.Interfaces.DbContext;
+using ScheduleService.DataAccess.Settings;
+using ScheduleService.DomainModel.Models;
+using MongoCollectionSettings = ScheduleService.DataAccess.Settings.MongoCollectionSettings;
 
 namespace ScheduleService.DataAccess.DbContext;
 
 public class ScheduleDbContext : IScheduleDbContext
 {
     private IMongoDatabase Database { get; set; }
-    public IClientSessionHandle Session { get; set; }
     private MongoClient MongoClient { get; set; }
-    private readonly List<Func<Task>> _commands = new List<Func<Task>>();
-    private readonly IConfiguration _configuration;
+    private MongoDbSettings MongoDbSettings { get; set; }
+    private MongoCollectionSettings MongoCollectionSettings { get; set; }
     
-    public ScheduleDbContext(IServiceProvider services, IConfiguration configuration)
-    {
-        _configuration = configuration;
+    public IClientSessionHandle Session { get; set; }
+    
+    private readonly List<Func<Task>> _commands = new List<Func<Task>>();
 
+    public ScheduleDbContext(IServiceProvider services)
+    {
+        MongoDbSettings = services.GetRequiredService<MongoDbSettings>();
+        MongoCollectionSettings = services.GetRequiredService<MongoCollectionSettings>();
+        
+        Database =  services.GetService<IMongoDatabase>()
+                    ?? throw new NullReferenceException("Database");
+        
         MongoClient = services.GetService<MongoClient>()
             ?? throw new NullReferenceException("MongoClient");
-
-        Database = services.GetService<IMongoDatabase>()
-            ?? throw new NullReferenceException("Database");
+        
+        ConfigureIndexes();
     }
-    
 
     public async Task<int> SaveChanges()
     {
@@ -57,5 +64,14 @@ public class ScheduleDbContext : IScheduleDbContext
     public void AddCommand(Func<Task> func)
     {
         _commands.Add(func);
+    }
+
+    private void ConfigureIndexes()
+    {
+        AvailabilityTemplateConfiguration.ConfigureIndexes(
+            Database.GetCollection<AvailabilityTemplate>(MongoCollectionSettings.AvailabilityTemplates));
+        
+        CalendarDayConfiguration.ConfigureIndexes(
+            Database.GetCollection<CalendarDay>(MongoCollectionSettings.CalendarDays));
     }
 }

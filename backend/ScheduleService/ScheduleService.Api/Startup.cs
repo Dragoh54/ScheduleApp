@@ -3,6 +3,7 @@ using ScheduleService.Application;
 using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
+using ScheduleService.DataAccess.Persistence;
 using ScheduleService.DataAccess.Settings;
 using ScheduleService.DataAccess.UnitOfWork;
 using ExceptionHandlerMiddleware = ScheduleService.Api.Middlewares.ExceptionHandlerMiddleware;
@@ -26,11 +27,15 @@ public class Startup(
         
         services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
         services.Configure<MongoCollectionSettings>(Configuration.GetSection(nameof(MongoCollectionSettings)));
+            
+        MongoDbPersistence.Configure();
         
         services.AddDatabase();
         services.AddDbContext();
         services.AddUnitOfWork();
         services.AddRepositories();
+
+        //services.AddMediatR();
         
         GeneralConfig.RegisterMappers();
         

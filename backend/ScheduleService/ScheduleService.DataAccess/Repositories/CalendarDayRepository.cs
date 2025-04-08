@@ -16,7 +16,7 @@ public class CalendarDayRepository(
             Builders<CalendarDay>.Filter.Eq(x => x.UserId, userId),
             Builders<CalendarDay>.Filter.Eq(x => x.Date, date));
         
-        return await Collection.Find(dbContext.Session, filter).FirstOrDefaultAsync(cancellationToken);
+        return await Collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<CalendarDay>> GetForPeriodAsync(Guid userId, DateOnly start, DateOnly end, CancellationToken cancellationToken)
@@ -26,6 +26,6 @@ public class CalendarDayRepository(
                 Builders<CalendarDay>.Filter.Gte(x => x.Date, start),
                 Builders<CalendarDay>.Filter.Lte(x => x.Date, end));
         
-        return await Collection.Find(dbContext.Session, filter).ToListAsync(cancellationToken);
+        return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
 }
