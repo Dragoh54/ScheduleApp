@@ -27,6 +27,7 @@ public class Startup(
         services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
         services.Configure<MongoCollectionSettings>(Configuration.GetSection(nameof(MongoCollectionSettings)));
         
+        services.AddDatabase();
         services.AddDbContext();
         services.AddUnitOfWork();
         services.AddRepositories();

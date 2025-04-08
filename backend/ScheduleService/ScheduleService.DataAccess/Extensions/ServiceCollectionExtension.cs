@@ -41,19 +41,19 @@ public static class ServiceCollectionExtension
         });
     }
     
-    // public static void AddDatabase(this IServiceCollection services)
-    // {
-    //     services.AddSingleton<IMongoClient>(options =>
-    //     {
-    //         var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-    //         return new MongoClient(settings.MongoConnectionString);
-    //     });
-    //     
-    //     services.AddScoped<IMongoDatabase>(options => 
-    //     {
-    //         var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-    //         var client = options.GetRequiredService<IMongoClient>();
-    //         return client.GetDatabase(settings.MongoDatabaseName);
-    //     });
-    // }
+    public static void AddDatabase(this IServiceCollection services)
+    {
+        services.AddSingleton<IMongoClient>(options =>
+        {
+            var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            return new MongoClient(settings.MongoConnectionString);
+        });
+        
+        services.AddScoped<IMongoDatabase>(options => 
+        {
+            var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            var client = options.GetRequiredService<IMongoClient>();
+            return client.GetDatabase(settings.MongoDatabaseName);
+        });
+    }
 }

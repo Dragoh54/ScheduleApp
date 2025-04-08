@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
@@ -14,13 +15,15 @@ public class ScheduleDbContext : IScheduleDbContext
     private readonly List<Func<Task>> _commands = new List<Func<Task>>();
     private readonly IConfiguration _configuration;
     
-    public ScheduleDbContext(IConfiguration configuration)
+    public ScheduleDbContext(IServiceProvider services, IConfiguration configuration)
     {
         _configuration = configuration;
-        
-        MongoClient = new MongoClient(_configuration["MongoDbSettings:MongoConnectionString"]);
 
-        Database = MongoClient.GetDatabase(_configuration["MongoDbSettings:MongoDatabaseName"]);
+        MongoClient = services.GetService<MongoClient>()
+            ?? throw new NullReferenceException("MongoClient");
+
+        Database = services.GetService<IMongoDatabase>()
+            ?? throw new NullReferenceException("Database");
     }
     
 
