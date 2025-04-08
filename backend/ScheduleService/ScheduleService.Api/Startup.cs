@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
+using ScheduleService.Application;
 using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;
+using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DataAccess.Settings;
+using ScheduleService.DataAccess.UnitOfWork;
 using ExceptionHandlerMiddleware = ScheduleService.Api.Middlewares.ExceptionHandlerMiddleware;
 
 namespace ScheduleService.Api;
@@ -24,7 +27,8 @@ public class Startup(
         services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
         services.Configure<MongoCollectionSettings>(Configuration.GetSection(nameof(MongoCollectionSettings)));
         
-        services.AddDatabase(Configuration);
+        services.AddDbContext();
+        services.AddUnitOfWork();
         services.AddRepositories();
         
         GeneralConfig.RegisterMappers();

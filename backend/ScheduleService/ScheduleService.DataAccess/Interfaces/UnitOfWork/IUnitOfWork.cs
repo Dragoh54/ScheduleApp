@@ -3,9 +3,9 @@
 namespace ScheduleService.DataAccess.Interfaces.UnitOfWork;
 
 
-//TODO: ADD UNIT OF WORK
-public interface IUnitOfWork
+public interface IUnitOfWork : IDisposable
 {
-    public IAvailabilityTemplateRepository AvailabilityTemplateRepository { get; }
-    public ICalendarDayRepository CalendarDayRepository { get; }
+    IAvailabilityTemplateRepository AvailabilityTemplates { get; }
+    ICalendarDayRepository CalendarDays { get; }
+    Task<bool> Commit();
 }
