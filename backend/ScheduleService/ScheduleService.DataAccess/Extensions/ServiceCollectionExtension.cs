@@ -49,11 +49,11 @@ public static class ServiceCollectionExtension
             return new MongoClient(settings.MongoConnectionString);
         });
 
-        services.AddSingleton<IMongoClient>(options => 
-        {
-            var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-            return new MongoClient(settings.MongoReplicaConnectionString);
-        });
+        // services.AddSingleton<IMongoClient>(options => 
+        // {
+        //     var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+        //     return new MongoClient(settings.MongoReplicaConnectionString);
+        // });
         
         services.AddScoped<IMongoDatabase>(options => 
         {

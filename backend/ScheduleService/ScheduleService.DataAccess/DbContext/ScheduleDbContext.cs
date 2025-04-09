@@ -34,9 +34,9 @@ public class ScheduleDbContext : IScheduleDbContext
         ConfigureIndexes();
     }
 
-    public async Task<int> SaveChanges()
+    public async Task<int> SaveChanges(CancellationToken cancellationToken)
     {
-        using (Session = await MongoClient.StartSessionAsync())
+        using (Session = await MongoClient.StartSessionAsync(cancellationToken: cancellationToken))
         {
             Session.StartTransaction();
 
@@ -44,7 +44,7 @@ public class ScheduleDbContext : IScheduleDbContext
 
             await Task.WhenAll(commandTasks);
 
-            await Session.CommitTransactionAsync();
+            await Session.CommitTransactionAsync(cancellationToken);
         }
 
         return _commands.Count;

@@ -7,5 +7,5 @@ public interface IUnitOfWork : IDisposable
 {
     IAvailabilityTemplateRepository AvailabilityTemplates { get; }
     ICalendarDayRepository CalendarDays { get; }
-    Task<bool> Commit();
+    Task<bool> Commit(CancellationToken cancellationToken);
 }

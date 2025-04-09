@@ -16,9 +16,9 @@ public class UnitOfWork(
     public IAvailabilityTemplateRepository AvailabilityTemplates { get; } = availabilityTemplateRepository;
     public ICalendarDayRepository CalendarDays { get; } = calendarDayRepository;
 
-    public async Task<bool> Commit()
+    public async Task<bool> Commit(CancellationToken cancellationToken)
     {
-        var changeAmount = await context.SaveChanges();
+        var changeAmount = await context.SaveChanges(cancellationToken);
 
         return changeAmount > 0;
     }

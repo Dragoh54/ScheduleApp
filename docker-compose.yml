@@ -68,7 +68,7 @@
       interval: 5s
       timeout: 5s
       retries: 5
-      
+  
   user_redis:
     image: redis:latest
     container_name: user_redis
@@ -112,51 +112,40 @@
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
-      retries: 5  
-
-#  mongodb:
-#    image: mongo:latest
-#    container_name: mongodb
-#    env_file:
-#      - .env
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-#      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-#    ports:
-#        - ${MONGO_PORTS}
-#    volumes:
-#      - mongodb_data:/var/lib/mongodb/data
-#    healthcheck:
-#      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 5
+      retries: 5
       
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    command: mongod --replSet rs0 --bind_ip_all
     env_file:
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
-      - ${MONGO_PORTS}
+        - ${MONGO_PORTS}
     volumes:
       - mongodb_data:/var/lib/mongodb/data
-
-  mongodb-replica:
-    image: mongo:latest
-    container_name: mongodb-replica
-    command: mongod --replSet rs0 --bind_ip_all
-    env_file:
-      - .env
-    depends_on:
-      - mongodb
-    ports:
-      - ${MONGO_REPLICA_PORTS}
-      
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+#  mongodb:
+#    image: mongo:latest
+#    container_name: mongodb
+#    command: mongod --replSet rs0 --bind_ip_all
+#    env_file:
+#      - .env
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+#      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+#    ports:
+#      - ${MONGO_PORTS}
+#    volumes:
+#      - mongodb_data:/var/lib/mongodb/data
+  
   #---------------------- PG-ADMIN --------------------------
   pgadmin4:
     container_name: pgadmin4
@@ -171,7 +160,7 @@
     volumes:
       - pgadmin_data:/var/lib/pgadmin/data
     restart: always
-    
+  
   #---------------------- MONGO_DB EXPRESS ------------------
   mongo-express:
     image: mongo-express:latest
@@ -224,11 +213,11 @@
       - user_service
       - schedule_service
       - meeting_service
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:${API_GATEWAY_SERVICE_PORTS%:*}/health" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
+  #    healthcheck:
+  #      test: [ "CMD", "curl", "-f", "http://localhost:${API_GATEWAY_SERVICE_PORTS%:*}/health" ]
+  #      interval: 30s
+  #      timeout: 10s
+  #      retries: 3
 
   user_service:
     build:
@@ -311,7 +300,7 @@
       retries: 5
     networks:
       - elk
-    
+  
   logstash:
     image: logstash:7.9.1
     container_name: logstash
@@ -356,7 +345,7 @@
 networks:
   elk:
     driver: bridge
-    
+
 #---------------------- VOLUMES -----------------------------
 volumes:
   user_postgres_data:
