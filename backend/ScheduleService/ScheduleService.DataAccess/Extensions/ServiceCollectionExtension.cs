@@ -43,10 +43,16 @@ public static class ServiceCollectionExtension
     
     public static void AddDatabase(this IServiceCollection services)
     {
-        services.AddSingleton<IMongoClient>(options =>
+        services.AddSingleton<IMongoClient>(options => 
         {
             var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
             return new MongoClient(settings.MongoConnectionString);
+        });
+
+        services.AddSingleton<IMongoClient>(options => 
+        {
+            var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            return new MongoClient(settings.MongoReplicaConnectionString);
         });
         
         services.AddScoped<IMongoDatabase>(options => 

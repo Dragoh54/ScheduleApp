@@ -1,11 +1,8 @@
-﻿using Microsoft.Extensions.Options;
-using ScheduleService.Application;
+﻿using ScheduleService.Application.Extensions;
 using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;
-using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DataAccess.Persistence;
 using ScheduleService.DataAccess.Settings;
-using ScheduleService.DataAccess.UnitOfWork;
 using ExceptionHandlerMiddleware = ScheduleService.Api.Middlewares.ExceptionHandlerMiddleware;
 
 namespace ScheduleService.Api;
@@ -35,7 +32,7 @@ public class Startup(
         services.AddUnitOfWork();
         services.AddRepositories();
 
-        //services.AddMediatR();
+        services.AddMediatRServices();
         
         GeneralConfig.RegisterMappers();
         

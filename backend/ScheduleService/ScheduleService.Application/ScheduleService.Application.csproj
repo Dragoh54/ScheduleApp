@@ -12,13 +12,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="12.0.0-preview1" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0-preview1" />
       <PackageReference Include="MediatR" Version="12.5.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="UseCases\AvailabilityTemplate\Command\AddTemplateCommand\" />
       <Folder Include="UseCases\AvailabilityTemplate\Command\DeleteTemplateCommand\" />
+      <Folder Include="UseCases\AvailabilityTemplate\Command\SetToDefaultCommand\" />
       <Folder Include="UseCases\AvailabilityTemplate\Command\UpdateTemplateCommand\" />
       <Folder Include="UseCases\AvailabilityTemplate\Querry\ExistTemplateQuerry\" />
       <Folder Include="UseCases\AvailabilityTemplate\Querry\GetByIdTemplateQuerry\" />

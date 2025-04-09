@@ -114,23 +114,48 @@
       timeout: 5s
       retries: 5  
 
+#  mongodb:
+#    image: mongo:latest
+#    container_name: mongodb
+#    env_file:
+#      - .env
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+#      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+#    ports:
+#        - ${MONGO_PORTS}
+#    volumes:
+#      - mongodb_data:/var/lib/mongodb/data
+#    healthcheck:
+#      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
+      
   mongodb:
     image: mongo:latest
     container_name: mongodb
+    command: mongod --replSet rs0 --bind_ip_all
     env_file:
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
-        - ${MONGO_PORTS}
+      - ${MONGO_PORTS}
     volumes:
       - mongodb_data:/var/lib/mongodb/data
-    healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
+  mongodb-replica:
+    image: mongo:latest
+    container_name: mongodb-replica
+    command: mongod --replSet rs0 --bind_ip_all
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+    ports:
+      - ${MONGO_REPLICA_PORTS}
       
   #---------------------- PG-ADMIN --------------------------
   pgadmin4:
