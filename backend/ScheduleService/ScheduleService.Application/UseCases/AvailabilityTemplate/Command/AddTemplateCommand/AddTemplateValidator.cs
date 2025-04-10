@@ -6,6 +6,6 @@ public class AddTemplateValidator : AbstractValidator<AddTemplateCommand>
 {
     public AddTemplateValidator()
     {
-        
+        //TODO: ADD VALIDATORS
     }
 }

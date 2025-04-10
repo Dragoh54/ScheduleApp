@@ -19,4 +19,13 @@ public interface IAvailabilityTemplateRepository : IBaseRepository<AvailabilityT
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public Task<IEnumerable<AvailabilityTemplate>> GetUserTemplatesAsync(Guid userId, CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// set template by id to default
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="templateId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken);
 }

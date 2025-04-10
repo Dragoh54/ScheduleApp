@@ -19,19 +19,4 @@
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="UseCases\AvailabilityTemplate\Command\DeleteTemplateCommand\" />
-      <Folder Include="UseCases\AvailabilityTemplate\Command\SetToDefaultCommand\" />
-      <Folder Include="UseCases\AvailabilityTemplate\Command\UpdateTemplateCommand\" />
-      <Folder Include="UseCases\AvailabilityTemplate\Querry\ExistTemplateQuerry\" />
-      <Folder Include="UseCases\AvailabilityTemplate\Querry\GetByIdTemplateQuerry\" />
-      <Folder Include="UseCases\AvailabilityTemplate\Querry\GetDefaultTemplateQuerry\" />
-      <Folder Include="UseCases\AvailabilityTemplate\Querry\GetUserTemplatesQuerry\" />
-      <Folder Include="UseCases\CalendarDay\Command\AddCalendarDayCommand\" />
-      <Folder Include="UseCases\CalendarDay\Command\DeleteCalendarDayCommand\" />
-      <Folder Include="UseCases\CalendarDay\Command\UpdateCalendarDayCommand\" />
-      <Folder Include="UseCases\CalendarDay\Querry\GetByDateCalendarDayQuerry\" />
-      <Folder Include="UseCases\CalendarDay\Querry\GetForPeriodCalendarDayQuerry\" />
-    </ItemGroup>
-
 </Project>

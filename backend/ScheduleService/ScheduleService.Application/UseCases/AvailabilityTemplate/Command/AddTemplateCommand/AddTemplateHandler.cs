@@ -10,12 +10,10 @@ public class AddTemplateHandler(
     IUnitOfWork unitOfWork
     ) : IRequestHandler<AddTemplateCommand, AvailabilityTemplateDto>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-
     public async Task<AvailabilityTemplateDto> Handle(AddTemplateCommand request, CancellationToken cancellationToken)
     {
-        await _unitOfWork.AvailabilityTemplates.AddAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken);
-        var success = await _unitOfWork.Commit(cancellationToken);
+        await unitOfWork.AvailabilityTemplates.AddAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken);
+        var success = await unitOfWork.Commit(cancellationToken);
         
         if (!success)
         {
