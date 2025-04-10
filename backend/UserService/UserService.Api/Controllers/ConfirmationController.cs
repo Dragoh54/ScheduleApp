@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UserService.Api.Extensions;
 using UserService.Application.Dto.EmailDtos;
 using UserService.Application.Interfaces.Services;
 
@@ -16,8 +17,7 @@ public class ConfirmationController(
     [HttpPost]
     public async Task<IResult> ConfirmEmailSend(CancellationToken cancellationToken)
     {
-        //TODO: move it to extension method
-        var accessToken = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", string.Empty);
+        var accessToken = HttpContext.GetBearerToken();
         var callbackUrl = Url.RouteUrl(
             "EmailConfirmation",
             values: null,

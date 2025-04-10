@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserService.Api.Extensions;
 using UserService.Application.Dto.EmailDtos;
 using UserService.Application.Dto.RoleDtos;
 using UserService.Application.Dto.UserDtos;
@@ -68,7 +69,7 @@ public class UserController(
     [Authorize]
     public async Task<IResult> SoftDeleteUser(CancellationToken cancellationToken)
     {
-        var accessToken = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", string.Empty);
+        var accessToken = HttpContext.GetBearerToken();
         var deletedUser = await service.SoftDelete(accessToken, cancellationToken);
         
         return Results.Ok(deletedUser);
