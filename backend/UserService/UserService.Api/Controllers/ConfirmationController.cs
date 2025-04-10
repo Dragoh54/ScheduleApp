@@ -16,6 +16,7 @@ public class ConfirmationController(
     [HttpPost]
     public async Task<IResult> ConfirmEmailSend(CancellationToken cancellationToken)
     {
+        //TODO: move it to extension method
         var accessToken = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", string.Empty);
         var callbackUrl = Url.RouteUrl(
             "EmailConfirmation",

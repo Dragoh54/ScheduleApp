@@ -9,7 +9,7 @@ public class UserRepository(
     UserServiceDbContext dbContext
     ) : BaseRepository<UserEntity>(dbContext), IUserRepository
 {
-    public async Task<IEnumerable<UserEntity>?> Get(CancellationToken cancellationToken)
+    public override async Task<IEnumerable<UserEntity>?> Get(CancellationToken cancellationToken)
     {
         var users = await _dbContext.Users
             .Include(u => u.UserRoles)
@@ -21,7 +21,7 @@ public class UserRepository(
         return users;
     }
 
-    public new async Task<UserEntity?> Get(Guid id, CancellationToken cancellationToken)
+    public override async Task<UserEntity?> Get(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
             .Include(u => u.UserRoles) 
@@ -36,6 +36,7 @@ public class UserRepository(
 
     public async Task<(List<UserEntity>?, int)> Get(UserFilters userFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
+        //TODO: ADD SPECIFICATION
         var query = _dbContext.Users
             .AsNoTracking()
             .Where(a => string.IsNullOrEmpty(userFilter.Username) || a.Username.Contains(userFilter.Username))
@@ -89,25 +90,27 @@ public class UserRepository(
 
     public async Task<IEnumerable<UserEntity>?> GetDeletedUsersAsync(CancellationToken cancellationToken)
     {
-        var res = await _dbSet
+        var deletedUsers = await _dbSet
             .AsNoTracking()
             .IgnoreQueryFilters()
             .Where(u => u.IsDeleted)
             .ToListAsync(cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
-        return res;
+        
+        return deletedUsers;
     }
 
     public async Task<UserEntity?> GetDeletedUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var res = await _dbSet
+        var deletedUser = await _dbSet
             .AsNoTracking()
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.IsDeleted && u.Email == email, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
-        return res;
+        
+        return deletedUser;
     }
 
     public async Task<IEnumerable<UserEntity?>> GetOldUsersAsync(DateTime ago, CancellationToken cancellationToken)

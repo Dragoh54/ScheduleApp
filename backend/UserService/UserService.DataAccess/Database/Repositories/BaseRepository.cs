@@ -16,7 +16,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         _dbSet = _dbContext.Set<T>();
     }
     
-    public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken)
+    public virtual async Task<IEnumerable<T>> Get(CancellationToken cancellationToken)
     {
         var entities = await _dbSet
             .AsNoTracking()
@@ -27,7 +27,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return entities;
     }
 
-    public async Task<T?> Get(Guid id, CancellationToken cancellationToken)
+    public virtual async Task<T?> Get(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _dbSet
             .AsNoTracking()
@@ -38,7 +38,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return entity;
     }
 
-    public async Task<T> Add(T item, CancellationToken cancellationToken)
+    public virtual async Task<T> Add(T item, CancellationToken cancellationToken)
     {
         var result = await _dbSet.AddAsync(item, cancellationToken);
         
@@ -47,7 +47,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return result.Entity;
     }
 
-    public async Task<T?> Update(T item, CancellationToken cancellationToken)
+    public virtual async Task<T?> Update(T item, CancellationToken cancellationToken)
     {
         _dbSet.Update(item);
         cancellationToken.ThrowIfCancellationRequested();
@@ -55,7 +55,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return item;
     }
 
-    public async Task<bool> Delete(T item, CancellationToken cancellationToken)
+    public virtual async Task<bool> Delete(T item, CancellationToken cancellationToken)
     {
         _dbSet.Remove(item);
         cancellationToken.ThrowIfCancellationRequested();
@@ -63,7 +63,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return true;
     }
     
-    public async Task SaveAsync(CancellationToken cancellationToken)
+    public virtual async Task SaveAsync(CancellationToken cancellationToken)
     {
         await _dbContext.SaveChangesAsync(cancellationToken);
         

@@ -23,6 +23,7 @@ public class UserController(
     public async Task<IResult> GetUsers([FromQuery] PaginatedPageUsers query, CancellationToken cancellationToken)
     {
         var resultUsers = await service.GetUsers(query, cancellationToken);
+        
         return Results.Ok(resultUsers);
     }
     
@@ -33,6 +34,7 @@ public class UserController(
     public async Task<IResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var resultUsers = await service.GetUserById(id, cancellationToken);
+        
         return Results.Ok(resultUsers);
     }
     
@@ -55,18 +57,20 @@ public class UserController(
     public async Task<IResult> UpdateUser([FromRoute] Guid id, UpdateUserDto user, CancellationToken cancellationToken)
     {
         var resultUser = await service.UpdateUser(id, user, cancellationToken);
+        
         return Results.Ok(resultUser);
     }
 
     /// <summary>
     /// Soft delete user account
     /// </summary>
-    [HttpDelete]
+    [HttpDelete("me")]
     [Authorize]
     public async Task<IResult> SoftDeleteUser(CancellationToken cancellationToken)
     {
         var accessToken = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", string.Empty);
         var deletedUser = await service.SoftDelete(accessToken, cancellationToken);
+        
         return Results.Ok(deletedUser);
     }
     
@@ -106,6 +110,7 @@ public class UserController(
     {
         var dto = new AddRoleDto{Role = role, UserId = id};
         var resultUser = await service.AddRole(dto, cancellationToken);
+        
         return Results.Ok(resultUser);
     }
 }

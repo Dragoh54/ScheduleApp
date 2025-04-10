@@ -12,7 +12,22 @@ public class EmailService(
     ) : IEmailService
 {
     private readonly EmailSettings _settings = settings.Value;
+    
     public async Task SendEmailAsync(string mailTo, string subject, string message, CancellationToken cancellationToken)
+    {
+        var emailMessage = BuildMimeMessage(mailTo, subject, message);
+             
+        using (var client = new SmtpClient())
+        {
+            await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.EnableSsl, cancellationToken);
+            await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword, cancellationToken);
+            await client.SendAsync(emailMessage, cancellationToken);
+            
+            await client.DisconnectAsync(true, cancellationToken);
+        }
+    }
+
+    private MimeMessage BuildMimeMessage(string mailTo, string subject, string message)
     {
         var emailMessage = new MimeMessage();
  
@@ -23,14 +38,7 @@ public class EmailService(
         {
             Text = message
         };
-             
-        using (var client = new SmtpClient())
-        {
-            await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.EnableSsl, cancellationToken);
-            await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword, cancellationToken);
-            await client.SendAsync(emailMessage, cancellationToken);
-            
-            await client.DisconnectAsync(true, cancellationToken);
-        }
+        
+        return emailMessage;
     }
 }

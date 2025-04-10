@@ -25,12 +25,12 @@ public sealed class UnitOfWork(
 
     private void Dispose(bool disposing)
     {
-        if (!this._disposed && disposing)
+        if (!_disposed && disposing)
         {
             dbContext.Dispose();
         }
 
-        this._disposed = true;
+        _disposed = true;
     }
 
     public void Dispose()

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.Application.Dto.EmailDtos;
 using UserService.Application.Dto.UserDtos;
+using UserService.Application.Handlers.Email;
 using UserService.Application.Interfaces.Auth;
 using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
@@ -53,9 +54,9 @@ public class AuthenticationService(
         var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken)
             ?? throw new NotFoundException("Cannot found user with this email");
 
-        var result = passwordHasher.Verify(loginUserDto.Password, userByEmail.PasswordHash, cancellationToken);
+        var isVerified = passwordHasher.Verify(loginUserDto.Password, userByEmail.PasswordHash, cancellationToken);
 
-        if (!result)
+        if (!isVerified)
         {
             throw new BadRequestException("Failed to login");
         }
@@ -64,6 +65,7 @@ public class AuthenticationService(
         var refreshToken = await tokenService.GenerateRefreshToken(userByEmail, cancellationToken);
         
         userByEmail.LastLoginAt = DateTime.UtcNow;
+        
         await unitOfWork.UserRepository.Update(userByEmail, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         
@@ -116,12 +118,7 @@ public class AuthenticationService(
             emailService.SendEmailAsync(
                 email, 
                 "No-reply",
-                $"""
-                 <h1>Email confirmation</h1>
-                 <p>Go thought this link to confirm:</p>
-                 <a href="{link}">Confirm!</a>
-                 <p>This link active only 24 hours.</p>
-                 """,
+                EmailTemplates.ConfirmEmailBody(link),
                 cancellationToken));
 
         return confirmToken;
@@ -143,6 +140,7 @@ public class AuthenticationService(
     
         await unitOfWork.UserRepository.Update(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return "Email successfully confirmed!";
@@ -162,23 +160,18 @@ public class AuthenticationService(
             throw new NotFoundException("User not found");
         }
         
-        var resetPass = await tokenService.GenerateEmailToken(user, TokenTypes.ResetPassword, cancellationToken);
-        var link = GenerateEmailTokenLink(callbackUrl, email, resetPass);
+        var emailToken = await tokenService.GenerateEmailToken(user, TokenTypes.ResetPassword, cancellationToken);
+        var link = GenerateEmailTokenLink(callbackUrl, email, emailToken);
 
         BackgroundJob.Enqueue(() =>
             emailService.SendEmailAsync(
                 email,
                 "Reset password",
-                $"""
-                 <h1>Reset password</h1>
-                 <p>Go thought this link to reset:</p>
-                 <a href="{link}">Reset!</a>
-                 <p>This link active only 24 hours.</p>
-                 """,
+                EmailTemplates.ResetPasswordEmailBody(link),
                 cancellationToken)
         );
 
-        return resetPass;
+        return emailToken;
     }
     
     public async Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
@@ -194,10 +187,12 @@ public class AuthenticationService(
              ?? throw new NotFoundException("User not found");
         
         user.PasswordHash = passwordHasher.Generate(resetPasswordDto.Password, cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
     
         await unitOfWork.UserRepository.Update(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return $"Password successfully reset!\n Password: {resetPasswordDto.Password}";
@@ -235,21 +230,16 @@ public class AuthenticationService(
             throw new BadRequestException("To recover account you must activated it in past time.");
         }
         
-        var resetPass = await tokenService.GenerateEmailToken(user, TokenTypes.RecoverAccount, cancellationToken);
-        var link = GenerateEmailTokenLink(callbackUrl, email, resetPass);
+        var emailToken = await tokenService.GenerateEmailToken(user, TokenTypes.RecoverAccount, cancellationToken);
+        var link = GenerateEmailTokenLink(callbackUrl, email, emailToken);
         
         await emailService.SendEmailAsync(
             email, 
             "Recover account",
-            $"""
-             <h1>Recover account</h1>
-             <p>Go thought this link to recover:</p>
-             <a href="{link}">Reset!</a>
-             <p>This link active only 1 hour.</p>
-             """, 
+            EmailTemplates.RecoverEmailBody(link), 
             cancellationToken);
 
-        return resetPass;
+        return emailToken;
     }
 
     public async Task<string> RestoreAccountAsync(EmailTokenDto emailTokenDto, CancellationToken cancellationToken)
@@ -268,6 +258,7 @@ public class AuthenticationService(
     
         await unitOfWork.UserRepository.Update(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return "Account successfully recovered!";
@@ -288,9 +279,9 @@ public class AuthenticationService(
         return uriBuilder.ToString();
     }
 
-    private void CheckTokens(string token, string encodedToke)
+    private void CheckTokens(string token, string encodedToken)
     {
-        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToke));
+        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
         if (token != decodedTokenFromDto)
         {
             throw new BadRequestException("Invalid token");

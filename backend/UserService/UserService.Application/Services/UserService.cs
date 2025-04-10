@@ -17,7 +17,7 @@ public class UserService(
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
         var candidate = await unitOfWork.UserRepository.Get(id, cancellationToken)
-            ?? throw new AlreadyExistsException("User with this id doesn't exist!");
+            ?? throw new NotFoundException("User with this id doesn't exist!");
         
         return candidate.Adapt<UserDto>();
     }
@@ -101,7 +101,7 @@ public class UserService(
         var idFromToken = await tokenService.GetIdFromToken(token, cancellationToken);
         
         var candidate = await unitOfWork.UserRepository.Get(Guid.Parse(idFromToken), cancellationToken)
-                        ?? throw new AlreadyExistsException("User with this id doesn't exist!");
+                        ?? throw new NotFoundException("User with this id doesn't exist!");
         
         candidate.IsDeleted = true;
         candidate.DeletedAt = DateTime.UtcNow;

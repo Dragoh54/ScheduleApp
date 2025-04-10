@@ -9,19 +9,20 @@ public class RoleRepository(
     UserServiceDbContext dbContext
     ) : BaseRepository<RoleEntity>(dbContext), IRoleRepository
 {
-    public async Task<IEnumerable<RoleEntity>?> Get(CancellationToken cancellationToken)
+    public override async Task<IEnumerable<RoleEntity>?> Get(CancellationToken cancellationToken)
     {
         var roles = await _dbContext.Roles
             .Include(r => r.UserRoles)
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         return roles;
     }
 
-    public new async Task<RoleEntity?> Get(Guid id, CancellationToken cancellationToken)
+    public override async Task<RoleEntity?> Get(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Roles
             .Include(r => r.UserRoles) 

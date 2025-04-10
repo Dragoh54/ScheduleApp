@@ -2,7 +2,7 @@ using UserService.DataAccess.Enums;
 
 namespace UserService.DataAccess.Models;
 
-public class TokenModel : IdEntity
+public class TokenEntity : IdEntity
 {
     public Guid UserId { get; set; }
     public UserEntity User { get; set; }
@@ -13,9 +13,9 @@ public class TokenModel : IdEntity
     public DateTime ExpiresAt { get; set; }
     public bool IsUsed { get; set; } = false;
     
-    public TokenModel() {}
+    public TokenEntity() {}
 
-    public TokenModel(Guid id, string token, TokenTypes tokenType,  Guid userId, DateTime createdAt, DateTime expiresAt)
+    public TokenEntity(Guid id, string token, TokenTypes tokenType,  Guid userId, DateTime createdAt, DateTime expiresAt)
     {
         Id = id;
         Token = token;

@@ -33,6 +33,7 @@ public class PasswordResetController(
     public async Task<IResult> OnResetPassword([FromQuery] EmailTokenDto resetPasswordRequest, CancellationToken cancellationToken)
     {
         var success = await authService.ValidateResetPasswordAsync(resetPasswordRequest, cancellationToken);
+        
         return Results.Ok(success);
     }
     

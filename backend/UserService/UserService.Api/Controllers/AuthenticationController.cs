@@ -8,8 +8,8 @@ using IAuthenticationService = UserService.Application.Interfaces.Services.IAuth
 namespace UserService.Api.Controllers;
 
 [ApiController]
-[Route("sessions")]
-public class SessionController(
+[Route("auth")]
+public class AuthenticationController(
     IAuthenticationService authService, 
     IOptions<JwtOptions> jwtOptions
     ) : Controller

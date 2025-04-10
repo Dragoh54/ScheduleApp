@@ -68,6 +68,25 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         
         return principal;
     }
+    
+    public async Task<string> GetClaimFromToken(string token, string claimType, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            throw new ArgumentException("Token cannot be empty", nameof(token));
+
+        if (string.IsNullOrWhiteSpace(claimType))
+            throw new ArgumentException("Claim type cannot be empty", nameof(claimType));
+
+        var principal = ValidateToken(token)
+                        ?? throw new BadRequestException("Invalid or expired token");
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var claim = principal.FindFirst(claimType)
+                    ?? throw new BadRequestException($"Claim '{claimType}' not found in token");
+        
+       return claim.Value;
+    }
 
     public DateTime GetExpirationDate(TokenTypes tokenTypesType)
     {
@@ -95,9 +114,9 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         };
     }
     
-    public TokenModel GenerateTokenModel(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
+    public TokenEntity GenerateTokenModel(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
     {
-        var result = new TokenModel()
+        var result = new TokenEntity()
         {
             Id = Guid.NewGuid(),
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
@@ -111,4 +130,6 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         
         return result;
     }
+    
+    public string GenerateRefreshTokenString() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 }

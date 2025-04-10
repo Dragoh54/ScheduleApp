@@ -23,26 +23,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IEmailService, EmailService>(); 
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<ICacheService, CacheService>();
-    }
-    
-    public static void AddValidation(this IServiceCollection services)
-    {
-        services.AddControllersWithViews(options =>
-        {
-            options.Filters.Add<ValidationFilter>();
-        });
-        
-        services.AddScoped<IValidator<LoginUserDto>, LoginUserValidator>();
-        services.AddScoped<IValidator<RegisterDto>, RegisterUserValidator>();
-        services.AddScoped<IValidator<UpdateUserDto>, UpdateUserValidator>();
-        services.AddScoped<IValidator<UserDto>, UserDtoValidator>();
-        
-        services.AddScoped<IValidator<EmailTokenDto>, EmailTokenValidator>();
-        services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordValidator>();
-        
-        services.AddScoped<IValidator<AddRoleDto>, AddRoleValidator>();
-        services.AddScoped<IValidator<RoleDto>, RoleDtoValidator>();
+        services.AddScoped<IEmailCacheService, EmailCacheService>();
     }
     
     public static void AddJwt(this IServiceCollection services)
