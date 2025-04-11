@@ -8,9 +8,9 @@ namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.Dele
 
 public class DeleteTemplateHandler(
     IUnitOfWork unitOfWork
-) : IRequestHandler<DeleteTemplateCommand, AvailabilityTemplateDto>
+) : IRequestHandler<DeleteTemplateCommand, bool>
 {
-    public async Task<AvailabilityTemplateDto> Handle(DeleteTemplateCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(DeleteTemplateCommand request, CancellationToken cancellationToken)
     {
         await unitOfWork.AvailabilityTemplates.DeleteAsync(request.Id, cancellationToken);
         var success = await unitOfWork.Commit(cancellationToken);
@@ -20,6 +20,6 @@ public class DeleteTemplateHandler(
             throw new BadRequestException("Failed to delete template to database");
         }
         
-        return request.Adapt<AvailabilityTemplateDto>();
+        return success;
     }
 }

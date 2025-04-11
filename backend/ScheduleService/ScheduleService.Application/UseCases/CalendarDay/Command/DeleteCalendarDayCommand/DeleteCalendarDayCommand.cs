@@ -5,5 +5,5 @@ namespace ScheduleService.Application.UseCases.CalendarDay.Command.DeleteCalenda
 
 public class DeleteCalendarDayCommand : IRequest<CalendarDayDto>
 {
-    
+    public Guid Id { get; set; }
 }

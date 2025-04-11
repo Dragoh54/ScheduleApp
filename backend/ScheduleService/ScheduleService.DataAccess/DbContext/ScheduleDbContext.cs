@@ -12,9 +12,9 @@ namespace ScheduleService.DataAccess.DbContext;
 public class ScheduleDbContext : IScheduleDbContext
 {
     private IMongoDatabase Database { get; set; }
-    private MongoClient MongoClient { get; set; }
-    private MongoDbSettings MongoDbSettings { get; set; }
-    private MongoCollectionSettings MongoCollectionSettings { get; set; }
+    private IMongoClient MongoClient { get; set; }
+    //private MongoDbSettings MongoDbSettings { get; set; }
+    //private MongoCollectionSettings MongoCollectionSettings { get; set; }
     
     public IClientSessionHandle Session { get; set; }
     
@@ -22,16 +22,16 @@ public class ScheduleDbContext : IScheduleDbContext
 
     public ScheduleDbContext(IServiceProvider services)
     {
-        MongoDbSettings = services.GetRequiredService<MongoDbSettings>();
-        MongoCollectionSettings = services.GetRequiredService<MongoCollectionSettings>();
+        // MongoDbSettings = services.GetRequiredService<MongoDbSettings>();
+        // MongoCollectionSettings = services.GetRequiredService<MongoCollectionSettings>();
         
         Database =  services.GetService<IMongoDatabase>()
                     ?? throw new NullReferenceException("Database");
         
-        MongoClient = services.GetService<MongoClient>()
+        MongoClient = services.GetService<IMongoClient>()
             ?? throw new NullReferenceException("MongoClient");
         
-        ConfigureIndexes();
+        //ConfigureIndexes();
     }
 
     public async Task<int> SaveChanges(CancellationToken cancellationToken)
@@ -66,12 +66,12 @@ public class ScheduleDbContext : IScheduleDbContext
         _commands.Add(func);
     }
 
-    private void ConfigureIndexes()
-    {
-        AvailabilityTemplateConfiguration.ConfigureIndexes(
-            Database.GetCollection<AvailabilityTemplate>(MongoCollectionSettings.AvailabilityTemplates));
-        
-        CalendarDayConfiguration.ConfigureIndexes(
-            Database.GetCollection<CalendarDay>(MongoCollectionSettings.CalendarDays));
-    }
+    // private void ConfigureIndexes()
+    // {
+    //     AvailabilityTemplateConfiguration.ConfigureIndexes(
+    //         Database.GetCollection<AvailabilityTemplate>(MongoCollectionSettings.AvailabilityTemplates));
+    //     
+    //     CalendarDayConfiguration.ConfigureIndexes(
+    //         Database.GetCollection<CalendarDay>(MongoCollectionSettings.CalendarDays));
+    // }
 }

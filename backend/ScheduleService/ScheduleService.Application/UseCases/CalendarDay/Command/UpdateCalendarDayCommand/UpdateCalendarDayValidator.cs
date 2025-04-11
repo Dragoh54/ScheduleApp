@@ -1,6 +1,8 @@
-﻿namespace ScheduleService.Application.UseCases.CalendarDay.Command.UpdateCalendarDayCommand;
+﻿using FluentValidation;
 
-public class UpdateCalendarDayValidator
+namespace ScheduleService.Application.UseCases.CalendarDay.Command.UpdateCalendarDayCommand;
+
+public class UpdateCalendarDayValidator : AbstractValidator<UpdateCalendarDayCommand>
 {
     //TODO: ADD VALIDATORS
 }

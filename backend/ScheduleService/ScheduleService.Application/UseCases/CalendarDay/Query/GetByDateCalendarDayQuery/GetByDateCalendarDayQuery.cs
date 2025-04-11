@@ -5,5 +5,6 @@ namespace ScheduleService.Application.UseCases.CalendarDay.Query.GetByDateCalend
 
 public class GetByDateCalendarDayQuery : IRequest<CalendarDayDto>
 {
-    
+    public Guid UserId { get; set; }
+    public DateOnly Date { get; set; }
 }

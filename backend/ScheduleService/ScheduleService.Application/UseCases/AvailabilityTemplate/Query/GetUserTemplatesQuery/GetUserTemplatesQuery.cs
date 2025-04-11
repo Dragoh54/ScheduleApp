@@ -5,5 +5,5 @@ namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Query.GetUse
 
 public class GetUserTemplatesQuery : IRequest<IEnumerable<AvailabilityTemplateDto>>
 {
-    
+    public Guid UserId { get; set; }
 }

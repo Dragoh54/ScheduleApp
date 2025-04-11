@@ -1,6 +1,8 @@
-﻿namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.SetToDefaultCommand;
+﻿using FluentValidation;
 
-public class SetToDefaultValidator
+namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.SetToDefaultCommand;
+
+public class SetToDefaultValidator : AbstractValidator<SetToDefaultCommand>
 {
     //TODO: ADD VALIDATORS
 }

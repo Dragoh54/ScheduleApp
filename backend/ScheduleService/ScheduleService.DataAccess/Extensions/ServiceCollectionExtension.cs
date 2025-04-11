@@ -24,29 +24,32 @@ public static class ServiceCollectionExtension
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
     }
     
-    public static void AddRepositories(this IServiceCollection services)
+    public static void AddRepositories(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IAvailabilityTemplateRepository>(options => 
         {
             var dbContext = options.GetRequiredService<IScheduleDbContext>();
-            var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
-            return new AvailabilityTemplateRepository(dbContext, settings.AvailabilityTemplates);
+            // var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
+            // return new AvailabilityTemplateRepository(dbContext, settings.AvailabilityTemplates);
+            return new AvailabilityTemplateRepository(dbContext, configuration.GetSection("MongoCollections:AvailabilityTemplates").Value!);
         });
         
         services.AddScoped<ICalendarDayRepository>(options => 
         {
             var dbContext = options.GetRequiredService<IScheduleDbContext>();
-            var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
-            return new CalendarDayRepository(dbContext, settings.CalendarDays);
+            //var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
+            //return new CalendarDayRepository(dbContext, settings.CalendarDays);
+            return new CalendarDayRepository(dbContext, configuration.GetSection("MongoCollections:CalendarDays").Value!);
         });
     }
     
-    public static void AddDatabase(this IServiceCollection services)
+    public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IMongoClient>(options => 
         {
-            var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-            return new MongoClient(settings.MongoConnectionString);
+            //var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            //return new MongoClient(settings.MongoConnectionString);
+            return new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!);
         });
 
         // services.AddSingleton<IMongoClient>(options => 
@@ -57,9 +60,9 @@ public static class ServiceCollectionExtension
         
         services.AddScoped<IMongoDatabase>(options => 
         {
-            var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            //var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
             var client = options.GetRequiredService<IMongoClient>();
-            return client.GetDatabase(settings.MongoDatabaseName);
+            return client.GetDatabase(configuration.GetSection("MongoDbSettings:MongoDatabaseName").Value!);
         });
     }
 }

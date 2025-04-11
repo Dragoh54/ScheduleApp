@@ -25,7 +25,7 @@ public interface IBaseRepository<T> where T : IEntity
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="cancellationToken"></param>
-    public Task AddAsync(T entity, CancellationToken cancellationToken);
+    public Task<T?> AddAsync(T entity, CancellationToken cancellationToken);
     
     /// <summary>
     /// update entity

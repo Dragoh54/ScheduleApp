@@ -22,9 +22,10 @@ public abstract class BaseRepository<T>(IScheduleDbContext dbContext, string col
         return await Collection.Find(new BsonDocument()).ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+    public async Task<T?> AddAsync(T entity, CancellationToken cancellationToken = default)
     {
         DbContext.AddCommand(() => Collection.InsertOneAsync(entity, null, cancellationToken));
+        return entity;
     }
 
     public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)

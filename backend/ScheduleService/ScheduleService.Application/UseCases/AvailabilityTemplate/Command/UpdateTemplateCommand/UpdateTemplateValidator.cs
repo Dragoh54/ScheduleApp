@@ -1,6 +1,8 @@
-﻿namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.UpdateTemplateCommand;
+﻿using FluentValidation;
 
-public class UpdateTemplateValidator
+namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.UpdateTemplateCommand;
+
+public class UpdateTemplateValidator : AbstractValidator<UpdateTemplateCommand>
 {
     //TODO: ADD VALIDATORS
 }

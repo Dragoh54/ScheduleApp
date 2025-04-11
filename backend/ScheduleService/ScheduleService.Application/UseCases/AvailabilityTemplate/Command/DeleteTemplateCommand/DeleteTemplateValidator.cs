@@ -1,6 +1,8 @@
-﻿namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;
+﻿using FluentValidation;
 
-public class DeleteTemplateValidator
+namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;
+
+public class DeleteTemplateValidator : AbstractValidator<DeleteTemplateCommand>
 {
     //TODO: ADD VALIDATORS
 }

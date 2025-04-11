@@ -27,10 +27,10 @@ public class Startup(
             
         MongoDbPersistence.Configure();
         
-        services.AddDatabase();
+        services.AddDatabase(Configuration);
         services.AddDbContext();
         services.AddUnitOfWork();
-        services.AddRepositories();
+        services.AddRepositories(Configuration);
 
         services.AddMediatRServices();
         
