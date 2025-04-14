@@ -1,4 +1,5 @@
-﻿using ScheduleService.Application.Extensions;
+﻿using ScheduleService.Api.Filtres;
+using ScheduleService.Application.Extensions;
 using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;
 using ScheduleService.DataAccess.Persistence;
@@ -37,7 +38,10 @@ public class Startup(
         GeneralConfig.RegisterMappers();
         
         services.AddControllers();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(options =>
+        {
+            options.SchemaFilter<DayOfWeekDictionaryFilter>();
+        });
         
         //services.AddSwaggerGenAuthenticationExtension();
     }

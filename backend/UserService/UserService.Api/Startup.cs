@@ -73,9 +73,9 @@ public class Startup(
         {
             app.UseSwagger();
             app.UseSwaggerUI();
+            app.UseHangfireDashboard();
         }
         
-        app.UseHangfireDashboard();
         app.UseHangfireServer();
         
         app.UseCookiePolicy(new CookiePolicyOptions

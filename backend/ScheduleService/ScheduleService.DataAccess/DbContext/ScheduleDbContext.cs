@@ -13,17 +13,13 @@ public class ScheduleDbContext : IScheduleDbContext
 {
     private IMongoDatabase Database { get; set; }
     private IMongoClient MongoClient { get; set; }
-    //private MongoDbSettings MongoDbSettings { get; set; }
-    //private MongoCollectionSettings MongoCollectionSettings { get; set; }
     
     public IClientSessionHandle Session { get; set; }
     
     private readonly List<Func<Task>> _commands = new List<Func<Task>>();
 
     public ScheduleDbContext(IServiceProvider services)
-    {
-        // MongoDbSettings = services.GetRequiredService<MongoDbSettings>();
-        // MongoCollectionSettings = services.GetRequiredService<MongoCollectionSettings>();
+    { 
         
         Database =  services.GetService<IMongoDatabase>()
                     ?? throw new NullReferenceException("Database");

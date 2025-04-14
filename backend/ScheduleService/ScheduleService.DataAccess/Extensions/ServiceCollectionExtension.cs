@@ -29,17 +29,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IAvailabilityTemplateRepository>(options => 
         {
             var dbContext = options.GetRequiredService<IScheduleDbContext>();
-            // var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
-            // return new AvailabilityTemplateRepository(dbContext, settings.AvailabilityTemplates);
             return new AvailabilityTemplateRepository(dbContext, configuration.GetSection("MongoCollections:AvailabilityTemplates").Value!);
-        });
-        
-        services.AddScoped<ICalendarDayRepository>(options => 
-        {
-            var dbContext = options.GetRequiredService<IScheduleDbContext>();
-            //var settings = options.GetRequiredService<IOptions<MongoCollectionSettings>>().Value;
-            //return new CalendarDayRepository(dbContext, settings.CalendarDays);
-            return new CalendarDayRepository(dbContext, configuration.GetSection("MongoCollections:CalendarDays").Value!);
         });
     }
     
@@ -47,11 +37,10 @@ public static class ServiceCollectionExtension
     {
         services.AddSingleton<IMongoClient>(options => 
         {
-            //var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-            //return new MongoClient(settings.MongoConnectionString);
             return new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!);
         });
 
+        //TODO: REPLICA FOR FUTURE
         // services.AddSingleton<IMongoClient>(options => 
         // {
         //     var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
@@ -60,7 +49,6 @@ public static class ServiceCollectionExtension
         
         services.AddScoped<IMongoDatabase>(options => 
         {
-            //var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
             var client = options.GetRequiredService<IMongoClient>();
             return client.GetDatabase(configuration.GetSection("MongoDbSettings:MongoDatabaseName").Value!);
         });

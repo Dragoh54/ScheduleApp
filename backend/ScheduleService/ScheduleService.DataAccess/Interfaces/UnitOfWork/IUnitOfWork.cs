@@ -6,6 +6,5 @@ namespace ScheduleService.DataAccess.Interfaces.UnitOfWork;
 public interface IUnitOfWork : IDisposable
 {
     IAvailabilityTemplateRepository AvailabilityTemplates { get; }
-    ICalendarDayRepository CalendarDays { get; }
     Task<bool> Commit(CancellationToken cancellationToken);
 }

@@ -9,12 +9,10 @@ namespace ScheduleService.DataAccess.UnitOfWork;
 
 public class UnitOfWork(
     IScheduleDbContext context,
-    IAvailabilityTemplateRepository availabilityTemplateRepository,
-    ICalendarDayRepository calendarDayRepository
+    IAvailabilityTemplateRepository availabilityTemplateRepository
     ) : IUnitOfWork
 {
     public IAvailabilityTemplateRepository AvailabilityTemplates { get; } = availabilityTemplateRepository;
-    public ICalendarDayRepository CalendarDays { get; } = calendarDayRepository;
 
     public async Task<bool> Commit(CancellationToken cancellationToken)
     {

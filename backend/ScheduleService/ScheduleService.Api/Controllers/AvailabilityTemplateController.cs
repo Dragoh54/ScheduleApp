@@ -12,7 +12,7 @@ public class AvailabilityTemplateController(
 {
 
     [HttpPost]
-    public async Task<IResult> AddAvailabilityTemplate([FromForm] AddTemplateCommand template, CancellationToken cancellationToken)
+    public async Task<IResult> AddAvailabilityTemplate([FromBody] AddTemplateCommand template, CancellationToken cancellationToken)
     {
         var newTemplate = await mediator.Send(template, cancellationToken);
         return Results.Ok(newTemplate);
