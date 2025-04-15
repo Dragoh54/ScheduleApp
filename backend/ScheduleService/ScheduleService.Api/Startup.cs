@@ -24,7 +24,6 @@ public class Startup(
         services.AddControllersWithViews();
         
         services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
-        services.Configure<MongoCollectionSettings>(Configuration.GetSection(nameof(MongoCollectionSettings)));
             
         MongoDbPersistence.Configure();
         

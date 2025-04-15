@@ -5,6 +5,7 @@ namespace ScheduleService.DataAccess.Interfaces.DbContext;
 public interface IScheduleDbContext : IDisposable
 {
     public IClientSessionHandle Session { get; set; }
+    Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken);
     void AddCommand(Func<Task> func);
     Task<int> SaveChanges(CancellationToken cancellationToken);
     IMongoCollection<T> GetCollection<T>(string name);

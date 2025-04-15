@@ -8,7 +8,6 @@ using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DataAccess.Repositories;
 using ScheduleService.DataAccess.Settings;
-using MongoCollectionSettings = ScheduleService.DataAccess.Settings.MongoCollectionSettings;
 
 namespace ScheduleService.DataAccess.Extensions;
 
@@ -29,7 +28,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IAvailabilityTemplateRepository>(options => 
         {
             var dbContext = options.GetRequiredService<IScheduleDbContext>();
-            return new AvailabilityTemplateRepository(dbContext, configuration.GetSection("MongoCollections:AvailabilityTemplates").Value!);
+            return new AvailabilityTemplateRepository(dbContext);
         });
     }
     

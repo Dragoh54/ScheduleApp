@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using ScheduleService.DataAccess.Indexes;
 using ScheduleService.DataAccess.Interfaces.DbContext;
+using ScheduleService.DataAccess.Repositories;
 using ScheduleService.DataAccess.Settings;
 using ScheduleService.DomainModel.Models;
-using MongoCollectionSettings = ScheduleService.DataAccess.Settings.MongoCollectionSettings;
 
 namespace ScheduleService.DataAccess.DbContext;
 
@@ -27,7 +27,7 @@ public class ScheduleDbContext : IScheduleDbContext
         MongoClient = services.GetService<IMongoClient>()
             ?? throw new NullReferenceException("MongoClient");
         
-        //ConfigureIndexes();
+        ConfigureIndexes();
     }
 
     public async Task<int> SaveChanges(CancellationToken cancellationToken)
@@ -50,11 +50,24 @@ public class ScheduleDbContext : IScheduleDbContext
     {
         return Database.GetCollection<T>(name);
     }
+    
+    private void DisposeSession()
+    {
+        if (Session is not { } session) return;
+        session.Dispose();
+        Session = null;
+    }
 
     public void Dispose()
     {
-        Session?.Dispose();
+        DisposeSession();
         GC.SuppressFinalize(this);
+    }
+
+    public async Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken)
+    {
+        Session = await MongoClient.StartSessionAsync(cancellationToken: cancellationToken);
+        return Session;
     }
 
     public void AddCommand(Func<Task> func)
@@ -62,12 +75,10 @@ public class ScheduleDbContext : IScheduleDbContext
         _commands.Add(func);
     }
 
-    // private void ConfigureIndexes()
-    // {
-    //     AvailabilityTemplateConfiguration.ConfigureIndexes(
-    //         Database.GetCollection<AvailabilityTemplate>(MongoCollectionSettings.AvailabilityTemplates));
-    //     
-    //     CalendarDayConfiguration.ConfigureIndexes(
-    //         Database.GetCollection<CalendarDay>(MongoCollectionSettings.CalendarDays));
-    // }
+    private void ConfigureIndexes()
+    {
+        //TODO: HIDE GET_COLLECTION_STRING
+        AvailabilityTemplateConfiguration.ConfigureIndexes(
+            Database.GetCollection<AvailabilityTemplate>("availability_templates"));
+    }
 }
