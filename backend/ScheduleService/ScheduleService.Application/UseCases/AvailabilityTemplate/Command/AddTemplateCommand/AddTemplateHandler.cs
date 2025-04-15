@@ -13,9 +13,8 @@ public class AddTemplateHandler(
     public async Task<AvailabilityTemplateDto> Handle(AddTemplateCommand request, CancellationToken cancellationToken)
     {
         var addedTemplate = await unitOfWork.AvailabilityTemplates.AddAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken);
-        var success = await unitOfWork.Commit(cancellationToken);
-        
-        if (!success)
+            
+        if (!await unitOfWork.Commit(cancellationToken))
         {
             throw new BadRequestException("Failed to add template to database");
         }

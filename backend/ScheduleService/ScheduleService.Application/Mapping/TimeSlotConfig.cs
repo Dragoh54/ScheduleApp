@@ -13,7 +13,7 @@ public class TimeSlotConfig
             .Map(dest => dest.EndTime, src => src.EndTime);
 
         TypeAdapterConfig<TimeSlotDto, TimeSlot>.NewConfig()
-            .Map(dest => dest.StartTime, src => src.StartTime.TimeOfDay)
-            .Map(dest => dest.EndTime, src => src.EndTime.TimeOfDay);
+            .Map(dest => dest.StartTime, src => src.StartTime)
+            .Map(dest => dest.EndTime, src => src.EndTime);
     }
 }

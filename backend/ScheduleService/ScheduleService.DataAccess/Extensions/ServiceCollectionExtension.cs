@@ -35,16 +35,7 @@ public static class ServiceCollectionExtension
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IMongoClient>(options => 
-        {
-            return new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!);
-        });
-
-        //TODO: REPLICA FOR FUTURE
-        // services.AddSingleton<IMongoClient>(options => 
-        // {
-        //     var settings = options.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-        //     return new MongoClient(settings.MongoReplicaConnectionString);
-        // });
+                new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!));
         
         services.AddScoped<IMongoDatabase>(options => 
         {

@@ -8,20 +8,29 @@ public class AddTemplateValidator : AbstractValidator<AddTemplateCommand>
 {
     public AddTemplateValidator()
     {
-        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
-        
+        RuleFor(x => x.UserId)
+            .NotEmpty().WithMessage("User ID is required");
+            
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Template name is required")
+            .MaximumLength(100).WithMessage("Name must be less than 100 characters");
+            
         RuleFor(x => x.Schedule)
-            .NotNull()
-            .Must(s => s != null && s.Keys.All(k => Enum.IsDefined(typeof(DayOfWeek), k)))
-            .WithMessage("Schedule contains invalid day of week");
+            .NotEmpty().WithMessage("At least one day must be specified");
             
+        // Валидация каждого дня в расписании
         RuleForEach(x => x.Schedule)
-            .Must(kvp => kvp.Value != null)
-            .OverridePropertyName("Schedule")
-            .WithMessage("Time slots cannot be null for day {CollectionIndex}");
-            
-        RuleForEach(x => x.Schedule.Values.SelectMany(v => v))
-            .SetValidator(new TimeSlotDtoValidator())
+            .Must((_, kvp) => kvp.Value != null && kvp.Value.Any())
+            .WithMessage("At least one time slot must be specified for each day")
             .OverridePropertyName("Schedule");
+            
+        // Валидация каждого временного слота
+        RuleForEach(x => x.Schedule)
+            .ChildRules(dayRules =>
+            {
+                dayRules.RuleForEach(day => day.Value)
+                    .SetValidator(new TimeSlotDtoValidator())
+                    .OverridePropertyName($"Schedule.{dayRules}");
+            });
     }
 }

@@ -114,9 +114,9 @@
       timeout: 5s
       retries: 5
       
-  mongodb:
+  mongo:
     image: mongo:latest
-    container_name: mongodb
+    container_name: mongo
     env_file:
       - .env
     environment:
@@ -125,26 +125,12 @@
     ports:
         - ${MONGO_PORTS}
     volumes:
-      - mongodb_data:/var/lib/mongodb/data
+      - mongo_data:/data/db
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 5s
+      test: [ "CMD", "mongosh", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_PASSWORD}", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
       timeout: 5s
       retries: 5
-  
-#  mongodb:
-#    image: mongo:latest
-#    container_name: mongodb
-#    command: mongod --replSet rs0 --bind_ip_all
-#    env_file:
-#      - .env
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-#      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-#    ports:
-#      - ${MONGO_PORTS}
-#    volumes:
-#      - mongodb_data:/var/lib/mongodb/data
   
   #---------------------- PG-ADMIN --------------------------
   pgadmin4:
@@ -167,12 +153,12 @@
     container_name: mongo-express
     env_file: .env
     depends_on:
-      mongodb:
+      mongo:
         condition: service_healthy
     ports:
       - "${MONGO_EXPRESS_PORT}"
     environment:
-      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/"
+      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_PASSWORD}@mongo:27017/"
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
       ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
   
@@ -250,7 +236,7 @@
     ports:
       - ${SCHEDULE_SERVICE_PORTS}
     depends_on:
-      - mongodb
+      - mongo
     #    healthcheck:
     #      test: [ "CMD", "curl", "-f", "http://localhost:${SCHEDULE_SERVICE_PORTS%:*}/health" ]
     #      interval: 30s
@@ -354,7 +340,7 @@ volumes:
   user_redis_data:
   schedule_redis_data:
   meeting_redis_data:
-  mongodb_data:
+  mongo_data:
   rabbitmq_data:
   elasticsearch_data:
   kibana_data:

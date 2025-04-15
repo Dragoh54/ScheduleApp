@@ -1,4 +1,6 @@
-﻿using ScheduleService.Api.Filtres;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using ScheduleService.Api.Filtres;
 using ScheduleService.Application.Extensions;
 using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;
@@ -26,6 +28,12 @@ public class Startup(
         services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
             
         MongoDbPersistence.Configure();
+
+        {
+            var client = new MongoClient(Configuration["MongoDbSettings:MongoConnectionString"]);
+            var db = client.GetDatabase(Configuration["MongoDbSettings:MongoDatabaseName"]);
+            Console.WriteLine(db.RunCommand<BsonDocument>(new BsonDocument("ping", 1)));
+        }
         
         services.AddDatabase(Configuration);
         services.AddDbContext();
