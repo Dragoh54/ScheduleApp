@@ -29,11 +29,11 @@ public class Startup(
             
         MongoDbPersistence.Configure();
 
-        {
-            var client = new MongoClient(Configuration["MongoDbSettings:MongoConnectionString"]);
-            var db = client.GetDatabase(Configuration["MongoDbSettings:MongoDatabaseName"]);
-            Console.WriteLine(db.RunCommand<BsonDocument>(new BsonDocument("ping", 1)));
-        }
+        // {
+        //     var client = new MongoClient(Configuration["MongoDbSettings:MongoConnectionString"]);
+        //     var db = client.GetDatabase(Configuration["MongoDbSettings:MongoDatabaseName"]);
+        //     Console.WriteLine(db.RunCommand<BsonDocument>(new BsonDocument("ping", 1)));
+        // }
         
         services.AddDatabase(Configuration);
         services.AddDbContext();
@@ -64,11 +64,14 @@ public class Startup(
         
         app.UseMiddleware<ExceptionHandlerMiddleware>();
         
-        if (env.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        
+        // if (env.IsDevelopment())
+        // {
+        //     app.UseSwagger();
+        //     app.UseSwaggerUI();
+        // }
         
         app.UseCookiePolicy(new CookiePolicyOptions
         {

@@ -114,23 +114,96 @@
       timeout: 5s
       retries: 5
       
-  mongo:
-    image: mongo:latest
-    container_name: mongo
+  #---------------------- MONGO-REPLICAS --------------------
+  mongo1:
+    build:
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo1
+    hostname: mongo1
+    restart: always
     env_file:
       - .env
+    volumes:
+      - mongo1_data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
-        - ${MONGO_PORTS}
-    volumes:
-      - mongo_data:/data/db
+      - ${MONGO_PORTS_1}
+    command: >
+      mongod --replSet rs0 --auth --keyFile /etc/mongo-keyfile --bind_ip_all
+    networks:
+      - mongo-cluster
     healthcheck:
       test: [ "CMD", "mongosh", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_PASSWORD}", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  mongo2:
+    build:
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo2
+    hostname: mongo2
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mongo2_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - ${MONGO_PORTS_2}
+    command: >
+      mongod --replSet rs0 --auth --keyFile /etc/mongo-keyfile --bind_ip_all
+    networks:
+      - mongo-cluster
+    healthcheck:
+      test: [ "CMD", "mongosh", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_PASSWORD}", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo3:
+    build:
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo3
+    hostname: mongo3
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mongo3_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - ${MONGO_PORTS_3}
+    command: >
+      mongod --replSet rs0 --auth --keyFile /etc/mongo-keyfile --bind_ip_all
+    networks:
+      - mongo-cluster
+    healthcheck:
+      test: [ "CMD", "mongosh", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_PASSWORD}", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-init:
+    build: 
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo-init
+    env_file:
+      - .env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    command: >
+      bash -c "/scripts/init-replica.sh"
+    networks:
+      - mongo-cluster
   
   #---------------------- PG-ADMIN --------------------------
   pgadmin4:
@@ -151,16 +224,21 @@
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
-    env_file: .env
+    env_file:
+      - .env
     depends_on:
-      mongo:
+      mongo1:
         condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
     ports:
       - "${MONGO_EXPRESS_PORT}"
     environment:
-      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_PASSWORD}@mongo:27017/"
+      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_PASSWORD}@mongo1:27017,mongo2:27017,mongo3:27017/admin?replicaSet=rs0"
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
       ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+    networks:
+      - mongo-cluster
   
   #---------------------- MESSAGE-BROKER --------------------
   rabbitmq:
@@ -236,7 +314,12 @@
     ports:
       - ${SCHEDULE_SERVICE_PORTS}
     depends_on:
-      - mongo
+      mongo1:
+        condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
+    networks:
+      - mongo-cluster
     #    healthcheck:
     #      test: [ "CMD", "curl", "-f", "http://localhost:${SCHEDULE_SERVICE_PORTS%:*}/health" ]
     #      interval: 30s
@@ -331,6 +414,8 @@
 networks:
   elk:
     driver: bridge
+  mongo-cluster:
+    driver: bridge
 
 #---------------------- VOLUMES -----------------------------
 volumes:
@@ -340,7 +425,9 @@ volumes:
   user_redis_data:
   schedule_redis_data:
   meeting_redis_data:
-  mongo_data:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
   rabbitmq_data:
   elasticsearch_data:
   kibana_data:
