@@ -8,5 +8,5 @@ public record AvailabilityTemplateDto
     public Guid UserId { get; set; }
     public string Name { get; set; } = string.Empty;
     public bool IsDefault { get; set; }
-    public List<DayOfWeekSchedule> Schedule { get; set; } = [];
+    public List<DayOfWeekScheduleDto> Schedule { get; set; } = [];
 }

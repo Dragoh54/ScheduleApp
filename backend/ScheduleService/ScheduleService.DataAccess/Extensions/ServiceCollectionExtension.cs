@@ -34,8 +34,11 @@ public static class ServiceCollectionExtension
     
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IMongoClient>(options => 
-                new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!));
+        //TODO: MOVE CONNECTION STRING
+        services.AddSingleton<IMongoClient>(options =>
+            new MongoClient(
+                "mongodb://admin:admin@localhost:27017/schedule_service_db?replicaSet=rs0&authSource=admin&directConnection=true"));
+                //new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!));
         
         services.AddScoped<IMongoDatabase>(options => 
         {

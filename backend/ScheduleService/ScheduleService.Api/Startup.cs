@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using ScheduleService.Api.Filtres;
 using ScheduleService.Application.Extensions;
@@ -28,12 +29,6 @@ public class Startup(
         services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
             
         MongoDbPersistence.Configure();
-
-        // {
-        //     var client = new MongoClient(Configuration["MongoDbSettings:MongoConnectionString"]);
-        //     var db = client.GetDatabase(Configuration["MongoDbSettings:MongoDatabaseName"]);
-        //     Console.WriteLine(db.RunCommand<BsonDocument>(new BsonDocument("ping", 1)));
-        // }
         
         services.AddDatabase(Configuration);
         services.AddDbContext();
@@ -47,7 +42,7 @@ public class Startup(
         services.AddControllers();
         services.AddSwaggerGen(options =>
         {
-            options.SchemaFilter<DayOfWeekDictionaryFilter>();
+            //options.SchemaFilter<DayOfWeekDictionaryFilter>();
         });
         
         //services.AddSwaggerGenAuthenticationExtension();
@@ -58,7 +53,7 @@ public class Startup(
         app.UseSwagger();
         app.UseSwaggerUI();
         
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
         

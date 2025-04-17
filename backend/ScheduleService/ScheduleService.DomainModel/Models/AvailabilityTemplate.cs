@@ -10,7 +10,7 @@ public class AvailabilityTemplate : IEntity
     
     public bool IsDefault { get; set; }
     
-    public Dictionary<DayOfWeek, List<TimeSlot>> Schedule { get; set; } = new();
+    public List<DayOfWeekSchedule> Schedule { get; set; } = [];
     
     
     public AvailabilityTemplate()
@@ -18,7 +18,7 @@ public class AvailabilityTemplate : IEntity
         
     }
 
-    public AvailabilityTemplate(Guid userId, string name, Dictionary<DayOfWeek, List<TimeSlot>> schedule)
+    public AvailabilityTemplate(Guid userId, string name, List<DayOfWeekSchedule> schedule)
     {
         UserId = userId;
         Name = name;
