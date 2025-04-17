@@ -14,13 +14,6 @@ public class GetUserTemplatesHandler(
     {
         var templates = await unitOfWork.AvailabilityTemplates.GetUserTemplatesAsync(request.UserId, cancellationToken)
             ?? throw new NotFoundException("User templates not found");
-        
-        // var success = await unitOfWork.Commit(cancellationToken);
-        //
-        // if (!success)
-        // {
-        //     throw new BadRequestException("Failed to get availability template");
-        // }
 
         return templates.Adapt<IEnumerable<AvailabilityTemplateDto>>();
     }

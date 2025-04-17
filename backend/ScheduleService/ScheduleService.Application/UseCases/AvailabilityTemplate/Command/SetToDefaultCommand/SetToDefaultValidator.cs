@@ -4,5 +4,12 @@ namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.SetT
 
 public class SetToDefaultValidator : AbstractValidator<SetToDefaultCommand>
 {
-    //TODO: ADD VALIDATORS
+    public SetToDefaultValidator()
+    {
+        RuleFor(x => x.TemplateId)
+            .NotEmpty().WithMessage("Template ID is required");
+
+        RuleFor(x => x.UserId)
+            .NotEmpty().WithMessage("User ID is required");
+    }
 }
