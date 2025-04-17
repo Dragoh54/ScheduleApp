@@ -13,8 +13,8 @@ public class DeleteTemplateHandler(
     public async Task<bool> Handle(DeleteTemplateCommand request, CancellationToken cancellationToken)
     {
         await unitOfWork.AvailabilityTemplates.DeleteAsync(request.Id, cancellationToken);
-        var success = await unitOfWork.Commit(cancellationToken);
         
+        var success = await unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to delete template to database");

@@ -1,9 +1,9 @@
 ﻿namespace ScheduleService.Application.Mapping;
 
-public class CalendarDayConfig
+public class MeetingConfig
 {
     public static void RegisterMappings()
     {
-        //TODO: ADD MAPPINGS
+        
     }
 }

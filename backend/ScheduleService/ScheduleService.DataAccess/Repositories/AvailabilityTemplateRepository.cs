@@ -28,20 +28,17 @@ public class AvailabilityTemplateRepository(
     
     public async Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken)
     {
-        using var session = await DbContext.StartSessionAsync(cancellationToken);
-        try
+        AvailabilityTemplate? updatedTemplate = null;
+
+        DbContext.AddCommand(async () =>
         {
-            session.StartTransaction();
-            
             await Collection.UpdateManyAsync(
-                session,
                 x => x.UserId == userId && x.IsDefault,
                 Builders<AvailabilityTemplate>.Update.Set(x => x.IsDefault, false),
                 cancellationToken: cancellationToken);
-
-            var result = await Collection.FindOneAndUpdateAsync(
-                session,
-                Builders<AvailabilityTemplate>.Filter.Eq(x => x.UserId, userId),
+            
+            updatedTemplate = await Collection.FindOneAndUpdateAsync(
+                Builders<AvailabilityTemplate>.Filter.Eq(x => x.Id, templateId),
                 Builders<AvailabilityTemplate>.Update.Set(x => x.IsDefault, true),
                 new FindOneAndUpdateOptions<AvailabilityTemplate>
                 {
@@ -49,14 +46,9 @@ public class AvailabilityTemplateRepository(
                 },
                 cancellationToken
             );
+        });
 
-            await session.CommitTransactionAsync(cancellationToken);
-            return result;
-        }
-        catch
-        {
-            await session.AbortTransactionAsync(cancellationToken);
-            throw;
-        }
+        return updatedTemplate;
     }
+
 }

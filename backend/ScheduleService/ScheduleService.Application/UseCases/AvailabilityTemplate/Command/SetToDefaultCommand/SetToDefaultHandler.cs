@@ -16,7 +16,6 @@ public class SetToDefaultHandler(
             ?? throw new NotFoundException("Default template not found");
         
         var success = await unitOfWork.Commit(cancellationToken);
-
         if (!success)
         {
             throw new BadRequestException("Failed to set to default availability template");

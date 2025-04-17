@@ -6,6 +6,6 @@ public class GeneralConfig
     {
         TimeSlotConfig.RegisterMappings();
         AvailabilityTemplateConfig.RegisterMappings();
-        CalendarDayConfig.RegisterMappings();
+        MeetingConfig.RegisterMappings();
     }
 }

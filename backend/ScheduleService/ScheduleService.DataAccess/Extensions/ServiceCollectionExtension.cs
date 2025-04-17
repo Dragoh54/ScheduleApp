@@ -30,6 +30,12 @@ public static class ServiceCollectionExtension
             var dbContext = options.GetRequiredService<IScheduleDbContext>();
             return new AvailabilityTemplateRepository(dbContext);
         });
+        
+        services.AddScoped<IMeetingRepository>(options => 
+        {
+            var dbContext = options.GetRequiredService<IScheduleDbContext>();
+            return new MeetingRepository(dbContext);
+        });
     }
     
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)

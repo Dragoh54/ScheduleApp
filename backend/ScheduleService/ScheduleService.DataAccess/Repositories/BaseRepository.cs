@@ -7,8 +7,10 @@ using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DomainModel.Intefaces;
 
 namespace ScheduleService.DataAccess.Repositories;
-public abstract class BaseRepository<T>(IScheduleDbContext dbContext, string collectionName) 
-    : IBaseRepository<T> where T : IEntity
+public abstract class BaseRepository<T>(
+    IScheduleDbContext dbContext, 
+    string collectionName
+    ) : IBaseRepository<T> where T : IEntity
 {
     protected readonly IMongoCollection<T> Collection = dbContext.GetCollection<T>(collectionName);
     protected readonly IScheduleDbContext DbContext = dbContext;

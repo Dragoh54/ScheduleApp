@@ -13,8 +13,8 @@ public class UpdateTemplateHandler(
     public async Task<AvailabilityTemplateDto> Handle(UpdateTemplateCommand request, CancellationToken cancellationToken)
     {
         await unitOfWork.AvailabilityTemplates.UpdateAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken);
+        
         var success = await unitOfWork.Commit(cancellationToken);
-
         if (!success)
         {
             throw new BadRequestException("Failed to update availability template");
