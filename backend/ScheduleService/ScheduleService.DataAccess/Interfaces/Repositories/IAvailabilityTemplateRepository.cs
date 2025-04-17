@@ -27,5 +27,6 @@ public interface IAvailabilityTemplateRepository : IBaseRepository<AvailabilityT
     /// <param name="templateId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken);
+    public Task SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken);
+    //ublic Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken);
 }

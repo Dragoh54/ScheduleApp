@@ -12,8 +12,10 @@ public class SetToDefaultHandler(
 {
     public async Task<AvailabilityTemplateDto> Handle(SetToDefaultCommand request, CancellationToken cancellationToken)
     {
-        var newDefaultTemplate = await unitOfWork.AvailabilityTemplates.SetDefaultTemplateAsync(request.UserId, request.TemplateId , cancellationToken)
-            ?? throw new NotFoundException("Default template not found");
+        //var updatedTemplate = await unitOfWork.AvailabilityTemplates.SetDefaultTemplateAsync(request.UserId, request.TemplateId , cancellationToken)
+        //     ?? throw new NotFoundException("Default template not found");
+
+        await unitOfWork.AvailabilityTemplates.SetDefaultTemplateAsync(request.UserId, request.TemplateId, cancellationToken);
         
         var success = await unitOfWork.Commit(cancellationToken);
         if (!success)
@@ -21,6 +23,8 @@ public class SetToDefaultHandler(
             throw new BadRequestException("Failed to set to default availability template");
         }
         
-        return newDefaultTemplate.Adapt<AvailabilityTemplateDto>();
+        var updatedTemplate = await unitOfWork.AvailabilityTemplates.GetByIdAsync(request.TemplateId, cancellationToken);
+        
+        return updatedTemplate.Adapt<AvailabilityTemplateDto>();
     }
 }

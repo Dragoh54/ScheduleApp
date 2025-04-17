@@ -5,6 +5,7 @@ namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.Upda
 
 public class UpdateTemplateCommand : IRequest<AvailabilityTemplateDto>
 {
+    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public  Dictionary<DayOfWeek, List<TimeSlotDto>> Schedule { get; set; } = new();
+    public List<DayOfWeekScheduleDto> Schedule { get; set; } = [];
 }

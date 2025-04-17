@@ -26,10 +26,8 @@ public class AvailabilityTemplateRepository(
         return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
     
-    public async Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken)
+    public async Task SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken)
     {
-        AvailabilityTemplate? updatedTemplate = null;
-
         DbContext.AddCommand(async () =>
         {
             await Collection.UpdateManyAsync(
@@ -37,7 +35,7 @@ public class AvailabilityTemplateRepository(
                 Builders<AvailabilityTemplate>.Update.Set(x => x.IsDefault, false),
                 cancellationToken: cancellationToken);
             
-            updatedTemplate = await Collection.FindOneAndUpdateAsync(
+            await Collection.FindOneAndUpdateAsync(
                 Builders<AvailabilityTemplate>.Filter.Eq(x => x.Id, templateId),
                 Builders<AvailabilityTemplate>.Update.Set(x => x.IsDefault, true),
                 new FindOneAndUpdateOptions<AvailabilityTemplate>
@@ -47,8 +45,31 @@ public class AvailabilityTemplateRepository(
                 cancellationToken
             );
         });
-
-        return updatedTemplate;
     }
-
+    
+    //TODO: FIX THIS METHOD (IT SAVES OLD DEFAULTS)
+    // public async Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken)
+    // {
+    //     AvailabilityTemplate? updatedTemplate = null;
+    //
+    //     DbContext.AddCommand(async () =>
+    //     {
+    //         await Collection.UpdateManyAsync(
+    //             x => x.UserId == userId && x.IsDefault,
+    //             Builders<AvailabilityTemplate>.Update.Set(x => x.IsDefault, false),
+    //             cancellationToken: cancellationToken);
+    //         
+    //         updatedTemplate = await Collection.FindOneAndUpdateAsync(
+    //             Builders<AvailabilityTemplate>.Filter.Eq(x => x.Id, templateId),
+    //             Builders<AvailabilityTemplate>.Update.Set(x => x.IsDefault, true),
+    //             new FindOneAndUpdateOptions<AvailabilityTemplate>
+    //             {
+    //                 ReturnDocument = ReturnDocument.After
+    //             },
+    //             cancellationToken
+    //         );
+    //     });
+    //     
+    //     return updatedTemplate;
+    // }
 }

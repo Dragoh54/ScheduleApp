@@ -16,14 +16,13 @@ public class AvailabilityTemplateController(
     IMediator mediator
     ) : Controller
 {
-
     [HttpPost]
     public async Task<IResult> AddAvailabilityTemplate([FromBody] AddTemplateCommand command, CancellationToken cancellationToken)
     {
         var newTemplate = await mediator.Send(command, cancellationToken);
         return Results.Ok(newTemplate);
     }
-
+    
     [HttpPut]
     public async Task<IResult> UpdateAvailabilityTemplate([FromBody] UpdateTemplateCommand command, CancellationToken cancellationToken)
     {
@@ -38,7 +37,8 @@ public class AvailabilityTemplateController(
         return Results.Ok(updatedTemplate);
     }
 
-    [HttpPatch]
+    //TODO: REFACTOR THIS
+    [HttpPatch("default")]
     public async Task<IResult> SetToDefaultTemplate([FromQuery] SetToDefaultCommand command, CancellationToken cancellationToken)
     {
         var updatedTemplate = await mediator.Send(command, cancellationToken);
@@ -59,7 +59,7 @@ public class AvailabilityTemplateController(
         var templates = await mediator.Send(query, cancellationToken);
         return Results.Ok(templates);
     }
-
+    
     [HttpGet("default")]
     public async Task<IResult> GetDefaultTemplate([FromQuery] GetDefaultTemplateQuery query, CancellationToken cancellationToken)
     {

@@ -12,7 +12,12 @@ public class UpdateTemplateHandler(
 {
     public async Task<AvailabilityTemplateDto> Handle(UpdateTemplateCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.AvailabilityTemplates.UpdateAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken);
+        var template = await unitOfWork.AvailabilityTemplates.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new NotFoundException("Template not found");
+
+        request.Adapt(template);
+        
+        await unitOfWork.AvailabilityTemplates.UpdateAsync(template, cancellationToken);
         
         var success = await unitOfWork.Commit(cancellationToken);
         if (!success)
@@ -20,6 +25,6 @@ public class UpdateTemplateHandler(
             throw new BadRequestException("Failed to update availability template");
         }
         
-        return request.Adapt<AvailabilityTemplateDto>();
+        return template.Adapt<AvailabilityTemplateDto>();
     }
 }

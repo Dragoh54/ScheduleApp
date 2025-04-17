@@ -44,8 +44,9 @@ public class AvailabilityTemplateConfig
             .Map(dest => dest.Name, src => src.Name)
             .Map(dest => dest.Schedule, src => src.Schedule.Select(s => new DayOfWeekSchedule
             {
-                DayOfWeek = s.Key,
-                TimeSlots = s.Value.Adapt<List<TimeSlot>>()
+                DayOfWeek = s.DayOfWeek,  
+                TimeSlots = s.TimeSlots.Select(t => new TimeSlot(t.StartTime, t.EndTime)).ToList()
             }).ToList());
+
     }
 }

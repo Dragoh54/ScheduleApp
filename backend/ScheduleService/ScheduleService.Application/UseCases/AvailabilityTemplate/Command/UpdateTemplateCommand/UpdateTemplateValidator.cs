@@ -15,16 +15,12 @@ public class UpdateTemplateValidator : AbstractValidator<UpdateTemplateCommand>
             .NotEmpty().WithMessage("At least one day must be specified");
 
         RuleForEach(x => x.Schedule)
-            .Must((_, kvp) => kvp.Value != null && kvp.Value.Any())
-            .WithMessage("At least one time slot must be specified for each day")
-            .OverridePropertyName("Schedule");
-
-        RuleForEach(x => x.Schedule)
             .ChildRules(dayRules =>
             {
-                dayRules.RuleForEach(day => day.Value)
-                    .SetValidator(new TimeSlotDtoValidator())
-                    .OverridePropertyName($"Schedule.{dayRules}");
+                dayRules.RuleFor(day => day.TimeSlots)
+                    .NotEmpty().WithMessage("At least one time slot must be specified for each day");
+                dayRules.RuleForEach(day => day.TimeSlots)
+                    .SetValidator(new TimeSlotDtoValidator());
             });
     }
 }
