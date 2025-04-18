@@ -38,29 +38,29 @@ public class UserRepository(
 
     public async Task<(List<UserEntity>?, int)> Get(UserFilters userFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        var specification = new UserFilterSpecification(userFilter);
-    
+        var specification = new UserByFilterSpecification(userFilter);
+        var predicate = specification.ToExpression();
+
         var query = _dbContext.Users
             .AsNoTracking()
-            .Where(specification.Criteria);
-    
-        foreach (var include in specification.Includes)
-        {
-            query = query.Include(include);
-        }
+            .Where(predicate)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .AsQueryable();
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var users = await query
-            .OrderBy(u => u.LastName) 
+        var items = await query
+            .OrderBy(u => u.LastName)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
-        
-        cancellationToken.ThrowIfCancellationRequested();
 
-        return (users, totalCount);
+        return (items, totalCount);
     }
+
 
     public async Task<UserEntity?> GetWithTracking(Guid id, CancellationToken cancellationToken)
     {
