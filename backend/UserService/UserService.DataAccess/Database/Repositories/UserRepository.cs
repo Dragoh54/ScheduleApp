@@ -2,6 +2,7 @@
 using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Models;
 using UserService.DataAccess.Models.Pagination;
+using UserService.DataAccess.Specifications;
 
 namespace UserService.DataAccess.Database.Repositories;
 
@@ -36,18 +37,16 @@ public class UserRepository(
 
     public async Task<(List<UserEntity>?, int)> Get(UserFilters userFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        //TODO: ADD SPECIFICATION
+        var specification = new UserFilterSpecification(userFilter);
+    
         var query = _dbContext.Users
             .AsNoTracking()
-            .Where(a => string.IsNullOrEmpty(userFilter.Username) || a.Username.Contains(userFilter.Username))
-            .Where(a => string.IsNullOrEmpty(userFilter.Email) || a.Email.Contains(userFilter.Email))
-            .Where(a => string.IsNullOrEmpty(userFilter.FirstName) || a.FirstName.Contains(userFilter.FirstName))
-            .Where(a => string.IsNullOrEmpty(userFilter.LastName) || a.LastName.Contains(userFilter.LastName))
-            .Where(a => string.IsNullOrEmpty(userFilter.LastLoginAt) || a.LastLoginAt.Date == DateTime.Parse(userFilter.LastLoginAt).Date)
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
-            .AsQueryable();
-        
+            .Where(specification.Criteria);
+    
+        foreach (var include in specification.Includes)
+        {
+            query = query.Include(include);
+        }
         cancellationToken.ThrowIfCancellationRequested();
 
         var totalCount = await query.CountAsync(cancellationToken);
