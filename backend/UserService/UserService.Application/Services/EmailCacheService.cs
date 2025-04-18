@@ -16,6 +16,7 @@ public class EmailCacheService(
     public async Task AddEmailTokenToCacheAsync(string email,string token, TokenTypes type, CancellationToken cancellationToken)
     {
         var tokenFromCache = await _cache.GetStringAsync(email, cancellationToken);
+        
         if (tokenFromCache is not null)
         {
             throw new BadRequestException("Email Token already exists");

@@ -13,9 +13,7 @@ public sealed class UnitOfWork(
     private bool _disposed;
     
     public IUserRepository UserRepository { get; } = userRepository;
-
     public ITokenModelRepository TokenModelRepository { get; } = tokenModelRepository;
-
     public IRoleRepository RoleRepository { get; } = roleRepository;
 
     public async Task SaveChangesAsync()

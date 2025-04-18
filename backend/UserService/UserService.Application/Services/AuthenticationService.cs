@@ -37,6 +37,7 @@ public class AuthenticationService(
         
         await unitOfWork.UserRepository.Add(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         BackgroundJob.Enqueue(() => 
@@ -79,14 +80,11 @@ public class AuthenticationService(
             return false;
         }
         
-        var refreshToken = unitOfWork.TokenModelRepository.GetByToken(token, cancellationToken).Result;
+        var refreshToken = unitOfWork.TokenModelRepository.GetByToken(token, cancellationToken).Result
+            ?? throw new NotFoundException("Refresh token not found");
+        
         cancellationToken.ThrowIfCancellationRequested();
-
-        if (refreshToken is null)
-        {
-            throw new NotFoundException("Refresh token not found");
-        }
-
+        
         refreshToken.IsUsed = true;
 
         await unitOfWork.TokenModelRepository.Update(refreshToken, cancellationToken);
@@ -103,12 +101,8 @@ public class AuthenticationService(
         }
         
         var email = await tokenService.GetEmailFromToken(accessToken, cancellationToken);
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
-    
-        if (user is null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken)
+            ?? throw new NotFoundException("User not found");
         
         var confirmToken = await tokenService.GenerateEmailToken(user, TokenTypes.EmailConfirmation, cancellationToken);
         
@@ -153,12 +147,8 @@ public class AuthenticationService(
             throw new BadRequestException("invalid email address");
         }
         
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
-    
-        if (user is null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken)
+            ?? throw new NotFoundException("User not found");
         
         var emailToken = await tokenService.GenerateEmailToken(user, TokenTypes.ResetPassword, cancellationToken);
         var link = GenerateEmailTokenLink(callbackUrl, email, emailToken);
@@ -218,12 +208,8 @@ public class AuthenticationService(
             throw new BadRequestException("invalid email address");
         }
         
-        var user = await unitOfWork.UserRepository.GetDeletedUserByEmailAsync(email, cancellationToken);
-    
-        if (user is null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await unitOfWork.UserRepository.GetDeletedUserByEmailAsync(email, cancellationToken)
+            ?? throw new NotFoundException("User not found");
 
         if (!user.IsConfirmed)
         {

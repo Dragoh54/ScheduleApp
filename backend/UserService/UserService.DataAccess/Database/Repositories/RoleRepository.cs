@@ -37,7 +37,7 @@ public class RoleRepository(
 
     public async Task<RoleEntity?> GetByRole(Roles roles, CancellationToken cancellationToken)
     {
-        var item = await _dbContext.Roles
+        var role = await _dbContext.Roles
             .Include(r => r.UserRoles)
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
@@ -45,6 +45,6 @@ public class RoleRepository(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        return item;
+        return role;
     }
 }

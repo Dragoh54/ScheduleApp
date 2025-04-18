@@ -58,14 +58,15 @@ public class TokenService(
 
     public async Task<(string, string)> RefreshAccessToken(string? refreshToken, CancellationToken cancellationToken)
     {
-        if (refreshToken is null)
+        if (string.IsNullOrEmpty(refreshToken))
         {
             throw new UnauthorizedAccessException();
         }
         
         var token = await unitOfWork.TokenModelRepository.GetByToken(refreshToken, cancellationToken);
-
+        
         var isTokenValid = token is null || token.IsUsed || token.ExpiresAt < DateTime.UtcNow;
+        
         if (isTokenValid)
         {
             throw new UnauthorizedAccessException();

@@ -28,7 +28,10 @@ public class CacheService<T>(
         try
         {
             var entityBytes = await cache.GetAsync(key, cancellationToken);
-            if (entityBytes is null || entityBytes.Length == 0)
+
+            var isNotValidEntity = entityBytes is null || entityBytes.Length == 0;
+            
+            if (isNotValidEntity)
             {
                 throw new NotFoundException($"Entity not found by this key: {key}");
             }

@@ -1,4 +1,5 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
@@ -19,11 +20,7 @@ public class EmailService(
              
         using (var client = new SmtpClient())
         {
-            await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.EnableSsl, cancellationToken);
-            await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword, cancellationToken);
-            await client.SendAsync(emailMessage, cancellationToken);
-            
-            await client.DisconnectAsync(true, cancellationToken);
+            await SendEmailThroughClientAsync(client, emailMessage, cancellationToken);
         }
     }
 
@@ -40,5 +37,15 @@ public class EmailService(
         };
         
         return emailMessage;
+    }
+
+    private async Task SendEmailThroughClientAsync(SmtpClient client, MimeMessage emailMessage, CancellationToken cancellationToken)
+    {
+        await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.EnableSsl, cancellationToken);
+    
+        await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword, cancellationToken);
+    
+        await client.SendAsync(emailMessage, cancellationToken);
+        await client.DisconnectAsync(true, cancellationToken);
     }
 }

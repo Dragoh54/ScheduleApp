@@ -5,6 +5,7 @@ using UserService.DataAccess.Models.Pagination;
 
 namespace UserService.DataAccess.Specifications;
 
+//TODO: REWORK THIS SPECIFICATION
 public class UserFilterSpecification : ISpecification<UserEntity>
 {
     private readonly UserFilters _filters;

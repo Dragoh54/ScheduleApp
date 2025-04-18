@@ -24,6 +24,7 @@ public class LoginUserValidator : AbstractValidator<LoginUserDto>
             .WithMessage("Email is must not be empty.")
             .NotNull()
             .WithMessage("Email is required.")
-            .EmailAddress();
+            .EmailAddress()
+            .WithMessage("Invalid email address.");
     }
 }

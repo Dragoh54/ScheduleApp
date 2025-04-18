@@ -26,18 +26,18 @@ public class UserService(
     {
         var (pageNumber, pageSize) = (request.PageNumber, request.PageSize);
         
-        var (items, totalCount) = await unitOfWork.UserRepository.Get(request.UserFilters, pageNumber, pageSize, cancellationToken);
+        var (users, totalCount) = await unitOfWork.UserRepository.Get(request.UserFilters, pageNumber, pageSize, cancellationToken);
 
-        if (items is null)
+        if (users is null)
         {
             throw new NotFoundException("There are no users!");
         }
         
-        var users = items.Adapt<List<UserDto>>();
+        var resultUsers = users.Adapt<List<UserDto>>();
 
         return new PaginatedListDto<UserDto>()
         {
-            Items = users,
+            Items = resultUsers,
             TotalCount = totalCount,
             PageNumber = pageNumber,
             PageSize = pageSize
@@ -58,6 +58,7 @@ public class UserService(
         
         await unitOfWork.UserRepository.Update(candidate, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return candidate.Adapt<UserDto>();
@@ -86,6 +87,7 @@ public class UserService(
         
         await unitOfWork.UserRepository.Update(candidate, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         return candidate.Adapt<UserDto>();
@@ -108,6 +110,7 @@ public class UserService(
         
         await unitOfWork.UserRepository.Update(candidate, cancellationToken);
         await unitOfWork.SaveChangesAsync();
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         return candidate.Adapt<UserDto>();

@@ -40,16 +40,17 @@ public class BaseRepository<T> : IBaseRepository<T>
 
     public virtual async Task<T> Add(T item, CancellationToken cancellationToken)
     {
-        var result = await _dbSet.AddAsync(item, cancellationToken);
+        var addedEntity = await _dbSet.AddAsync(item, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
 
-        return result.Entity;
+        return addedEntity.Entity;
     }
 
     public virtual async Task<T?> Update(T item, CancellationToken cancellationToken)
     {
         _dbSet.Update(item);
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         return item;
@@ -58,6 +59,7 @@ public class BaseRepository<T> : IBaseRepository<T>
     public virtual async Task<bool> Delete(T item, CancellationToken cancellationToken)
     {
         _dbSet.Remove(item);
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return true;

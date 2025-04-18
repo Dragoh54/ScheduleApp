@@ -17,6 +17,7 @@ public class UserRepository(
             .ThenInclude(ur => ur.Role)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         return users;
@@ -47,11 +48,10 @@ public class UserRepository(
         {
             query = query.Include(include);
         }
-        cancellationToken.ThrowIfCancellationRequested();
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var items = await query
+        var users = await query
             .OrderBy(u => u.LastName) 
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -59,7 +59,7 @@ public class UserRepository(
         
         cancellationToken.ThrowIfCancellationRequested();
 
-        return (items, totalCount);
+        return (users, totalCount);
     }
 
     public async Task<UserEntity?> GetWithTracking(Guid id, CancellationToken cancellationToken)

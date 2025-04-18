@@ -97,9 +97,9 @@ public class UserController(
     [HttpGet("restore", Name = "RestoreAccount")]
     public async Task<IResult> OnRestoreAccount([FromQuery] EmailTokenDto restoreAccountRequest, CancellationToken cancellationToken)
     {
-        var result = await authService.RestoreAccountAsync(restoreAccountRequest, cancellationToken);
+        var restoreSuccess = await authService.RestoreAccountAsync(restoreAccountRequest, cancellationToken);
     
-        return Results.Ok(result);
+        return Results.Ok(restoreSuccess);
     }
     
     /// <summary>
@@ -109,8 +109,8 @@ public class UserController(
     [Authorize(Policy = "Admin")]
     public async Task<IResult> AddAdminRoleToUser([FromRoute]Guid id, [FromQuery] Roles role, CancellationToken cancellationToken)
     {
-        var dto = new AddRoleDto{Role = role, UserId = id};
-        var resultUser = await service.AddRole(dto, cancellationToken);
+        var addRoleDto = new AddRoleDto{Role = role, UserId = id};
+        var resultUser = await service.AddRole(addRoleDto, cancellationToken);
         
         return Results.Ok(resultUser);
     }
