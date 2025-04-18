@@ -30,7 +30,7 @@ public class ScheduleDbContext : IScheduleDbContext
         ConfigureIndexes();
     }
 
-    public async Task<int> SaveChanges(CancellationToken cancellationToken)
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
         using (Session = await MongoClient.StartSessionAsync(cancellationToken: cancellationToken))
         {

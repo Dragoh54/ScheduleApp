@@ -28,5 +28,15 @@ public interface IAvailabilityTemplateRepository : IBaseRepository<AvailabilityT
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public Task SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken);
-    //ublic Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken);
+    //public Task<AvailabilityTemplate?> SetDefaultTemplateAsync(Guid userId, Guid templateId, CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Checks if user free according his template
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="startTime"></param>
+    /// <param name="endTime"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task<bool> IsUserFreeAsync(Guid userId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
 }

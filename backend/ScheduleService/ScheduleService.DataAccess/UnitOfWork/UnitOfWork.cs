@@ -18,7 +18,7 @@ public class UnitOfWork(
 
     public async Task<bool> Commit(CancellationToken cancellationToken)
     {
-        var changeAmount = await context.SaveChanges(cancellationToken);
+        var changeAmount = await context.SaveChangesAsync(cancellationToken);
 
         return changeAmount > 0;
     }

@@ -15,4 +15,9 @@ public class TimeSlot
         StartTime = startTime;
         EndTime = endTime;
     }
+    
+    public static bool IsOverlapping(TimeSlot a, TimeSlot b)
+    {
+        return a.StartTime < b.EndTime && b.StartTime < a.EndTime;
+    }
 }

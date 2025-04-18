@@ -33,7 +33,7 @@ public interface IMeetingRepository : IBaseRepository<Meeting>
    /// <param name="endTime"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   public Task<bool> IsUserBusyAsync(Guid userId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+   public Task<bool> IsUserHasMeetingAsync(Guid userId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
    
    /// <summary>
    /// Updates meeting status

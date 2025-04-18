@@ -32,30 +32,20 @@ public class MeetingRepository(
         
         return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
-
-    public async Task<bool> IsUserBusyAsync(Guid userId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+    
+    //TODO: REWORK (m.Status == MeetingStatus.Scheduled || m.Status == MeetingStatus.Rescheduled))
+    public async Task<bool> IsUserHasMeetingAsync(Guid userId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
     {
-        var userFilter = Builders<Meeting>.Filter.Eq(m => m.UserId, userId);
+        var meetings = await Collection.Find(m =>
+            m.UserId == userId  &&
+            (m.Status == MeetingStatus.Scheduled || m.Status == MeetingStatus.Rescheduled))
+            .ToListAsync(cancellationToken);
 
-        var statusFilter = Builders<Meeting>.Filter.Or(
-            Builders<Meeting>.Filter.Eq(m => m.Status, MeetingStatus.Scheduled),
-            Builders<Meeting>.Filter.Eq(m => m.Status, MeetingStatus.Rescheduled)
+        var overlappedMeetings = meetings.Select(m =>
+            startTime < m.EndTime && m.StartTime < endTime
         );
-
-        var timeFilter = Builders<Meeting>.Filter.Or(
-            Builders<Meeting>.Filter.And(
-                Builders<Meeting>.Filter.Lte(m => m.StartTime, startTime),
-                Builders<Meeting>.Filter.Gt(m => m.EndTime, startTime)
-            ),
-            Builders<Meeting>.Filter.And(
-                Builders<Meeting>.Filter.Lt(m => m.StartTime, endTime),
-                Builders<Meeting>.Filter.Gte(m => m.StartTime, startTime)
-            )
-        );
-
-        var filter = Builders<Meeting>.Filter.And(userFilter, statusFilter, timeFilter);
-
-        return await Collection.Find(filter).AnyAsync(cancellationToken);
+        
+        return overlappedMeetings.Any();
     }
 
     public async Task<Meeting?> UpdateMeetingStatusAsync(Guid meetingId, MeetingStatus status, CancellationToken cancellationToken)
