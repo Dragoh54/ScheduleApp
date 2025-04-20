@@ -26,14 +26,12 @@ public interface IMeetingRepository : IBaseRepository<Meeting>
    public Task<IEnumerable<Meeting>> GetMeetingsForUserInRangeAsync(Guid userId, DateTime from, DateTime to, CancellationToken cancellationToken);
    
    /// <summary>
-   /// Check if user has meeting in date range
+   /// Get user meetings
    /// </summary>
    /// <param name="userId"></param>
-   /// <param name="startTime"></param>
-   /// <param name="endTime"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   public Task<bool> IsUserHasMeetingAsync(Guid userId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+   public Task<IEnumerable<Meeting>?> GetUserMeetings(Guid userId, CancellationToken cancellationToken);
    
    /// <summary>
    /// Updates meeting status

@@ -32,17 +32,21 @@ public abstract class BaseRepository<T>(
         return entity;
     }
 
-    public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+    public async Task<T?> UpdateAsync(T entity, CancellationToken cancellationToken = default)
     {
         var filter = Builders<T>.Filter.Eq(e => e.Id, entity.Id);
         DbContext.AddCommand(() => Collection.ReplaceOneAsync(filter, entity, 
                                       new ReplaceOptions(), cancellationToken));
+        
+        return entity;
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var filter = Builders<T>.Filter.Eq(x => x.Id, id);
         DbContext.AddCommand(() => Collection.DeleteOneAsync(filter, cancellationToken));
+        
+        return true;
     }
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)

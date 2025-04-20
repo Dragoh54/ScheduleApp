@@ -1,6 +1,15 @@
-﻿namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingStatusCommand;
+﻿using FluentValidation;
 
-public class UpdateMeetingStatusValidator
+namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingStatusCommand;
+
+public class UpdateMeetingStatusValidator : AbstractValidator<UpdateMeetingStatusCommand>
 {
-    
+    public UpdateMeetingStatusValidator()
+    {
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage("Id cannot be empty");
+        
+        RuleFor(x => x.Status)
+            .NotEmpty().WithMessage("Status cannot be empty");
+    }
 }

@@ -1,6 +1,9 @@
-﻿namespace ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
+﻿using MediatR;
+using ScheduleService.Application.Dto;
 
-public class DeleteMeetingCommand
+namespace ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
+
+public record DeleteMeetingCommand : IRequest<bool>
 {
-    
+    public Guid Id { get; set; }
 }

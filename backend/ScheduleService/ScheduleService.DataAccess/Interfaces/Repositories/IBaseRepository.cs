@@ -32,14 +32,14 @@ public interface IBaseRepository<T> where T : IEntity
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="cancellationToken"></param>
-    public Task UpdateAsync(T entity, CancellationToken cancellationToken);
+    public Task<T?> UpdateAsync(T entity, CancellationToken cancellationToken);
     
     /// <summary>
     /// delete entity
     /// </summary>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
-    public Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
     
     /// <summary>
     /// check if entity exist by id

@@ -1,6 +1,14 @@
-﻿namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingCommand;
+﻿using MediatR;
+using ScheduleService.Application.Dto;
+using ScheduleService.DomainModel.Enums;
 
-public class UpdateMeetingCommand
+namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingCommand;
+
+public record UpdateMeetingCommand : IRequest<MeetingDto>
 {
-    
+    public Guid Id { get; init; }
+    public Guid UserId { get; init; }
+    public DateTime StartTime { get; init; }
+    public DateTime EndTime { get; init; }
+    public MeetingStatus Status { get; init; }
 }

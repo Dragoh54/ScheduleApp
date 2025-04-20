@@ -11,20 +11,9 @@ public class CreateMeetingHandler(
     IUnitOfWork unitOfWork
     ) : IRequestHandler<CreateMeetingCommand, MeetingDto>
 {
+    //TODO: THINK ABOUT CHECKING FOR TEMPLATE IN THIS SERVICE
     public async Task<MeetingDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
     {
-        var isBusy = await unitOfWork.Meetings.IsUserHasMeetingAsync(request.UserId, request.StartTime, request.EndTime, cancellationToken);
-        if (isBusy)
-        {
-            throw new BadRequestException("User is already busy during this time.");
-        }
-        
-        var isFreeByTemplate = await unitOfWork.AvailabilityTemplates.IsUserFreeAsync(request.UserId, request.StartTime, request.EndTime, cancellationToken);
-        if (!isFreeByTemplate)
-        {
-            throw new BadRequestException("User is not available at this time according to their availability template.");
-        }
-        
         var meeting = await unitOfWork.Meetings.AddAsync(request.Adapt<DomainModel.Models.Meeting>(), cancellationToken);
 
         var success = await unitOfWork.Commit(cancellationToken);
@@ -35,4 +24,5 @@ public class CreateMeetingHandler(
         
         return meeting.Adapt<MeetingDto>();
     }
+    
 }
