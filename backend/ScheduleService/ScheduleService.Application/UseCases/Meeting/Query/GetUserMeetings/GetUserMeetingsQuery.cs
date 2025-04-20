@@ -1,6 +1,9 @@
-﻿namespace ScheduleService.Application.UseCases.Meeting.Query.GetUserMeetings;
+﻿using MediatR;
+using ScheduleService.Application.Dto;
 
-public class GetUserMeetingsQuery
+namespace ScheduleService.Application.UseCases.Meeting.Query.GetUserMeetings;
+
+public record GetUserMeetingsQuery : IRequest<IEnumerable<MeetingDto>>
 {
-    
+    public Guid UserId { get; set; }
 }

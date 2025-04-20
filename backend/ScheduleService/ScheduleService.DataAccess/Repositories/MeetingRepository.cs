@@ -12,11 +12,11 @@ public class MeetingRepository(
 {
     private const string CollectionName = "meetings";
     
-    public async Task<IEnumerable<Meeting>> GetMeetingsForUserOnDateAsync(Guid userId, DateOnly date, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Meeting>> GetMeetingsForUserOnDateAsync(Guid userId, DateTime date, CancellationToken cancellationToken)
     {
         var filter = Builders<Meeting>.Filter.And(
             Builders<Meeting>.Filter.Eq(m => m.UserId, userId),
-            Builders<Meeting>.Filter.Eq(m => DateOnly.FromDateTime(m.StartTime), date)
+            Builders<Meeting>.Filter.Eq(m => m.StartTime.Day, date.Day)
         );
         
         return await Collection.Find(filter).ToListAsync(cancellationToken);
@@ -33,10 +33,19 @@ public class MeetingRepository(
         return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Meeting>?> GetUserMeetings(Guid userId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Meeting>?> GetUserMeetingsAsync(Guid userId, CancellationToken cancellationToken)
     {
         var filter = Builders<Meeting>.Filter.Eq(m => m.UserId, userId);
         
+        return await Collection.Find(filter).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Meeting>?> GetUserUpcomingMeetingsAsync(Guid userId, DateTime date, CancellationToken cancellationToken)
+    {
+        var filter = Builders<Meeting>.Filter.And(
+            Builders<Meeting>.Filter.Eq(m => m.UserId, userId),
+            Builders<Meeting>.Filter.Gte(m => m.StartTime, date));
+            
         return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
 

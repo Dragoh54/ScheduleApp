@@ -13,7 +13,7 @@ public interface IMeetingRepository : IBaseRepository<Meeting>
    /// <param name="date"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   public Task<IEnumerable<Meeting>> GetMeetingsForUserOnDateAsync(Guid userId, DateOnly date, CancellationToken cancellationToken);
+   public Task<IEnumerable<Meeting>> GetMeetingsForUserOnDateAsync(Guid userId, DateTime date, CancellationToken cancellationToken);
 
    /// <summary>
    /// Get meetings for user in range
@@ -31,7 +31,16 @@ public interface IMeetingRepository : IBaseRepository<Meeting>
    /// <param name="userId"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   public Task<IEnumerable<Meeting>?> GetUserMeetings(Guid userId, CancellationToken cancellationToken);
+   public Task<IEnumerable<Meeting>?> GetUserMeetingsAsync(Guid userId, CancellationToken cancellationToken);
+   
+   /// <summary>
+   /// Get user's upcoming meetings
+   /// </summary>
+   /// <param name="userId"></param>
+   /// <param name="date"></param>
+   /// <param name="cancellationToken"></param>
+   /// <returns></returns>
+   public Task<IEnumerable<Meeting>?> GetUserUpcomingMeetingsAsync(Guid userId, DateTime date, CancellationToken cancellationToken);
    
    /// <summary>
    /// Updates meeting status
