@@ -16,7 +16,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         _dbSet = _dbContext.Set<T>();
     }
     
-    public virtual async Task<IEnumerable<T>> Get(CancellationToken cancellationToken)
+    public virtual async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken)
     {
         var entities = await _dbSet
             .AsNoTracking()
@@ -27,7 +27,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return entities;
     }
 
-    public virtual async Task<T?> Get(Guid id, CancellationToken cancellationToken)
+    public virtual async Task<T?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _dbSet
             .AsNoTracking()

@@ -12,6 +12,7 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Handlers.Jwt;
 
+//TODO: REMOVE ALL METHODS EXCEPT METHODS WITH AUTH TOKENS
 public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtOptions) : IJwtProvider
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
@@ -131,5 +132,5 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         return result;
     }
     
-    public string GenerateRefreshTokenString() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    public string GenerateRefreshTokenString() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(JwtConfig.Base64));
 }

@@ -29,13 +29,6 @@ public class CacheService<T>(
         {
             var entityBytes = await cache.GetAsync(key, cancellationToken);
 
-            var isNotValidEntity = entityBytes is null || entityBytes.Length == 0;
-            
-            if (isNotValidEntity)
-            {
-                throw new NotFoundException($"Entity not found by this key: {key}");
-            }
-
             var entityJson = Encoding.UTF8.GetString(entityBytes);
             var entity = JsonSerializer.Deserialize<T>(entityJson, _jsonOptions)
                          ?? throw new BadRequestException("Deserialized entity is null");
@@ -50,8 +43,6 @@ public class CacheService<T>(
 
     public async Task Set(T entity, string key, CancellationToken cancellationToken, DistributedCacheEntryOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(entity);
-
         try
         {
             var entityJson = JsonSerializer.Serialize(entity, _jsonOptions);

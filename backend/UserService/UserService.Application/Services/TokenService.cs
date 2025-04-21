@@ -65,14 +65,14 @@ public class TokenService(
         
         var token = await unitOfWork.TokenModelRepository.GetByToken(refreshToken, cancellationToken);
         
-        var isTokenValid = token is null || token.IsUsed || token.ExpiresAt < DateTime.UtcNow;
+        var isTokenInvalid = token is null || token.IsUsed || token.ExpiresAt < DateTime.UtcNow;
         
-        if (isTokenValid)
+        if (isTokenInvalid)
         {
             throw new UnauthorizedAccessException();
         }
         
-        var user = await unitOfWork.UserRepository.Get(token.UserId, cancellationToken)
+        var user = await unitOfWork.UserRepository.GetById(token.UserId, cancellationToken)
                    ?? throw new UnauthorizedAccessException();
 
         token.Token = jwtProvider.GenerateRefreshTokenString();

@@ -12,8 +12,13 @@ public class PasswordHasher : IPasswordHasher
         return token;
     }
 
-    public bool Verify(string password, string hashedPassword, CancellationToken cancellationToken)
+    public bool Verify(string password, string? hashedPassword, CancellationToken cancellationToken)
     {
+        if (hashedPassword is null)
+        {
+            return false;
+        }
+        
         var success = BCrypt.Net.BCrypt.EnhancedVerify(password, hashedPassword);
         cancellationToken.ThrowIfCancellationRequested();
         

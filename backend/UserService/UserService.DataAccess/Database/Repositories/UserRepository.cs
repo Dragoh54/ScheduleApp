@@ -10,7 +10,7 @@ public class UserRepository(
     UserServiceDbContext dbContext
     ) : BaseRepository<UserEntity>(dbContext), IUserRepository
 {
-    public override async Task<IEnumerable<UserEntity>?> Get(CancellationToken cancellationToken)
+    public override async Task<IEnumerable<UserEntity>?> GetAll(CancellationToken cancellationToken)
     {
         var users = await _dbContext.Users
             .Include(u => u.UserRoles)
@@ -23,7 +23,7 @@ public class UserRepository(
         return users;
     }
 
-    public override async Task<UserEntity?> Get(Guid id, CancellationToken cancellationToken)
+    public override async Task<UserEntity?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
             .Include(u => u.UserRoles) 
@@ -110,12 +110,5 @@ public class UserRepository(
         cancellationToken.ThrowIfCancellationRequested();
         
         return deletedUser;
-    }
-
-    public async Task<IEnumerable<UserEntity?>> GetOldUsersAsync(DateTime ago, CancellationToken cancellationToken)
-    {
-        return await _dbContext.Users
-            .Where(u => u.LastLoginAt < ago)
-            .ToListAsync(cancellationToken);
     }
 }

@@ -18,8 +18,11 @@ public class UserController(
     ) : Controller
 {
     /// <summary>
-    /// Get all users with pagination
+    /// Get users with pagination
     /// </summary>
+    /// <param name="query"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<IResult> GetUsers([FromQuery] PaginatedPageUsers query, CancellationToken cancellationToken)
     {
@@ -31,6 +34,9 @@ public class UserController(
     /// <summary>
     /// Get user by ID
     /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpGet("{id:Guid}")]
     public async Task<IResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
@@ -42,6 +48,9 @@ public class UserController(
     /// <summary>
     /// Register a new user
     /// </summary>
+    /// <param name="user"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
@@ -53,6 +62,10 @@ public class UserController(
     /// <summary>
     /// Update user information
     /// </summary>
+    /// <param name="id"></param>
+    /// <param name="user"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpPut("{id:Guid}")]
     [Authorize]
     public async Task<IResult> UpdateUser([FromRoute] Guid id, UpdateUserDto user, CancellationToken cancellationToken)
@@ -65,6 +78,8 @@ public class UserController(
     /// <summary>
     /// Soft delete user account
     /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpDelete("me")]
     [Authorize]
     public async Task<IResult> SoftDeleteUser(CancellationToken cancellationToken)
@@ -78,6 +93,9 @@ public class UserController(
     /// <summary>
     /// Initiate account restoration process
     /// </summary>
+    /// <param name="email"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpPost("{email}/restore")]
     public async Task<IResult> RestoreAccount([FromRoute] string email, CancellationToken cancellationToken)
     {
@@ -94,6 +112,9 @@ public class UserController(
     /// <summary>
     /// Complete account restoration
     /// </summary>
+    /// <param name="restoreAccountRequest"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpGet("restore", Name = "RestoreAccount")]
     public async Task<IResult> OnRestoreAccount([FromQuery] EmailTokenDto restoreAccountRequest, CancellationToken cancellationToken)
     {
@@ -105,9 +126,13 @@ public class UserController(
     /// <summary>
     /// Add role to user (Admin only)
     /// </summary>
-    [HttpPut("{id:Guid}/roles")]
+    /// <param name="id"></param>
+    /// <param name="role"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPut("{id:guid}/roles")]
     [Authorize(Policy = "Admin")]
-    public async Task<IResult> AddAdminRoleToUser([FromRoute]Guid id, [FromQuery] Roles role, CancellationToken cancellationToken)
+    public async Task<IResult> AddAdminRoleToUser([FromRoute] Guid id, [FromQuery] Roles role, CancellationToken cancellationToken)
     {
         var addRoleDto = new AddRoleDto{Role = role, UserId = id};
         var resultUser = await service.AddRole(addRoleDto, cancellationToken);

@@ -13,7 +13,7 @@ public class EmailCacheService(
 {
     private readonly IDistributedCache _cache = cache;
 
-    public async Task AddEmailTokenToCacheAsync(string email,string token, TokenTypes type, CancellationToken cancellationToken)
+    public async Task AddEmailTokenToCacheAsync(string email, string token, TokenTypes type, CancellationToken cancellationToken)
     {
         var tokenFromCache = await _cache.GetStringAsync(email, cancellationToken);
         

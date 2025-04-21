@@ -21,6 +21,12 @@ public sealed class UnitOfWork(
         await dbContext.SaveChangesAsync();
     }
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    
     private void Dispose(bool disposing)
     {
         if (!_disposed && disposing)
@@ -29,11 +35,5 @@ public sealed class UnitOfWork(
         }
 
         _disposed = true;
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

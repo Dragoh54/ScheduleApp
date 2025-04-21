@@ -52,14 +52,13 @@ public class AuthenticationService(
     
     public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
-        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken)
-            ?? throw new NotFoundException("Cannot found user with this email");
+        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken);
 
         var isVerified = passwordHasher.Verify(loginUserDto.Password, userByEmail.PasswordHash, cancellationToken);
 
         if (!isVerified)
         {
-            throw new BadRequestException("Failed to login");
+            throw new BadRequestException("Incorrect email or password!");
         }
 
         var token = await tokenService.GenerateAccessToken(userByEmail, cancellationToken);

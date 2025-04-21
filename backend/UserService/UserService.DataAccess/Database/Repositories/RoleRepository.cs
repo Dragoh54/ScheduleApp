@@ -9,7 +9,7 @@ public class RoleRepository(
     UserServiceDbContext dbContext
     ) : BaseRepository<RoleEntity>(dbContext), IRoleRepository
 {
-    public override async Task<IEnumerable<RoleEntity>?> Get(CancellationToken cancellationToken)
+    public override async Task<IEnumerable<RoleEntity>?> GetAll(CancellationToken cancellationToken)
     {
         var roles = await _dbContext.Roles
             .Include(r => r.UserRoles)
@@ -22,7 +22,7 @@ public class RoleRepository(
         return roles;
     }
 
-    public override async Task<RoleEntity?> Get(Guid id, CancellationToken cancellationToken)
+    public override async Task<RoleEntity?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Roles
             .Include(r => r.UserRoles) 
