@@ -36,8 +36,7 @@ public class AvailabilityTemplateController(
         var updatedTemplate = await mediator.Send(command, cancellationToken);
         return Results.Ok(updatedTemplate);
     }
-
-    //TODO: REFACTOR THIS
+    
     [HttpPatch("default")]
     public async Task<IResult> SetToDefaultTemplate([FromQuery] SetToDefaultCommand command, CancellationToken cancellationToken)
     {

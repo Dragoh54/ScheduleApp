@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ScheduleService.DataAccess.DbContext;
+using ScheduleService.DataAccess.Indexes;
 using ScheduleService.DataAccess.Interfaces.DbContext;
 using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
@@ -40,11 +41,8 @@ public static class ServiceCollectionExtension
     
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        //TODO: MOVE CONNECTION STRING
         services.AddSingleton<IMongoClient>(options =>
-            new MongoClient(
-                "mongodb://admin:admin@localhost:27017/schedule_service_db?replicaSet=rs0&authSource=admin&directConnection=true"));
-                //new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!));
+            new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!));
         
         services.AddScoped<IMongoDatabase>(options => 
         {

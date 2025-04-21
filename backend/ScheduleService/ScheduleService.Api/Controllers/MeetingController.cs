@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Reflection;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleService.Application.UseCases.Meeting.Command.CreateMeetingCommand;
 using ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
@@ -9,6 +10,7 @@ using ScheduleService.Application.UseCases.Meeting.Query.GetMeetingsForUserInRan
 using ScheduleService.Application.UseCases.Meeting.Query.GetMeetingsForUserOnDateQuery;
 using ScheduleService.Application.UseCases.Meeting.Query.GetUpcomingMeetingsQuery;
 using ScheduleService.Application.UseCases.Meeting.Query.GetUserMeetings;
+using ScheduleService.Application.UseCases.Meeting.Query.IsUserHasMeetingQuery;
 
 namespace ScheduleService.Api.Controllers;
 
@@ -52,16 +54,14 @@ public class MeetingController(
         var meeting = await mediator.Send(query, cancellationToken);
         return Results.Ok(meeting);
     }
-
-    //TODO: CHECK DATE 
+    
     [HttpGet("user/in-range")]
     public async Task<IResult> GetMeetingsInRange([FromQuery] GetMeetingsForUserInRangeQuery query, CancellationToken cancellationToken)
     {
         var meetings = await mediator.Send(query, cancellationToken);
         return Results.Ok(meetings);
     }
-
-    //TODO: CHECK DATE
+    
     [HttpGet("user/on-date")]
     public async Task<IResult> GetMeetingsOnDate([FromQuery] GetMeetingsForUserOnDateQuery query, CancellationToken cancellationToken)
     {
@@ -81,5 +81,12 @@ public class MeetingController(
     {
         var meetings = await mediator.Send(query, cancellationToken);
         return Results.Ok(meetings);
+    }
+
+    [HttpGet("free")]
+    public async Task<IResult> IsUserHasMeetings([FromQuery] IsUserHasMeetingQuery query, CancellationToken cancellationToken)
+    {
+        var isUserHasMeetings = await mediator.Send(query, cancellationToken);
+        return Results.Ok(isUserHasMeetings);
     }
 }

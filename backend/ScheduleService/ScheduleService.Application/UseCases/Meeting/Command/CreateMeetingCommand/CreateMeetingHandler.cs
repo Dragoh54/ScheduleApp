@@ -11,7 +11,6 @@ public class CreateMeetingHandler(
     IUnitOfWork unitOfWork
     ) : IRequestHandler<CreateMeetingCommand, MeetingDto>
 {
-    //TODO: THINK ABOUT CHECKING FOR TEMPLATE IN THIS SERVICE
     public async Task<MeetingDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await unitOfWork.Meetings.AddAsync(request.Adapt<DomainModel.Models.Meeting>(), cancellationToken);

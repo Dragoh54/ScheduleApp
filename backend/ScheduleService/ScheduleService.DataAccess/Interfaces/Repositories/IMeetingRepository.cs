@@ -49,7 +49,5 @@ public interface IMeetingRepository : IBaseRepository<Meeting>
    /// <param name="status"></param>
    /// <param name="cancellationToken"></param>
    /// <returns></returns>
-   //public Task<Meeting?> UpdateMeetingStatusAsync(Guid meetingId, MeetingStatus status, CancellationToken cancellationToken);
-   
    public Task UpdateMeetingStatusAsync(Guid meetingId, MeetingStatus status, CancellationToken cancellationToken);
 }

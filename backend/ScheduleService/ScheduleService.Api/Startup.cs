@@ -1,7 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
-using ScheduleService.Api.Filtres;
 using ScheduleService.Application.Extensions;
 using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;

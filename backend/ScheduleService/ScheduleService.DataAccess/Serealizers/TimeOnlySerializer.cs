@@ -4,7 +4,6 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace ScheduleService.DataAccess.Handlers;
 
-//TODO: THINK ABOUT FUTURE FOR THIS CLASS
 public class TimeOnlySerializer : StructSerializerBase<TimeOnly>
 {
     private const string Format = "HH:mm";

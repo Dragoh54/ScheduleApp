@@ -64,12 +64,6 @@ public class ScheduleDbContext : IScheduleDbContext
         GC.SuppressFinalize(this);
     }
 
-    public async Task<IClientSessionHandle> StartSessionAsync(CancellationToken cancellationToken)
-    {
-        Session = await MongoClient.StartSessionAsync(cancellationToken: cancellationToken);
-        return Session;
-    }
-
     public void AddCommand(Func<Task> func)
     {
         _commands.Add(func);
@@ -77,8 +71,10 @@ public class ScheduleDbContext : IScheduleDbContext
 
     private void ConfigureIndexes()
     {
-        //TODO: HIDE GET_COLLECTION_STRING
         AvailabilityTemplateConfiguration.ConfigureIndexes(
             Database.GetCollection<AvailabilityTemplate>("availability_templates"));
+        
+        MeetingConfiguration.ConfigureIndexes(
+            Database.GetCollection<Meeting>("meetings"));
     }
 }

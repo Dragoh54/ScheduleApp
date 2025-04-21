@@ -31,8 +31,6 @@ namespace ScheduleService.DataAccess.Persistence
             BsonSerializer.RegisterSerializer(new DecimalSerializer(BsonType.Decimal128));
             
             BsonSerializer.RegisterSerializer(new TimeOnlySerializer());
-            
-            //RegisterAllSerializersFromAssembly(Assembly.GetExecutingAssembly());
         }
 
         private static void RegisterConventions()
@@ -40,7 +38,6 @@ namespace ScheduleService.DataAccess.Persistence
             var pack = new ConventionPack
             {
                 new IgnoreExtraElementsConvention(true),
-                //new IgnoreIfDefaultConvention(true),
                 new CamelCaseElementNameConvention(),
                 new EnumRepresentationConvention(BsonType.String)
             };
@@ -49,23 +46,6 @@ namespace ScheduleService.DataAccess.Persistence
                 "ApplicationConventions",
                 pack,
                 t => true);
-        }
-
-        private static void RegisterAllSerializersFromAssembly(Assembly assembly)
-        {
-            var serializerTypes = assembly.GetTypes()
-                .Where(t => typeof(IBsonSerializer).IsAssignableFrom(t) && !t.IsAbstract);
-
-            foreach (var type in serializerTypes)
-            {
-                if (Activator.CreateInstance(type) is not IBsonSerializer serializer) continue;
-                
-                var supportedType = type.BaseType?.GenericTypeArguments.FirstOrDefault();
-                if (supportedType != null)
-                {
-                    BsonSerializer.RegisterSerializer(supportedType, serializer);
-                }
-            }
         }
     }
 }
