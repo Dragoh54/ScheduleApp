@@ -40,7 +40,7 @@ namespace ScheduleService.DataAccess.Persistence
             var pack = new ConventionPack
             {
                 new IgnoreExtraElementsConvention(true),
-                new IgnoreIfDefaultConvention(true),
+                //new IgnoreIfDefaultConvention(true),
                 new CamelCaseElementNameConvention(),
                 new EnumRepresentationConvention(BsonType.String)
             };

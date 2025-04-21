@@ -10,6 +10,6 @@ public class UpdateMeetingStatusValidator : AbstractValidator<UpdateMeetingStatu
             .NotEmpty().WithMessage("Id cannot be empty");
         
         RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status cannot be empty");
+            .NotNull().WithMessage("Status cannot be null");
     }
 }

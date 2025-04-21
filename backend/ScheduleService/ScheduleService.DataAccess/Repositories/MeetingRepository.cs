@@ -65,16 +65,14 @@ public class MeetingRepository(
     //     return overlappedMeetings.Any();
     // }
 
-    public async Task<Meeting?> UpdateMeetingStatusAsync(Guid meetingId, MeetingStatus status, CancellationToken cancellationToken)
+    public async Task UpdateMeetingStatusAsync(Guid meetingId, MeetingStatus status, CancellationToken cancellationToken)
     {
         var filter = Builders<Meeting>.Filter.Eq(m => m.Id, meetingId);
         var update = Builders<Meeting>.Update.Set(m => m.Status, status);
 
-        Meeting? updatedMeeting = null;
-
         DbContext.AddCommand(async () =>
         {
-            updatedMeeting = await Collection.FindOneAndUpdateAsync(
+            await Collection.FindOneAndUpdateAsync(
                 filter,
                 update,
                 new FindOneAndUpdateOptions<Meeting>
@@ -84,7 +82,5 @@ public class MeetingRepository(
                 cancellationToken
             );
         });
-
-        return updatedMeeting;
     }
 }
