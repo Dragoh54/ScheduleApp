@@ -12,16 +12,17 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Handlers.Jwt;
 
-//TODO: REMOVE ALL METHODS EXCEPT METHODS WITH AUTH TOKENS
-public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtOptions) : IJwtProvider
+public class JwtProvider(
+    IConfiguration configuration, 
+    IOptions<JwtOptions> jwtOptions
+    ) : IJwtProvider
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
-    
     private readonly string _secretKey = configuration["JWTSecretKey"] ?? throw new NullReferenceException();
     
-    public string GenerateToken(UserEntity user, TokenTypes tokenTypesType, CancellationToken cancellationToken)
+    public string GenerateAccessToken(UserEntity user, CancellationToken cancellationToken)
     {
-        List<Claim> claims=
+        List<Claim> claims =
         [
             new("Id", user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
@@ -39,13 +40,31 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         var token = new JwtSecurityToken(
             claims: claims,
             signingCredentials: signingCredentials,
-            expires: GetExpirationDate(tokenTypesType)
+            expires: DateTime.UtcNow.AddMinutes(_jwtOptions.AccessExpiresMinutes)
         );
-        
-        var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
         cancellationToken.ThrowIfCancellationRequested();
         
-        return tokenValue;
+        return tokenString;
+    }
+
+    public TokenEntity GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
+    {
+        var token =  new TokenEntity()
+        {
+            Id = Guid.NewGuid(),
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(JwtConfig.Base64)),
+            TokenType = TokenTypes.Refresh,
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshExpiresDays),
+            IsUsed = false,
+        };
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return token;
     }
 
     public ClaimsPrincipal ValidateToken(string token)
@@ -61,16 +80,20 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         
         var tokenHandler = new JwtSecurityTokenHandler();
         var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+
+        var isTokenInvalid = securityToken is not JwtSecurityToken jwtSecurityToken ||
+                             !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                                 StringComparison.InvariantCultureIgnoreCase);
         
-        if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+        if (isTokenInvalid)
         {
             throw new SecurityTokenException("Invalid token");
         }
         
         return principal;
     }
-    
-    public async Task<string> GetClaimFromToken(string token, string claimType, CancellationToken cancellationToken)
+
+    public async Task<string> GetClaimFromToken(string token, string claimType)
     {
         if (string.IsNullOrWhiteSpace(token))
             throw new ArgumentException("Token cannot be empty", nameof(token));
@@ -81,55 +104,10 @@ public class JwtProvider(IConfiguration configuration, IOptions<JwtOptions> jwtO
         var principal = ValidateToken(token)
                         ?? throw new BadRequestException("Invalid or expired token");
 
-        cancellationToken.ThrowIfCancellationRequested();
-
         var claim = principal.FindFirst(claimType)
                     ?? throw new BadRequestException($"Claim '{claimType}' not found in token");
         
-       return claim.Value;
-    }
-
-    public DateTime GetExpirationDate(TokenTypes tokenTypesType)
-    {
-        return tokenTypesType switch
-        {
-            TokenTypes.Access => DateTime.UtcNow.AddMinutes(_jwtOptions.AccessExpiresMinutes),
-            TokenTypes.Refresh => DateTime.UtcNow.AddDays(_jwtOptions.RefreshExpiresDays),
-            TokenTypes.EmailConfirmation => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
-            TokenTypes.ResetPassword => DateTime.UtcNow.AddHours(_jwtOptions.EmailConfirmationExpiresHours),
-            TokenTypes.RecoverAccount => DateTime.UtcNow.AddHours(_jwtOptions.RecoverAccountExpiresHours),
-            _ => throw new BadRequestException("Invalid token type")
-        };
-    }
-
-    public int GetTokenExistingTime(TokenTypes tokenTypesType)
-    {
-        return tokenTypesType switch
-        {
-            TokenTypes.Access => _jwtOptions.AccessExpiresMinutes,
-            TokenTypes.Refresh => _jwtOptions.RefreshExpiresDays,
-            TokenTypes.EmailConfirmation => _jwtOptions.EmailConfirmationExpiresHours,
-            TokenTypes.ResetPassword => _jwtOptions.EmailConfirmationExpiresHours,
-            TokenTypes.RecoverAccount => _jwtOptions.RecoverAccountExpiresHours,
-            _ => throw new BadRequestException("Invalid token type")
-        };
-    }
-    
-    public TokenEntity GenerateTokenModel(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
-    {
-        var result = new TokenEntity()
-        {
-            Id = Guid.NewGuid(),
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            TokenType = tokenType,
-            UserId = user.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = GetExpirationDate(tokenType),
-            IsUsed = false,
-        };
-        cancellationToken.ThrowIfCancellationRequested();
-        
-        return result;
+        return claim.Value;
     }
     
     public string GenerateRefreshTokenString() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(JwtConfig.Base64));

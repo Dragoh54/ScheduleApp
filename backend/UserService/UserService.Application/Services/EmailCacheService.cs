@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using UserService.Application.Interfaces.Auth;
+using UserService.Application.Interfaces.Providers;
 using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
@@ -8,7 +9,8 @@ namespace UserService.Application.Services;
 
 public class EmailCacheService(
     IDistributedCache cache, 
-    IJwtProvider jwtProvider
+    IJwtProvider jwtProvider,
+    IEmailTokenProvider emailTokenProvider
     ) : CacheService<string>(cache), IEmailCacheService
 {
     private readonly IDistributedCache _cache = cache;
@@ -24,7 +26,7 @@ public class EmailCacheService(
         
         await _cache.SetStringAsync(email, token, new DistributedCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(jwtProvider.GetTokenExistingTime(type))
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(emailTokenProvider.GetTokenExistingTime(type))
         }, cancellationToken);
     }
 }

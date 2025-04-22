@@ -5,7 +5,9 @@ using UserService.Application.Dto.RoleDtos;
 using UserService.Application.Dto.UserDtos;
 using UserService.Application.Handlers.Jwt;
 using UserService.Application.Handlers.JwtUtilities;
+using UserService.Application.Handlers.Providers;
 using UserService.Application.Interfaces.Auth;
+using UserService.Application.Interfaces.Providers;
 using UserService.Application.Interfaces.Services;
 using UserService.Application.Services;
 using UserService.Application.Validator;
@@ -30,5 +32,6 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IEmailTokenProvider, EmailTokenProvider>();
     }
 }

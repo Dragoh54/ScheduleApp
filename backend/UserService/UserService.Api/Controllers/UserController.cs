@@ -130,7 +130,7 @@ public class UserController(
     /// <param name="role"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    [HttpPut("{id:guid}/roles")]
+    [HttpPatch("{id:guid}/roles")]
     [Authorize(Policy = "Admin")]
     public async Task<IResult> AddAdminRoleToUser([FromRoute] Guid id, [FromQuery] Roles role, CancellationToken cancellationToken)
     {

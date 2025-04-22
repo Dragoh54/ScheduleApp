@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.Application.Interfaces.Auth;
+using UserService.Application.Interfaces.Providers;
 using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
@@ -14,6 +15,7 @@ namespace UserService.Application.Services;
 
 public class TokenService(
     IJwtProvider jwtProvider, 
+    IEmailTokenProvider emailTokenProvider,
     IDistributedCache cache, 
     IEmailCacheService emailCacheService,
     IUnitOfWork unitOfWork
@@ -21,7 +23,7 @@ public class TokenService(
 {
     public async Task<string> GenerateAccessToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = jwtProvider.GenerateToken(user, TokenTypes.Access, cancellationToken)
+        var token = jwtProvider.GenerateAccessToken(user, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
         return token;
@@ -29,7 +31,7 @@ public class TokenService(
     
     public async Task<string> GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = jwtProvider.GenerateTokenModel(user, TokenTypes.Refresh, cancellationToken)
+        var token = jwtProvider.GenerateRefreshToken(user, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
         await unitOfWork.TokenModelRepository.Add(token, cancellationToken);
@@ -47,7 +49,7 @@ public class TokenService(
             return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         }
         
-        var confirmToken = jwtProvider.GenerateToken(user, tokenType, cancellationToken)
+        var confirmToken = emailTokenProvider.GenerateEmailToken(user, tokenType, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
         await emailCacheService.AddEmailTokenToCacheAsync(user.Email, confirmToken, tokenType, cancellationToken);
@@ -88,8 +90,8 @@ public class TokenService(
     }
 
     public async Task<string> GetEmailFromToken(string token, CancellationToken cancellationToken) =>
-        await jwtProvider.GetClaimFromToken(token, ClaimTypes.Email, cancellationToken);
+        await jwtProvider.GetClaimFromToken(token, ClaimTypes.Email);
 
     public async Task<string> GetIdFromToken(string token, CancellationToken cancellationToken) =>
-        await jwtProvider.GetClaimFromToken(token, "Id", cancellationToken);
+        await jwtProvider.GetClaimFromToken(token, "Id");
 }
