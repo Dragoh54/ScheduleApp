@@ -1,4 +1,4 @@
-﻿namespace UserService.Application.Handlers.Jwt;
+﻿namespace UserService.Application.Features.Jwt;
 
 public static class JwtConfig
 {

@@ -5,14 +5,13 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using UserService.Application.Handlers.Jwt;
+using UserService.Application.Features.Jwt;
 using UserService.Application.Interfaces.Providers;
-using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Models;
 
-namespace UserService.Application.Handlers.Providers;
+namespace UserService.Application.Features.Providers;
 
 public class EmailTokenProvider(
         IConfiguration configuration, 

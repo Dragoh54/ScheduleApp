@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using UserService.Application.Dto.UserDtos;
-using UserService.Application.Handlers.Jwt;
+using UserService.Application.Features.Jwt;
 using IAuthenticationService = UserService.Application.Interfaces.Services.IAuthenticationService;
 
 namespace UserService.Api.Controllers;

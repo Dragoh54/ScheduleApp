@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using UserService.Application.Handlers.Jwt;
+using UserService.Application.Features.Jwt;
 using UserService.Application.Interfaces.Services;
 
 namespace UserService.Api.Controllers;

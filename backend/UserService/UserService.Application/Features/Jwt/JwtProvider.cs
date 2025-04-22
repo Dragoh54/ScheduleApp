@@ -10,7 +10,7 @@ using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
 using UserService.DataAccess.Models;
 
-namespace UserService.Application.Handlers.Jwt;
+namespace UserService.Application.Features.Jwt;
 
 public class JwtProvider(
     IConfiguration configuration, 

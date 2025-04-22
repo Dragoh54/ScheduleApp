@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
-using UserService.Application.Handlers.Email;
+using UserService.Application.Features.Email;
 using UserService.Application.Interfaces.Services;
 
 namespace UserService.Application.Services;

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.Application.Dto.EmailDtos;
 using UserService.Application.Dto.UserDtos;
-using UserService.Application.Handlers.Email;
+using UserService.Application.Features.Email;
 using UserService.Application.Interfaces.Auth;
 using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;

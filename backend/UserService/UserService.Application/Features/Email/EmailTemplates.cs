@@ -1,4 +1,4 @@
-﻿namespace UserService.Application.Handlers.Email;
+﻿namespace UserService.Application.Features.Email;
 
 public static class EmailTemplates
 {
