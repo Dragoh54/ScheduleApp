@@ -24,7 +24,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
     }
     
-    public static void AddRepositories(this IServiceCollection services, IConfiguration configuration)
+    public static void AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IAvailabilityTemplateRepository>(options => 
         {
@@ -36,18 +36,6 @@ public static class ServiceCollectionExtension
         {
             var dbContext = options.GetRequiredService<IScheduleDbContext>();
             return new MeetingRepository(dbContext);
-        });
-    }
-    
-    public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddSingleton<IMongoClient>(options =>
-            new MongoClient(configuration.GetSection("MongoDbSettings:MongoConnectionString").Value!));
-        
-        services.AddScoped<IMongoDatabase>(options => 
-        {
-            var client = options.GetRequiredService<IMongoClient>();
-            return client.GetDatabase(configuration.GetSection("MongoDbSettings:MongoDatabaseName").Value!);
         });
     }
 }

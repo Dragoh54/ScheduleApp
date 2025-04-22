@@ -29,22 +29,16 @@ public class Startup(
             
         MongoDbPersistence.Configure();
         
-        services.AddDatabase(Configuration);
         services.AddDbContext();
         services.AddUnitOfWork();
-        services.AddRepositories(Configuration);
+        services.AddRepositories();
 
         services.AddMediatRServices();
         
         GeneralConfig.RegisterMappers();
         
         services.AddControllers();
-        services.AddSwaggerGen(options =>
-        {
-            //options.SchemaFilter<DayOfWeekDictionaryFilter>();
-        });
-        
-        //services.AddSwaggerGenAuthenticationExtension();
+        services.AddSwaggerGen();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, string[] args)
@@ -52,7 +46,6 @@ public class Startup(
         app.UseSwagger();
         app.UseSwaggerUI();
         
-        //app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
         

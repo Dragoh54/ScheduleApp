@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ScheduleService.DataAccess.Indexes;
 using ScheduleService.DataAccess.Interfaces.DbContext;
@@ -14,18 +15,24 @@ public class ScheduleDbContext : IScheduleDbContext
     private IMongoDatabase Database { get; set; }
     private IMongoClient MongoClient { get; set; }
     
+    private readonly MongoDbSettings _mongoDbSettings;
+    
     public IClientSessionHandle Session { get; set; }
     
     private readonly List<Func<Task>> _commands = new List<Func<Task>>();
 
-    public ScheduleDbContext(IServiceProvider services)
+    public ScheduleDbContext(IServiceProvider services, IOptions<MongoDbSettings> settings)
     { 
+        _mongoDbSettings = settings.Value;
         
-        Database =  services.GetService<IMongoDatabase>()
-                    ?? throw new NullReferenceException("Database");
+        MongoClient = new MongoClient(_mongoDbSettings.MongoConnectionString);
+        Database = MongoClient.GetDatabase(_mongoDbSettings.MongoDatabaseName);
         
-        MongoClient = services.GetService<IMongoClient>()
-            ?? throw new NullReferenceException("MongoClient");
+        // Database =  services.GetService<IMongoDatabase>()
+        //             ?? throw new NullReferenceException("Database");
+        //
+        // MongoClient = services.GetService<IMongoClient>()
+        //     ?? throw new NullReferenceException("MongoClient");
         
         ConfigureIndexes();
     }

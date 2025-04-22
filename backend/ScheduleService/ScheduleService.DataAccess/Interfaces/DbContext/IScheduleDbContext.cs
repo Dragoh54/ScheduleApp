@@ -5,11 +5,6 @@ namespace ScheduleService.DataAccess.Interfaces.DbContext;
 public interface IScheduleDbContext : IDisposable
 {
     /// <summary>
-    /// current session
-    /// </summary>
-    public IClientSessionHandle Session { get; set; }
-    
-    /// <summary>
     /// add command for future transaction
     /// </summary>
     /// <param name="func"></param>

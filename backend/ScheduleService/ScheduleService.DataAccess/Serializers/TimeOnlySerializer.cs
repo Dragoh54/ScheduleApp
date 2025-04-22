@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace ScheduleService.DataAccess.Handlers;
+namespace ScheduleService.DataAccess.Serializers;
 
 public class TimeOnlySerializer : StructSerializerBase<TimeOnly>
 {
