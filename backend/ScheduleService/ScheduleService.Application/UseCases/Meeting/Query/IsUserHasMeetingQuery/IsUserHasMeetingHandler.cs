@@ -9,9 +9,13 @@ public class IsUserHasMeetingHandler(
 {
     public async Task<bool> Handle(IsUserHasMeetingQuery request, CancellationToken cancellationToken)
     {
-        var meetings = await unitOfWork.Meetings
-            .GetMeetingsForUserInRangeAsync(request.UserId, request.StartTime, request.EndTime, cancellationToken);
-
-        return meetings.Any();
+        var meetings = await unitOfWork.Meetings.GetMeetingsForUserInRangeAsync(request.UserId, request.StartDate,
+            request.EndDate, cancellationToken);
+        
+        var isUserHasAnyMeeting = meetings.Any(m => 
+            m.StartTime < request.EndDate && 
+            m.EndTime > request.StartDate);
+        
+        return !isUserHasAnyMeeting;
     }
 }

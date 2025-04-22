@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleService.Application.UseCases.Meeting.Command.CreateMeetingCommand;
 using ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
@@ -83,7 +82,7 @@ public class MeetingController(
         return Results.Ok(meetings);
     }
 
-    [HttpGet("free")]
+    [HttpGet("check")]
     public async Task<IResult> IsUserHasMeetings([FromQuery] IsUserHasMeetingQuery query, CancellationToken cancellationToken)
     {
         var isUserHasMeetings = await mediator.Send(query, cancellationToken);

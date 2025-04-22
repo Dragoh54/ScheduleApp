@@ -1,8 +1,8 @@
 ﻿using MediatR;
 
-namespace ScheduleService.Application.UseCases.Meeting.Query.IsUserHasMeetingQuery;
+namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Query.IsUserFreeQuery;
 
-public class IsUserHasMeetingQuery : IRequest<bool>
+public record IsUserFreeQuery : IRequest<bool>
 {
     public Guid UserId { get; set; }
     public DateTime StartDate { get; set; }

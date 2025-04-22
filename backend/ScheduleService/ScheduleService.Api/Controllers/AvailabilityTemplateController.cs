@@ -7,6 +7,7 @@ using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.UpdateTe
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Query.GetByIdTemplateQuery;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Query.GetDefaultTemplateQuery;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Query.GetUserTemplatesQuery;
+using ScheduleService.Application.UseCases.AvailabilityTemplate.Query.IsUserFreeQuery;
 
 namespace ScheduleService.Api.Controllers;
 
@@ -64,5 +65,12 @@ public class AvailabilityTemplateController(
     {
         var template = await mediator.Send(query, cancellationToken);
         return Results.Ok(template);
+    }
+
+    [HttpGet("check")]
+    public async Task<IResult> IsUserFree([FromQuery] IsUserFreeQuery query, CancellationToken token)
+    {
+        var isFree = await mediator.Send(query, token);
+        return Results.Ok(isFree);
     }
 }
