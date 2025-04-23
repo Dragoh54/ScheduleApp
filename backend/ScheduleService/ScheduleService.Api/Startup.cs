@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
+using ScheduleService.Api.Extensions;
 using ScheduleService.Application.Extensions;
 using ScheduleService.Application.Mapping;
 using ScheduleService.DataAccess.Extensions;
@@ -39,6 +40,10 @@ public class Startup(
         
         services.AddControllers();
         services.AddSwaggerGen();
+
+        services.AddApiAuthentication(Configuration);
+        
+        services.AddSwaggerGenAuthenticationExtension();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, string[] args)
@@ -53,6 +58,9 @@ public class Startup(
         
         app.UseSwagger();
         app.UseSwaggerUI();
+        
+        app.UseAuthentication();
+        app.UseAuthorization();
         
         // if (env.IsDevelopment())
         // {

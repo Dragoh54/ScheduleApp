@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleService.Application.UseCases.Meeting.Command.CreateMeetingCommand;
 using ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
@@ -14,6 +15,7 @@ using ScheduleService.Application.UseCases.Meeting.Query.IsUserHasMeetingQuery;
 namespace ScheduleService.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("meetings")]
 public class MeetingController(
         IMediator mediator

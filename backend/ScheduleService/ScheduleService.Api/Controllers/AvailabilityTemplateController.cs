@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.AddTemplateCommand;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;
@@ -12,6 +13,7 @@ using ScheduleService.Application.UseCases.AvailabilityTemplate.Query.IsUserFree
 namespace ScheduleService.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("availabilityTemplates")]
 public class AvailabilityTemplateController(
     IMediator mediator
