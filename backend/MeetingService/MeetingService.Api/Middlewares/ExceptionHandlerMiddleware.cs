@@ -1,13 +1,13 @@
 ﻿using System.Text.Json;
 using FluentValidation;
-using ScheduleService.DomainModel.Exceptions;
+using MeetingService.DomainModel.Exceptions;
 
-namespace ScheduleService.Api.Middlewares;
+namespace MeetingService.Api.Middlewares;
 
 public class ExceptionHandlerMiddleware(
     RequestDelegate next, 
     ILogger<ExceptionHandlerMiddleware> logger
-    )
+)
 {
     public async Task InvokeAsync(HttpContext context)
     {

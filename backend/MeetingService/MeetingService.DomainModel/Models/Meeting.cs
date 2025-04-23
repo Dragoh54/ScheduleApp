@@ -3,9 +3,8 @@ using MeetingService.DomainModel.Interfaces;
 
 namespace MeetingService.DomainModel.Models;
 
-public class Meeting : IEntity
+public class Meeting : IdEntity
 {
-    public Guid Id { get; set; }
     public Guid UserId { get; set; }  
     public TimeSlot TimeSlot { get; set; } = null!;
     public MeetingStatus Status { get; set; } = MeetingStatus.Scheduled;   
