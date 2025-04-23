@@ -12,7 +12,15 @@ public class DeleteTemplateHandler(
 {
     public async Task<bool> Handle(DeleteTemplateCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.AvailabilityTemplates.DeleteAsync(request.Id, cancellationToken);
+        var template = await unitOfWork.AvailabilityTemplates.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new NotFoundException("Template not found");
+
+        if (template.IsDefault)
+        {
+            throw new BadRequestException("Default template cannot be deleted");
+        }
+        
+        await unitOfWork.AvailabilityTemplates.DeleteAsync(template.Id, cancellationToken);
         
         var success = await unitOfWork.Commit(cancellationToken);
         if (!success)

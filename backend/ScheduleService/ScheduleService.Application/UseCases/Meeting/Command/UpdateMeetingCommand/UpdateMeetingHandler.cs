@@ -12,8 +12,13 @@ public class UpdateMeetingHandler(
 {
     public async Task<MeetingDto> Handle(UpdateMeetingCommand request, CancellationToken cancellationToken)
     {
-        var updatedMeeting = await unitOfWork.Meetings.UpdateAsync(request.Adapt<DomainModel.Models.Meeting>(), cancellationToken)
-                             ?? throw new NotFoundException("Meeting not found");
+        var meeting = await unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new NotFoundException("Meeting not found");
+        
+        request.Adapt(meeting);
+        
+        var updatedMeeting = await unitOfWork.Meetings.UpdateAsync(meeting, cancellationToken)
+            ?? throw new BadRequestException("Meeting not updated");
         
         var success = await unitOfWork.Commit(cancellationToken);
         if (!success)
