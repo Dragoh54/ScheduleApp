@@ -1,0 +1,14 @@
+﻿using MeetingService.DomainModel.Enums;
+
+namespace MeetingService.DomainModel.Models;
+
+public class Meeting
+{
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }  
+    public TimeSlot TimeSlot { get; set; } = null!;
+    public MeetingStatus Status { get; set; } = MeetingStatus.Scheduled;   
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
