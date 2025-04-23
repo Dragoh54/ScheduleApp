@@ -16,10 +16,10 @@ public class UpdateMeetingStatusHandler(
         var meeting = await unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
 
-        var isStatusInvalid = meeting.Status == MeetingStatus.Cancelled;
+        var isStatusInvalid = meeting.Status is MeetingStatus.Cancelled or MeetingStatus.Completed;
         if (isStatusInvalid)
         {
-            throw new BadRequestException("This meeting is cancelled");
+            throw new BadRequestException("This meeting is cancelled or completed");
         }
         
         await unitOfWork.Meetings.UpdateMeetingStatusAsync(request.Id, request.Status, cancellationToken);
