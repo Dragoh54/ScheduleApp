@@ -1,5 +1,6 @@
 ﻿using MeetingService.DataAccess.Interfaces.Repositories;
 using MeetingService.DomainModel.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeetingService.DataAccess.Repositories;
 
@@ -7,18 +8,25 @@ public class ParticipantRepository(
     MeetingServiceDbContext dbContext
     ) : BaseRepository<Participant>(dbContext), IParticipantRepository
 {
-    public Task<IEnumerable<Participant>> GetParticipantsByMeetingId(Guid meetingId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Participant>> GetParticipantsByMeetingId(Guid meetingId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Participants
+            .Where(p => p.MeetingId == meetingId)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<Participant?> GetParticipant(Guid meetingId, Guid userId, CancellationToken cancellationToken)
+    public async Task<Participant?> GetParticipant(Guid meetingId, Guid userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Participants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.MeetingId == meetingId && p.UserId == userId, cancellationToken);
     }
 
-    public Task<Participant?> GetParticipantByEmail(string email, CancellationToken cancellationToken)
+    public async Task<Participant?> GetParticipantByEmail(string email, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Participants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Email.Equals(email, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
     }
 }

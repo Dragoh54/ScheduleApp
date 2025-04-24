@@ -5,7 +5,7 @@ namespace MeetingService.DomainModel.Models;
 
 public class Meeting : IdEntity
 {
-    public Guid UserId { get; set; }
+    public Guid OrganizationUserId { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
     

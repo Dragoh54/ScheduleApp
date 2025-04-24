@@ -11,7 +11,7 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
         builder.HasKey(u => u.Id);
         
         builder.Property(u => u.Id).IsRequired();
-        builder.Property(u => u.UserId).IsRequired();
+        builder.Property(u => u.OrganizationUserId).IsRequired();
         builder.Property(u => u.Title).HasMaxLength(100).IsRequired();
         builder.Property(u => u.Description).HasMaxLength(256).IsRequired();
         
@@ -37,6 +37,6 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
             .HasForeignKey(p => p.MeetingId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        builder.HasIndex(m => m.UserId);
+        builder.HasIndex(m => m.OrganizationUserId);
     }
 }

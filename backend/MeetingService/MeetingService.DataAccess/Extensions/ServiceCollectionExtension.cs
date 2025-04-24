@@ -1,5 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
+using MeetingService.DataAccess.Interfaces.Repositories;
+using MeetingService.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +10,11 @@ namespace MeetingService.DataAccess.Extensions;
 
 public static class ServiceCollectionExtension
 {
-    //TODO: ADD REPOSITORIES
+    public static void AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IMeetingRepository, MeetingRepository>();
+        services.AddScoped<IParticipantRepository, ParticipantRepository>();
+    }
     
     public static void AddMeetingDbContext(this IServiceCollection services, IConfiguration configuration)
     {

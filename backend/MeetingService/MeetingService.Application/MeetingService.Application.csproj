@@ -17,4 +17,11 @@
         <PackageReference Include="Mapster" Version="7.4.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Dtos\" />
+      <Folder Include="Extensions\" />
+      <Folder Include="UseCases\" />
+      <Folder Include="Validations\" />
+    </ItemGroup>
+
 </Project>

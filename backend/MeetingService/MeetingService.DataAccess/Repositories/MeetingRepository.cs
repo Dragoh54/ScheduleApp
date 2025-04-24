@@ -1,5 +1,6 @@
 ﻿using MeetingService.DataAccess.Interfaces.Repositories;
 using MeetingService.DomainModel.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeetingService.DataAccess.Repositories;
 
@@ -7,18 +8,27 @@ public class MeetingRepository(
     MeetingServiceDbContext dbContext
     ) : BaseRepository<Meeting>(dbContext), IMeetingRepository
 {
-    public Task<IEnumerable<Meeting>> GetMeetingsForUser(Guid userId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Meeting>> GetMeetingsForUser(Guid userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Meetings
+            .Where(m => m.OrganizationUserId == userId)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<IEnumerable<Meeting>> GetMeetingsInRange(DateTime from, DateTime to, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Meeting>> GetMeetingsInRange(DateTime from, DateTime to, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Meetings
+            .Where(m => m.StartTime >= from && m.EndTime <= to)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<Meeting?> GetMeetingWithParticipants(Guid meetingId, CancellationToken cancellationToken)
+    public async Task<Meeting?> GetMeetingWithParticipants(Guid meetingId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Meetings
+            .Include(m => m.Participants)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == meetingId, cancellationToken);
     }
 }

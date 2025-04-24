@@ -22,6 +22,7 @@ public class Startup(
         
         services.AddMeetingDbContext(Configuration);
         services.AddHangfire(Configuration);
+        services.AddRepositories();
         
         GeneralMappingConfig.RegisterMappers();
         
