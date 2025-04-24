@@ -27,8 +27,4 @@
       <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Configurations\" />
-    </ItemGroup>
-
 </Project>

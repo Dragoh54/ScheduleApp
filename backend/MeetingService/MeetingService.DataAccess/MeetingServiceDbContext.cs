@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MeetingService.DomainModel.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeetingService.DataAccess;
 
@@ -6,13 +7,12 @@ public class MeetingServiceDbContext(
     DbContextOptions<MeetingServiceDbContext> options
     ) : DbContext(options)
 {
-    //TODO: ADD DB SETS
+    public DbSet<Meeting> Meetings { get; set; }
+    public DbSet<Participant> Participants { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MeetingServiceDbContext).Assembly);
-        
-        //TODO: ADD INDEXES
         
         base.OnModelCreating(modelBuilder);
     }
