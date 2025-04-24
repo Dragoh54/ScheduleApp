@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using MeetingService.Application.Extensions;
 using MeetingService.Application.Mapping;
 using MeetingService.DataAccess.Extensions;
 using ExceptionHandlerMiddleware = MeetingService.Api.Middlewares.ExceptionHandlerMiddleware;
@@ -28,6 +29,8 @@ public class Startup(
         
         services.AddControllers();
         services.AddSwaggerGen();
+
+        services.AddMediatRServices();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, string[] args)
