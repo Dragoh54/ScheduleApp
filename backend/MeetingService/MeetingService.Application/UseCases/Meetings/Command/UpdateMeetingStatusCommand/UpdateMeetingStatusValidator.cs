@@ -1,6 +1,8 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
+﻿using FluentValidation;
 
-public class UpdateMeetingStatusValidator
+namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
+
+public class UpdateMeetingStatusValidator : AbstractValidator<UpdateMeetingStatusCommand>
 {
     
 }

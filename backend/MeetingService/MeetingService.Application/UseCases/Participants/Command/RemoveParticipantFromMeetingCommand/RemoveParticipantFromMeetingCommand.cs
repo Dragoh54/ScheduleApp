@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class RemoveParticipantFromMeetingCommand
+namespace MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
+
+public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantDto>
 {
     
 }

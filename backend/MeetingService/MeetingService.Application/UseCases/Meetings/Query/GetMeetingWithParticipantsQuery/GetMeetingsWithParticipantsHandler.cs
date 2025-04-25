@@ -1,6 +1,15 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingWithParticipantsQuery;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
 
-public class GetMeetingsWithParticipantsHandler
+namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingWithParticipantsQuery;
+
+public class GetMeetingsWithParticipantsHandler(
+    IUnitOfWork unitOfWork
+    ) : IRequestHandler<GetMeetingsWithParticipantsQuery, IEnumerable<MeetingDto>>
 {
-    
+    public Task<IEnumerable<MeetingDto>> Handle(GetMeetingsWithParticipantsQuery request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

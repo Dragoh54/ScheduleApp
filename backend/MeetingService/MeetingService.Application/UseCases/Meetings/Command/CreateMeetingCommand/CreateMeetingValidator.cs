@@ -1,6 +1,8 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
+﻿using FluentValidation;
 
-public class CreateMeetingValidator
+namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
+
+public class CreateMeetingValidator : AbstractValidator<CreateMeetingCommand>
 {
     
 }

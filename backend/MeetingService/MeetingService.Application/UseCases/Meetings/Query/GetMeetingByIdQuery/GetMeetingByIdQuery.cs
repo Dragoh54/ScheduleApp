@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingByIdQuery;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class GetMeetingByIdQuery
+namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingByIdQuery;
+
+public record GetMeetingByIdQuery : IRequest<MeetingDto>
 {
     
 }

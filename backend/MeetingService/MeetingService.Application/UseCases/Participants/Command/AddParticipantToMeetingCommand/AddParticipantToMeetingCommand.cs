@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class AddParticipantToMeetingCommand
+namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
+
+public record AddParticipantToMeetingCommand : IRequest<ParticipantDto>
 {
     
 }

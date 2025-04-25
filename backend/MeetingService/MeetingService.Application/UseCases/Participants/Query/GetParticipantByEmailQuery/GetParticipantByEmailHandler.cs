@@ -1,6 +1,15 @@
-﻿namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantByEmailQuery;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
 
-public class GetParticipantByEmailHandler
+namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantByEmailQuery;
+
+public class GetParticipantByEmailHandler(
+    IUnitOfWork unitOfWork
+    ) : IRequestHandler<GetParticipantByEmailQuery, ParticipantDto>
 {
-    
+    public Task<ParticipantDto> Handle(GetParticipantByEmailQuery request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

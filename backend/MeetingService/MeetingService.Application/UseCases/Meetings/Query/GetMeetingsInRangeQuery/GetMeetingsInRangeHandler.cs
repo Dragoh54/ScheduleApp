@@ -1,6 +1,15 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingsInRangeQuery;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
 
-public class GetMeetingsInRangeHandler
+namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingsInRangeQuery;
+
+public class GetMeetingsInRangeHandler(
+    IUnitOfWork unitOfWork
+    ) : IRequestHandler<GetMeetingsInRangeQuery, IEnumerable<MeetingDto>>
 {
-    
+    public Task<IEnumerable<MeetingDto>> Handle(GetMeetingsInRangeQuery request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

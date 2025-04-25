@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class RescheduleMeetingCommand
+namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
+
+public record RescheduleMeetingCommand : IRequest<MeetingDto>
 {
     
 }

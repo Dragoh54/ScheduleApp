@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantByEmailQuery;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class GetParticipantByEmailQuery
+namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantByEmailQuery;
+
+public record GetParticipantByEmailQuery : IRequest<ParticipantDto>
 {
     
 }

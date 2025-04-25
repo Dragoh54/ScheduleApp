@@ -1,6 +1,8 @@
-﻿namespace MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
+﻿using FluentValidation;
 
-public class RemoveParticipantFromMeetingValidator
+namespace MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
+
+public class RemoveParticipantFromMeetingValidator : AbstractValidator<RemoveParticipantFromMeetingCommand>
 {
     
 }

@@ -1,6 +1,8 @@
-﻿namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
+﻿using FluentValidation;
 
-public class AddParticipantToMeetingValidator
+namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
+
+public class AddParticipantToMeetingValidator : AbstractValidator<AddParticipantToMeetingCommand>
 {
     
 }

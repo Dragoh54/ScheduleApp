@@ -1,6 +1,15 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
 
-public class DeleteMeetingHandler
+namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
+
+public class DeleteMeetingHandler(
+    IUnitOfWork unitOfWork
+    ) : IRequestHandler<DeleteMeetingCommand, MeetingDto>
 {
-    
+    public Task<MeetingDto> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,6 +1,8 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
+﻿using FluentValidation;
 
-public class RescheduleMeetingValidator
+namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
+
+public class RescheduleMeetingValidator : AbstractValidator<RescheduleMeetingCommand>
 {
     
 }

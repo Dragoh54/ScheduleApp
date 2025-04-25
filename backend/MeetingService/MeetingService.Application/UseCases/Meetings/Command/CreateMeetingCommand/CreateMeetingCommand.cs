@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class CreateMeetingCommand
+namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
+
+public record CreateMeetingCommand : IRequest<MeetingDto>
 {
     
 }

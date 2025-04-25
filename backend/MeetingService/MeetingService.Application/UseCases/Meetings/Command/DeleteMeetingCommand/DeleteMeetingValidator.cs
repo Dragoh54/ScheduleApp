@@ -1,6 +1,8 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
+﻿using FluentValidation;
 
-public class DeleteMeetingValidator
+namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
+
+public class DeleteMeetingValidator : AbstractValidator<DeleteMeetingCommand>
 {
     
 }

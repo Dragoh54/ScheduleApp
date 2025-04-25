@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class UpdateMeetingStatusCommand
+namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
+
+public record UpdateMeetingStatusCommand : IRequest<MeetingDto>
 {
     
 }

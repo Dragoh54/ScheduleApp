@@ -1,6 +1,9 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
 
-public class DeleteMeetingCommand
+namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
+
+public record DeleteMeetingCommand : IRequest<MeetingDto>
 {
     
 }

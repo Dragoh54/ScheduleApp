@@ -1,6 +1,15 @@
-﻿namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingByIdQuery;
+﻿using MediatR;
+using MeetingService.Application.Dtos;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
 
-public class GetMeetingByIdHandler
+namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingByIdQuery;
+
+public class GetMeetingByIdHandler(
+    IUnitOfWork unitOfWork
+    ) : IRequestHandler<GetMeetingByIdQuery, MeetingDto>
 {
-    
+    public Task<MeetingDto> Handle(GetMeetingByIdQuery request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }
