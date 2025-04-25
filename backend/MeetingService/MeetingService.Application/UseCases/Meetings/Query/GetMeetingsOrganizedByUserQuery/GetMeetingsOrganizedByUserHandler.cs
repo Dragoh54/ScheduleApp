@@ -3,15 +3,14 @@ using MediatR;
 using MeetingService.Application.Dtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
-using MeetingService.DomainModel.Models;
 
-namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingsForUserQuery;
+namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingsOrganizedByUserQuery;
 
-public class GetMeetingsForUserHandler(
+public class GetMeetingsOrganizedByUserHandler(
     IUnitOfWork unitOfWork
-    ) : IRequestHandler<GetMeetingsForUserQuery, IEnumerable<MeetingDto>>
+    ) : IRequestHandler<GetMeetingsOrganizedByUserQuery, IEnumerable<MeetingDto>>
 {
-    public async Task<IEnumerable<MeetingDto>> Handle(GetMeetingsForUserQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MeetingDto>> Handle(GetMeetingsOrganizedByUserQuery request, CancellationToken cancellationToken)
     {
         var meetings = await unitOfWork.MeetingRepository.GetMeetingsForUser(request.OrganizerId, cancellationToken)
             ?? throw new NotFoundException("Meetings not found");

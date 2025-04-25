@@ -8,5 +8,5 @@ public interface IParticipantRepository : IBaseRepository<Participant>
 
     public Task<Participant?> GetParticipant(Guid meetingId, Guid userId, CancellationToken cancellationToken);
 
-    public Task<Participant?> GetParticipantByEmail(string email, CancellationToken cancellationToken);
+    public Task<Participant?> GetParticipantByEmail(Guid meetingId, string email, CancellationToken cancellationToken);
 }

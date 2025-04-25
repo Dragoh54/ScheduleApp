@@ -5,5 +5,6 @@ namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantB
 
 public record GetParticipantByEmailQuery : IRequest<ParticipantDto>
 {
-    
+    public Guid MeetingId { get; set; }
+    public string Email { get; set; } = string.Empty;
 }

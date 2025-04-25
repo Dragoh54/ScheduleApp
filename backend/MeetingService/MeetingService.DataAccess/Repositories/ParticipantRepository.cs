@@ -23,10 +23,12 @@ public class ParticipantRepository(
             .FirstOrDefaultAsync(p => p.MeetingId == meetingId && p.UserId == userId, cancellationToken);
     }
 
-    public async Task<Participant?> GetParticipantByEmail(string email, CancellationToken cancellationToken)
+    public async Task<Participant?> GetParticipantByEmail(Guid meetingId, string email, CancellationToken cancellationToken)
     {
         return await _dbContext.Participants
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Email.Equals(email, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
+            .FirstOrDefaultAsync(p => 
+                p.Email.Equals(email, StringComparison.CurrentCultureIgnoreCase) &&
+                p.MeetingId == meetingId, cancellationToken);
     }
 }
