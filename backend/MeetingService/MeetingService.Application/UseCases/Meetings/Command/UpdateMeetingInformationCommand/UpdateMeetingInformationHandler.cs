@@ -4,13 +4,13 @@ using MeetingService.Application.Dtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
 
-namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
+namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInformationCommand;
 
-public class RescheduleMeetingHandler(
+public class UpdateMeetingInformationHandler(
     IUnitOfWork unitOfWork
-    ) : IRequestHandler<RescheduleMeetingCommand, MeetingDto>
+    ) : IRequestHandler<UpdateMeetingInformationCommand, MeetingDto>
 {
-    public async Task<MeetingDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<MeetingDto> Handle(UpdateMeetingInformationCommand request, CancellationToken cancellationToken)
     {
         var meeting = await unitOfWork.MeetingRepository.GetById(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");

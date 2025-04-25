@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MeetingService.DomainModel.Settings;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
 
@@ -11,11 +12,13 @@ public class CreateMeetingValidator : AbstractValidator<CreateMeetingCommand>
 
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")
-            .MaximumLength(100).WithMessage("Title must not exceed 100 characters.");
+            .MaximumLength(MeetingSettings.TitleMaxLength)
+            .WithMessage($"Title must not exceed {MeetingSettings.TitleMaxLength} characters.");
 
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required.")
-            .MaximumLength(256).WithMessage("Description must not exceed 256 characters.");
+            .MaximumLength(MeetingSettings.DescriptionMaxLength)
+            .WithMessage($"Description must not exceed {MeetingSettings.DescriptionMaxLength} characters.");
 
         RuleFor(x => x.StartTime)
             .NotNull().WithMessage("StartTime is required.")

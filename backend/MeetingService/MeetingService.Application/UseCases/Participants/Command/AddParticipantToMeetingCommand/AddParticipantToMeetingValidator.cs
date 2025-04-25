@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MeetingService.DomainModel.Settings;
 
 namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 
@@ -14,19 +15,24 @@ public class AddParticipantToMeetingValidator : AbstractValidator<AddParticipant
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")
+            .MaximumLength(ParticipantSettings.EmailMaxLength)
+            .WithMessage($"Email length must not exceed {ParticipantSettings.EmailMaxLength} characters.")
             .EmailAddress().WithMessage("Invalid email format.");
 
         RuleFor(x => x.Username)
             .NotEmpty().WithMessage("Username is required.")
-            .MaximumLength(100).WithMessage("Username must not exceed 100 characters.");
+            .MaximumLength(ParticipantSettings.UsernameMaxLength)
+            .WithMessage($"Username must not exceed {ParticipantSettings.UsernameMaxLength} characters.");
 
         RuleFor(x => x.FirstName)
             .NotNull().WithMessage("FirstName is required.")
-            .MaximumLength(256).WithMessage("First name must not exceed 256 characters.");
+            .MaximumLength(ParticipantSettings.FirstNameMaxLength)
+            .WithMessage($"First name must not exceed {ParticipantSettings.FirstNameMaxLength} characters.");
 
         RuleFor(x => x.LastName)
             .NotNull().WithMessage("LastName is required.")
-            .MaximumLength(256).WithMessage("Last name must not exceed 256 characters.");
+            .MaximumLength(ParticipantSettings.LastNameMaxLength)
+            .WithMessage($"Last name must not exceed {ParticipantSettings.LastNameMaxLength} characters.");
         
         RuleFor(x => x.Status)
             .NotNull().WithMessage("Status is required.");

@@ -2,6 +2,7 @@
 using MeetingService.Application.Dtos;
 using MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
 using MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
+using MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInformationCommand;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Models;
 
@@ -36,5 +37,9 @@ public class MeetingMappingConfig
             .Map(dest => dest.StartTime, src => src.StartTime)
             .Map(dest => dest.EndTime, src => src.EndTime)
             .Map(dest => dest.Status, _ => MeetingStatus.Rescheduled);
+
+        TypeAdapterConfig<UpdateMeetingInformationCommand, Meeting>.NewConfig()
+            .Map(dest => dest.Title, src => src.Title)
+            .Map(dest => dest.Description, src => src.Description);
     }
 }
