@@ -4,6 +4,7 @@ using MeetingService.Application.Dtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Exceptions;
+using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Participants.Command.UpdateParticipantStatusCommand;
 
@@ -17,21 +18,12 @@ public class UpdateParticipantStatusHandler(
                           ?? throw new NullReferenceException("Participant not found");
         
         //TODO: THINK ABOUT DELETING IN THIS HANDLER
-        // if (request.Status == ParticipationStatus.Declined)
-        // {
-        //     var success = await unitOfWork.ParticipantRepository.Delete(participant, cancellationToken);
-        //
-        //     if (!success)
-        //     {
-        //         throw new BadRequestException("Failed to delete declined participant");
-        //     }
-        //
-        //     await unitOfWork.SaveChangesAsync();
-        //
-        //     cancellationToken.ThrowIfCancellationRequested();
-        //
-        //     return participant.Adapt<ParticipantDto>();
-        // }
+        if (request.Status == ParticipationStatus.Declined)
+        {
+            await DeleteParticipant(participant, cancellationToken);
+        
+            return participant.Adapt<ParticipantDto>();
+        }
         
         participant.Status = request.Status;
         
@@ -43,5 +35,19 @@ public class UpdateParticipantStatusHandler(
         cancellationToken.ThrowIfCancellationRequested();
         
         return updatedParticipant.Adapt<ParticipantDto>();
+    }
+
+    private async Task DeleteParticipant(Participant participant, CancellationToken cancellationToken)
+    {
+        var success = await unitOfWork.ParticipantRepository.Delete(participant, cancellationToken);
+        
+        if (!success)
+        {
+            throw new BadRequestException("Failed to delete declined participant");
+        }
+        
+        await unitOfWork.SaveChangesAsync();
+        
+        cancellationToken.ThrowIfCancellationRequested();
     }
 }
