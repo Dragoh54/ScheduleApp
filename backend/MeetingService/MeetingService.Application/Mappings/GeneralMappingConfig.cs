@@ -1,9 +1,10 @@
-﻿namespace MeetingService.Application.Mapping;
+﻿namespace MeetingService.Application.Mappings;
 
 public class GeneralMappingConfig
 {
     public static void RegisterMappers()
     {
-        //TODO: ADD MAPPINGS
+        MeetingMappingConfig.RegisterMappers();
+        ParticipantMappingConfig.RegisterMappers();
     }
 }

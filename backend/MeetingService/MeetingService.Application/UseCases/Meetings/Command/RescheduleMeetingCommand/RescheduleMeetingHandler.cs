@@ -1,6 +1,8 @@
-﻿using MediatR;
+﻿using Mapster;
+using MediatR;
 using MeetingService.Application.Dtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.DomainModel.Exceptions;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
 
@@ -8,8 +10,19 @@ public class RescheduleMeetingHandler(
     IUnitOfWork unitOfWork
     ) : IRequestHandler<RescheduleMeetingCommand, MeetingDto>
 {
-    public Task<MeetingDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<MeetingDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var meeting = await unitOfWork.MeetingRepository.GetById(request.Id, cancellationToken)
+            ?? throw new NotFoundException("Meeting not found");
+
+        request.Adapt(meeting);
+        
+        var updatedMeeting = await unitOfWork.MeetingRepository.Update(meeting, cancellationToken);
+
+        await unitOfWork.SaveChangesAsync();
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return updatedMeeting.Adapt<MeetingDto>();
     }
 }

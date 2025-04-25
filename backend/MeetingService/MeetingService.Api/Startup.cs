@@ -1,7 +1,9 @@
 ﻿using Hangfire;
 using MeetingService.Application.Extensions;
-using MeetingService.Application.Mapping;
+using MeetingService.Application.Mappings;
 using MeetingService.DataAccess.Extensions;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.DataAccess.UnitOfWork;
 using ExceptionHandlerMiddleware = MeetingService.Api.Middlewares.ExceptionHandlerMiddleware;
 
 namespace MeetingService.Api;
@@ -24,6 +26,7 @@ public class Startup(
         services.AddMeetingDbContext(Configuration);
         services.AddHangfire(Configuration);
         services.AddRepositories();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         GeneralMappingConfig.RegisterMappers();
         

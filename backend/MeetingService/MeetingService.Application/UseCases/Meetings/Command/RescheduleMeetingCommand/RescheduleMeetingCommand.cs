@@ -5,5 +5,7 @@ namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeeting
 
 public record RescheduleMeetingCommand : IRequest<MeetingDto>
 {
-    
+    public Guid Id { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
 }

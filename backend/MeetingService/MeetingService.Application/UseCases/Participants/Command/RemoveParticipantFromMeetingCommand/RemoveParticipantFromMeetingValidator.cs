@@ -4,5 +4,8 @@ namespace MeetingService.Application.UseCases.Participants.Command.RemovePartici
 
 public class RemoveParticipantFromMeetingValidator : AbstractValidator<RemoveParticipantFromMeetingCommand>
 {
-    
+    public RemoveParticipantFromMeetingValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Id cannot be empty");
+    }
 }

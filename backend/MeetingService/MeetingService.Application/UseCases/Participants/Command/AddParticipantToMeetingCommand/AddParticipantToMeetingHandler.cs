@@ -1,6 +1,9 @@
-﻿using MediatR;
+﻿using Mapster;
+using MediatR;
 using MeetingService.Application.Dtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.DomainModel.Exceptions;
+using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 
@@ -8,8 +11,18 @@ public class AddParticipantToMeetingHandler(
     IUnitOfWork unitOfWork
     ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantDto>
 {
-    public Task<ParticipantDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<ParticipantDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
+            ?? throw new NotFoundException("Meeting not found");
+
+        var participant = await unitOfWork.ParticipantRepository.Add(request.Adapt<Participant>(), cancellationToken)
+            ?? throw new BadRequestException("Participant could not be added");
+        
+        await unitOfWork.SaveChangesAsync();
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        return participant.Adapt<ParticipantDto>();
     }
 }
