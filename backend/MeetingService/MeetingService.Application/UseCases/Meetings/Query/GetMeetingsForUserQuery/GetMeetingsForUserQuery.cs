@@ -5,5 +5,5 @@ namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingsForUserQ
 
 public record GetMeetingsForUserQuery : IRequest<IEnumerable<MeetingDto>>
 {
-    
+    public Guid OrganizerId { get; set; }
 }

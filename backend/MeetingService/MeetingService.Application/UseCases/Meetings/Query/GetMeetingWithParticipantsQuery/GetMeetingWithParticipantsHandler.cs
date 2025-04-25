@@ -1,0 +1,22 @@
+﻿using Mapster;
+using MediatR;
+using MeetingService.Application.Dtos;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.DomainModel.Exceptions;
+
+namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingWithParticipantsQuery;
+
+public class GetMeetingWithParticipantsHandler(
+    IUnitOfWork unitOfWork
+    ) : IRequestHandler<GetMeetingWithParticipantsQuery, MeetingDto>
+{
+    public async Task<MeetingDto> Handle(GetMeetingWithParticipantsQuery request, CancellationToken cancellationToken)
+    {
+        var meetings = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
+            ?? throw new NotFoundException("Meeting not found");
+        
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return meetings.Adapt<MeetingDto>();
+    }
+}

@@ -5,5 +5,5 @@ namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingByIdQuery
 
 public record GetMeetingByIdQuery : IRequest<MeetingDto>
 {
-    
+    public Guid Id { get; set; }
 }
