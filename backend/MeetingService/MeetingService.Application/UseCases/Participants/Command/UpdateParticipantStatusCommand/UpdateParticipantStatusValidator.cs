@@ -4,5 +4,15 @@ namespace MeetingService.Application.UseCases.Participants.Command.UpdatePartici
 
 public class UpdateParticipantStatusValidator : AbstractValidator<UpdateParticipantStatusCommand>
 {
-    
+    public UpdateParticipantStatusValidator()
+    {
+        RuleFor(x => x.Id)
+            .NotNull().WithMessage("Id cannot be null.");
+
+        RuleFor(x => x.MeetingId)
+            .NotNull().WithMessage("Meeting Id cannot be null.");
+        
+        RuleFor(x => x.Status)
+            .NotNull().WithMessage("Status cannot be null.");
+    }
 }

@@ -12,7 +12,7 @@ public class RemoveParticipantFromMeetingHandler(
 {
     public async Task<ParticipantDto> Handle(RemoveParticipantFromMeetingCommand request, CancellationToken cancellationToken)
     {
-        var participant = await unitOfWork.ParticipantRepository.GetById(request.Id, cancellationToken)
+        var participant = await unitOfWork.ParticipantRepository.GetParticipant(request.MeetingId, request.Id, cancellationToken)
                       ?? throw new NotFoundException("Participant not found");
         
         var success = await unitOfWork.ParticipantRepository.Delete(participant, cancellationToken);

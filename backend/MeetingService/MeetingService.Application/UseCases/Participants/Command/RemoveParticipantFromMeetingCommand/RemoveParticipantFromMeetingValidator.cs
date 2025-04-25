@@ -7,5 +7,7 @@ public class RemoveParticipantFromMeetingValidator : AbstractValidator<RemovePar
     public RemoveParticipantFromMeetingValidator()
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Id cannot be empty");
+        
+        RuleFor(x => x.MeetingId).NotEmpty().WithMessage("Meeting Id cannot be empty");
     }
 }

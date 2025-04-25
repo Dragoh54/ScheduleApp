@@ -6,4 +6,5 @@ namespace MeetingService.Application.UseCases.Participants.Command.RemovePartici
 public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantDto>
 {
     public Guid Id { get; set; }
+    public Guid MeetingId { get; set; }
 }
