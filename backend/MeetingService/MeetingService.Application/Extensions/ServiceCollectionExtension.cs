@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using MediatR;
+using MeetingService.Application.Interfaces.Services;
+using MeetingService.Application.Services;
 using MeetingService.Application.Validations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,5 +22,10 @@ public static class ServiceCollectionExtension
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         return services;
+    }
+
+    public static void AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IEmailService, EmailService>(); 
     }
 }

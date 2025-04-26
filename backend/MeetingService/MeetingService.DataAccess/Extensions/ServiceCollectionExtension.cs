@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
 using MeetingService.DataAccess.Interfaces.Repositories;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,5 +33,18 @@ public static class ServiceCollectionExtension
         services.AddHangfireServer();
     }
     
-    
+    public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "MeetingService_";
+        });
+    }
+
+    public static void AddUnitOfWork(this IServiceCollection services)
+    {
+        services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
+
+    }
 }

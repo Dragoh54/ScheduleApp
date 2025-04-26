@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using MeetingService.Application.Extensions;
 using MeetingService.Application.Mappings;
+using MeetingService.Application.Settings;
 using MeetingService.DataAccess.Extensions;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DataAccess.UnitOfWork;
@@ -21,14 +22,20 @@ public class Startup(
     
     public void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<EmailSettings>(Configuration.GetSection(nameof(EmailSettings)));
+        
         services.AddControllersWithViews();
         
         services.AddMeetingDbContext(Configuration);
         services.AddHangfire(Configuration);
-        services.AddRepositories();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddRedis(Configuration);
         
+        services.AddRepositories();
+        services.AddUnitOfWork();
+
         GeneralMappingConfig.RegisterMappers();
+        
+        services.AddServices();
         
         services.AddControllers();
         services.AddSwaggerGen();
