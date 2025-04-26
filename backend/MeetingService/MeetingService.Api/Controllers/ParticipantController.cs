@@ -1,8 +1,8 @@
 ﻿using MediatR;
+using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 using MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
 using MeetingService.Application.UseCases.Participants.Command.UpdateParticipantStatusCommand;
-using MeetingService.Application.UseCases.Participants.Query.GetParticipantByEmailQuery;
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantQuery;
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantsByMeetingIdQuery;
 using Microsoft.AspNetCore.Mvc;
@@ -16,39 +16,32 @@ public class ParticipantController(
     ) : Controller
 {
     [HttpPost("meetings/{meetingId:guid}")]
-    public async Task<IResult> AddParticipantToMeeting([FromRoute]Guid meetingId, [FromForm] AddParticipantToMeetingCommand command, CancellationToken cancellationToken)
+    public async Task<IResult> AddParticipantToMeeting([FromRoute]Guid meetingId, 
+        [FromForm] AddParticipantToMeetingDto dto, CancellationToken cancellationToken)
     {
-        command.MeetingId = meetingId;
+        var command = new AddParticipantToMeetingCommand(meetingId, dto);
         
         var participant = await mediator.Send(command, cancellationToken);
         return Results.Ok(participant);
     }
-
-    [HttpDelete]
-    public async Task<IResult> RemoveParticipantFromMeeting([FromQuery] RemoveParticipantFromMeetingCommand command,
-        CancellationToken cancellationToken)
+    
+    [HttpDelete("meetings/{meetingId:guid}")]
+    public async Task<IResult> RemoveParticipantFromMeeting([FromRoute]Guid meetingId, 
+        [FromQuery] RemoveParticipantFromMeetingDto dto, CancellationToken cancellationToken)
     {
+        var command = new RemoveParticipantFromMeetingCommand(meetingId, dto);
+        
         var participant = await mediator.Send(command, cancellationToken);
         return Results.Ok(participant);
     }
-
+    
     [HttpPatch("meetings/{meetingId:guid}/status")]
     public async Task<IResult> UpdateParticipantStatus([FromRoute] Guid meetingId, 
-        [FromForm] UpdateParticipantStatusCommand command, CancellationToken cancellationToken)
+        [FromForm] UpdateParticipantStatusDto dto, CancellationToken cancellationToken)
     {
-        command.MeetingId = meetingId;
+        var command = new UpdateParticipantStatusCommand(meetingId, dto);
         
         var participant = await mediator.Send(command, cancellationToken);
-        return Results.Ok(participant);
-    }
-
-    [HttpGet("meetings/{meetingId:guid}/email")]
-    public async Task<IResult> GetParticipantsByEmail([FromRoute] Guid meetingId, [FromForm] GetParticipantByEmailQuery query,
-        CancellationToken cancellationToken)
-    {
-        query.MeetingId = meetingId;
-        
-        var participant = await mediator.Send(query, cancellationToken);
         return Results.Ok(participant);
     }
 
@@ -60,7 +53,7 @@ public class ParticipantController(
         return Results.Ok(participant);
     }
 
-    [HttpGet("meetings/{meetingId:guid}")]
+    [HttpGet("meetings/{MeetingId:guid}")]
     public async Task<IResult> GetParticipantsForMeeting([FromRoute] GetParticipantsByMeetingIdQuery query,
         CancellationToken cancellationToken)
     {

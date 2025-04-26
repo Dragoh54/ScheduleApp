@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using MeetingService.Application.Dtos;
+using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;

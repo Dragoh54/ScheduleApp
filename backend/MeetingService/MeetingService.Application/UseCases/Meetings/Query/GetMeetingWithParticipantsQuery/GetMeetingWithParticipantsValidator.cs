@@ -6,7 +6,7 @@ public class GetMeetingWithParticipantsValidator : AbstractValidator<GetMeetingW
 {
     public GetMeetingWithParticipantsValidator()
     {
-        RuleFor(q => q.Id)
+        RuleFor(q => q.MeetingId)
             .NotNull().WithMessage("Id cannot be null.");
     }
 }

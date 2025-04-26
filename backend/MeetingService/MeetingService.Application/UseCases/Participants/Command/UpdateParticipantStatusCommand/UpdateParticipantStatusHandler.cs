@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using MediatR;
 using MeetingService.Application.Dtos;
+using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Exceptions;
@@ -14,7 +15,7 @@ public class UpdateParticipantStatusHandler(
 {
     public async Task<ParticipantDto> Handle(UpdateParticipantStatusCommand request, CancellationToken cancellationToken)
     {
-        var participant = await unitOfWork.ParticipantRepository.GetParticipant(request.MeetingId, request.Id, cancellationToken)
+        var participant = await unitOfWork.ParticipantRepository.GetParticipant(request.MeetingId, request.UserId, cancellationToken)
                           ?? throw new NullReferenceException("Participant not found");
         
         //TODO: THINK ABOUT DELETING IN THIS HANDLER

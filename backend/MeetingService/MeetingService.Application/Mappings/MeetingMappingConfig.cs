@@ -1,5 +1,7 @@
 ﻿using Mapster;
 using MeetingService.Application.Dtos;
+using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
 using MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
 using MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInformationCommand;
@@ -11,6 +13,11 @@ namespace MeetingService.Application.Mappings;
 public class MeetingMappingConfig
 {
     public static void RegisterMappers()
+    {
+        RegisterCommandToCommandMappers();
+    }
+
+    private static void RegisterCommandToCommandMappers()
     {
         TypeAdapterConfig<CreateMeetingCommand, Meeting>.NewConfig()
             .Map(dest => dest.Id, _ => Guid.NewGuid())

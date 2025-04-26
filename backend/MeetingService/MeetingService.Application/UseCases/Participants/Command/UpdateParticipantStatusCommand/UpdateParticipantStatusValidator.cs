@@ -6,7 +6,7 @@ public class UpdateParticipantStatusValidator : AbstractValidator<UpdateParticip
 {
     public UpdateParticipantStatusValidator()
     {
-        RuleFor(x => x.Id)
+        RuleFor(x => x.UserId)
             .NotNull().WithMessage("Id cannot be null.");
 
         RuleFor(x => x.MeetingId)

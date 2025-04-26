@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using MediatR;
 using MeetingService.Application.Dtos;
+using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
 

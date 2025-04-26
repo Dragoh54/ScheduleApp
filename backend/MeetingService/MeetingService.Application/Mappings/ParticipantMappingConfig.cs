@@ -1,5 +1,7 @@
 ﻿using Mapster;
 using MeetingService.Application.Dtos;
+using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 using MeetingService.DomainModel.Models;
 

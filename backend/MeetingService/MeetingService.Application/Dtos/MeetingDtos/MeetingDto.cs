@@ -1,6 +1,7 @@
-﻿using MeetingService.DomainModel.Enums;
+﻿using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.DomainModel.Enums;
 
-namespace MeetingService.Application.Dtos;
+namespace MeetingService.Application.Dtos.MeetingDtos;
 
 public record MeetingDto
 {
