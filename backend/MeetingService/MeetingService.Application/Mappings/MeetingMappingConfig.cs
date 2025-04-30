@@ -38,7 +38,7 @@ public class MeetingMappingConfig
             .Map(dest => dest.StartTime, src => src.StartTime)
             .Map(dest => dest.EndTime, src => src.EndTime)
             .Map(dest => dest.Status, src => src.Status)
-            .Map(dest => dest.Participants, src => src.Participants.Adapt<ICollection<ParticipantDto>>());
+            .Map(dest => dest.Participants, src => src.Participants.Adapt<IEnumerable<ParticipantDto>>());
 
         TypeAdapterConfig<RescheduleMeetingCommand, Meeting>.NewConfig()
             .Map(dest => dest.StartTime, src => src.StartTime)

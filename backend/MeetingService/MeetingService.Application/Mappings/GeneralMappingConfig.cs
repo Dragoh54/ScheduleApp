@@ -1,4 +1,6 @@
-﻿namespace MeetingService.Application.Mappings;
+﻿using Mapster;
+
+namespace MeetingService.Application.Mappings;
 
 public class GeneralMappingConfig
 {

@@ -17,7 +17,7 @@ public class GetMeetingWithParticipantsHandler(
             ?? throw new NotFoundException("Meeting not found");
         
         cancellationToken.ThrowIfCancellationRequested();
-
+        
         return meetings.Adapt<MeetingDto>();
     }
 }

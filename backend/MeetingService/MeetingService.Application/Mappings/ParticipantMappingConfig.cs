@@ -20,8 +20,9 @@ public class ParticipantMappingConfig
             .Map(dest => dest.FirstName, src => src.FirstName)
             .Map(dest => dest.LastName, src => src.LastName)
             .Map(dest => dest.Status, src => src.Status);
-        
+
         TypeAdapterConfig<Participant, ParticipantDto>.NewConfig()
+            .Ignore(dest => dest.Meeting)
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.MeetingId, src => src.MeetingId)
             .Map(dest => dest.UserId, src => src.UserId)
@@ -29,7 +30,6 @@ public class ParticipantMappingConfig
             .Map(dest => dest.Username, src => src.Username)
             .Map(dest => dest.FirstName, src => src.FirstName)
             .Map(dest => dest.LastName, src => src.LastName)
-            .Map(dest => dest.Status, src => src.Status)
-            .Map(dest => dest.Meeting, src => src.Meeting.Adapt<MeetingDto>());
+            .Map(dest => dest.Status, src => src.Status);
     }
 }

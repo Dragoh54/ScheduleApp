@@ -1,7 +1,9 @@
-﻿using Mapster;
+﻿using Hangfire;
+using Mapster;
 using MediatR;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
 using MeetingService.DomainModel.Models;
@@ -9,7 +11,8 @@ using MeetingService.DomainModel.Models;
 namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 
 public class AddParticipantToMeetingHandler(
-    IUnitOfWork unitOfWork
+    IUnitOfWork unitOfWork,
+    IEmailService emailService
     ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantDto>
 {
     public async Task<ParticipantDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
@@ -23,6 +26,17 @@ public class AddParticipantToMeetingHandler(
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        BackgroundJob.Enqueue(() =>
+            emailService.SendEmailAsync(
+                participant.Email,
+                $"Added to meeting",
+                $"""
+                 You were added to meeting {meeting.Title}! 
+                 Meeting will be {meeting.StartTime:MM/dd/yyyy} {meeting.EndTime:hh:tt}""
+                 """,
+                cancellationToken
+            )); 
         
         return participant.Adapt<ParticipantDto>();
     }
