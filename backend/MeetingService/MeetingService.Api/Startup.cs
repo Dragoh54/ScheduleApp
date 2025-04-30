@@ -3,8 +3,6 @@ using MeetingService.Application.Extensions;
 using MeetingService.Application.Mappings;
 using MeetingService.Application.Settings;
 using MeetingService.DataAccess.Extensions;
-using MeetingService.DataAccess.Interfaces.UnitOfWork;
-using MeetingService.DataAccess.UnitOfWork;
 using ExceptionHandlerMiddleware = MeetingService.Api.Middlewares.ExceptionHandlerMiddleware;
 
 namespace MeetingService.Api;
@@ -23,6 +21,7 @@ public class Startup(
     public void ConfigureServices(IServiceCollection services)
     {
         services.Configure<EmailSettings>(Configuration.GetSection(nameof(EmailSettings)));
+        services.Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)));
         
         services.AddControllersWithViews();
         
@@ -36,6 +35,7 @@ public class Startup(
         GeneralMappingConfig.RegisterMappers();
         
         services.AddServices();
+        services.AddProviders();
         
         services.AddControllers();
         services.AddSwaggerGen();

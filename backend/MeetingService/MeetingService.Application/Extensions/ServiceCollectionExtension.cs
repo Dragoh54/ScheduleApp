@@ -1,7 +1,9 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using MediatR;
+using MeetingService.Application.Interfaces.Providers;
 using MeetingService.Application.Interfaces.Services;
+using MeetingService.Application.Providers;
 using MeetingService.Application.Services;
 using MeetingService.Application.Validations;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +28,12 @@ public static class ServiceCollectionExtension
 
     public static void AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IEmailService, EmailService>(); 
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailCacheService, EmailCacheService>();
+    }
+
+    public static void AddProviders(this IServiceCollection services)
+    {
+        services.AddTransient<IEmailTokenProvider, EmailTokenProvider>();
     }
 }
