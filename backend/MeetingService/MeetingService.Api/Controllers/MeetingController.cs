@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MeetingService.Api.Extensions;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
 using MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
@@ -7,11 +8,13 @@ using MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInformat
 using MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
 using MeetingService.Application.UseCases.Meetings.Query.GetMeetingsOrganizedByUserQuery;
 using MeetingService.Application.UseCases.Meetings.Query.GetMeetingWithParticipantsQuery;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MeetingService.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("meetings")]
 public class MeetingController(
     IMediator mediator
@@ -68,17 +71,10 @@ public class MeetingController(
         return Results.Ok(meetings);
     }
     
-    //TODO: CHANGE GetMeetingWithParticipantsQuery -> GetMeetingWithParticipantsDto
     [HttpGet("{MeetingId:guid}")]
     public async Task<IResult> GetMeetings([FromRoute] GetMeetingWithParticipantsQuery query, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(query, cancellationToken);
         return Results.Ok(meeting);
-    }
-    
-    [HttpGet("health")]
-    public async Task<IResult> Health()
-    {
-        return Results.Ok("Healthy");
     }
 }

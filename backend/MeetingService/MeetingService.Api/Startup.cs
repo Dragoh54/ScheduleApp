@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using MeetingService.Api.Extensions;
 using MeetingService.Application.Extensions;
 using MeetingService.Application.Mappings;
 using MeetingService.Application.Settings;
@@ -25,6 +26,8 @@ public class Startup(
         
         services.AddControllersWithViews();
         
+        services.AddApiAuthentication(Configuration);
+        
         services.AddMeetingDbContext(Configuration);
         services.AddHangfire(Configuration);
         services.AddRedis(Configuration);
@@ -41,6 +44,9 @@ public class Startup(
         services.AddSwaggerGen();
 
         services.AddMediatRServices();
+        
+        
+        services.AddSwaggerGenAuthenticationExtension();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, string[] args)
@@ -50,6 +56,9 @@ public class Startup(
         
         app.UseStaticFiles();
         app.UseRouting();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
         
         if (env.IsDevelopment())
         {

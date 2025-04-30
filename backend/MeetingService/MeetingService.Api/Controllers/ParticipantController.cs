@@ -5,11 +5,13 @@ using MeetingService.Application.UseCases.Participants.Command.RemoveParticipant
 using MeetingService.Application.UseCases.Participants.Command.UpdateParticipantStatusCommand;
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantQuery;
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantsByMeetingIdQuery;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MeetingService.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("participants")]
 public class ParticipantController(
     IMediator mediator
@@ -59,11 +61,5 @@ public class ParticipantController(
     {
         var participants = await mediator.Send(query, cancellationToken);
         return Results.Ok(participants);
-    }
-    
-    [HttpGet("health")]
-    public async Task<IResult> Health()
-    {
-        return Results.Ok("Healthy");
     }
 }
