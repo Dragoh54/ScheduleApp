@@ -28,7 +28,7 @@ public class RescheduleMeetingHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
 
-        //TODO: THINK ABOUT NOTIFY THROUGH SIGNALR
+        //TODO: THINK ABOUT NOTIFY ALL PARTICIPANTS THROUGH SIGNALR
         foreach (var participant in updatedMeeting.Participants)
         {
             BackgroundJob.Enqueue(() =>

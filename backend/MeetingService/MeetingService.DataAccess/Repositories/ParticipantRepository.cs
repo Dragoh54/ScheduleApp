@@ -23,6 +23,14 @@ public class ParticipantRepository(
             .FirstOrDefaultAsync(p => p.MeetingId == meetingId && p.UserId == userId, cancellationToken);
     }
 
+    public async Task<Participant?> GetParticipantWithMeeting(Guid meetingId, Guid userId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Participants
+            .Include(p => p.Meeting)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.MeetingId == meetingId && p.UserId == userId, cancellationToken);
+    }
+
     public async Task<Participant?> GetParticipantByEmail(Guid meetingId, string email, CancellationToken cancellationToken)
     {
         return await _dbContext.Participants

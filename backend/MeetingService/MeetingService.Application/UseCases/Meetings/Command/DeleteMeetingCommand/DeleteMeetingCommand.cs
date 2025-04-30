@@ -7,4 +7,5 @@ namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingComm
 public record DeleteMeetingCommand : IRequest<MeetingDto>
 {
     public Guid Id { get; set; }
+    public Guid UserId { get; set; }
 }

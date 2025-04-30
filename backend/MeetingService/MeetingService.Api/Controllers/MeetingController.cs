@@ -68,6 +68,7 @@ public class MeetingController(
         return Results.Ok(meetings);
     }
     
+    //TODO: CHANGE GetMeetingWithParticipantsQuery -> GetMeetingWithParticipantsDto
     [HttpGet("{MeetingId:guid}")]
     public async Task<IResult> GetMeetings([FromRoute] GetMeetingWithParticipantsQuery query, CancellationToken cancellationToken)
     {

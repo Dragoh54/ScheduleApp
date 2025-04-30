@@ -17,12 +17,13 @@ public class DeleteMeetingHandler(
     public async Task<MeetingDto> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
     {
         //TODO: GET WITH PARTICIPANTS TO NOTIFY THEM
-        var meeting = await unitOfWork.MeetingRepository.GetById(request.Id, cancellationToken)
+        var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
 
-        var organizationUser =
-            await unitOfWork.ParticipantRepository.GetParticipant(meeting.Id, meeting.OrganizationUserId, cancellationToken)
-            ?? throw new NotFoundException("Organization user not found");
+        if (meeting.OrganizationUserId != request.UserId)
+        {
+            throw new BadRequestException("You are not an organization user");
+        }
         
         var success = await unitOfWork.MeetingRepository.Delete(meeting, cancellationToken);
 
@@ -32,19 +33,10 @@ public class DeleteMeetingHandler(
         }
         
         await unitOfWork.SaveChangesAsync();
-
-        //TODO: THINK ABOUT NOTIFY THROUGH SIGNALR
-        BackgroundJob.Enqueue(() =>
-            emailService.SendEmailAsync(
-                organizationUser.Email,
-                "Meeting deleted",
-                $"Meeting {meeting.Title} was successfully deleted.",
-                cancellationToken
-            ));
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        
+        //TODO: THINK ABOUT NOTIFY ALL PARTICIPANTS THROUGH SIGNALR
         
         return meeting.Adapt<MeetingDto>();
     }
