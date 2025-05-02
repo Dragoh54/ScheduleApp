@@ -3,5 +3,5 @@
 public enum TokenTypes
 {
     ParticipantConfirmation,
-    ParticipantStatusChanged
+    ParticipantDeclination
 }

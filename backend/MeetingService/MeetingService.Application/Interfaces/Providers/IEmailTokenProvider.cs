@@ -5,7 +5,7 @@ namespace MeetingService.Application.Interfaces.Providers;
 
 public interface IEmailTokenProvider
 {
-    public string GenerateEmailToken(string email);
+    public Task<string> GenerateEmailToken(Guid meetingId, string email, TokenTypes tokenType, CancellationToken cancellationToken);
     public int GetTokenExistingTime(TokenTypes tokenTypesType);
     public bool ValidateEmailToken(byte[] stringBytes, string email);
 }

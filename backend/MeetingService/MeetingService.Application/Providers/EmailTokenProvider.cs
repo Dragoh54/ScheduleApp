@@ -1,50 +1,44 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using MeetingService.Application.Interfaces.Providers;
+using MeetingService.Application.Interfaces.Services;
 using MeetingService.Application.Settings;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Exceptions;
 using MeetingService.DomainModel.Models;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MeetingService.Application.Providers;
 
 public class EmailTokenProvider(
-    IConfiguration configuration, 
-    IOptions<JwtSettings> jwtSettings
+    IOptions<JwtSettings> jwtSettings,
+    IEmailCacheService emailCacheService
     ) : IEmailTokenProvider
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
-    
-    // public string GenerateEmailToken(Participant participant, TokenTypes tokenTypesType, CancellationToken cancellationToken)
-    // {
-        // List<Claim> claims=
-        // [
-        //     new(ClaimTypes.Email, participant.Email),
-        // ];
-        //
-        // var signingCredentials = new SigningCredentials(
-        //     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
-        //     SecurityAlgorithms.HmacSha256);
-        //
-        // var token = new JwtSecurityToken(
-        //     claims: claims,
-        //     signingCredentials: signingCredentials,
-        //     expires: GetExpirationDate(tokenTypes)
-        // );
-        //  
-        // var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-        // cancellationToken.ThrowIfCancellationRequested();
-        //  
-        // return tokenValue;
-    // }
 
-    public string GenerateEmailToken(string email)
+    public async Task<string> GenerateEmailToken(Guid meetingId, string email, TokenTypes tokenType, CancellationToken cancellationToken)
     {
-        var stringBytes = Encoding.ASCII.GetBytes(email);
-        return Convert.ToBase64String(stringBytes);
+        var tokenKey = emailCacheService.CreateParticipantEmailTokenKey(meetingId, email);
+        
+        var token = await emailCacheService.Get(tokenKey, cancellationToken);
+        if (!string.IsNullOrEmpty(token))
+        {
+            return token;
+        }
+
+        var confirmToken = Encoding.UTF8.GetBytes(email);
+        var newToken = WebEncoders.Base64UrlEncode(confirmToken);
+        
+        await emailCacheService.AddEmailTokenToCacheAsync(tokenKey, newToken, tokenType, GetTokenExistingTime(tokenType), cancellationToken);
+        
+        return newToken;
     }
 
     public int GetTokenExistingTime(TokenTypes tokenTypesType)
@@ -52,10 +46,11 @@ public class EmailTokenProvider(
         return tokenTypesType switch
         {
             TokenTypes.ParticipantConfirmation => _jwtSettings.ParticipantConfirmationExpiresHours,
-            TokenTypes.ParticipantStatusChanged => _jwtSettings.ParticipantStatusChangedExpiresHours,
+            TokenTypes.ParticipantDeclination => _jwtSettings.ParticipantDeclinationExpiresHours,
             _ => throw new BadRequestException("Invalid token type")
         };
     }
+
 
     public bool ValidateEmailToken(byte[] stringBytes, string email)
     {

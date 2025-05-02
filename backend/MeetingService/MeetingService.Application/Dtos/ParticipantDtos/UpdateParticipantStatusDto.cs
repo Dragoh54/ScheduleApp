@@ -4,7 +4,7 @@ namespace MeetingService.Application.Dtos.ParticipantDtos;
 
 public record UpdateParticipantStatusDto
 {
-    public Guid UserId { get; set; }
-
+    public string Email { get; set; }
+    public string Token { get; set; }
     public ParticipationStatus Status { get; set; }
 }

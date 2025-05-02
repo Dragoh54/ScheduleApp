@@ -25,8 +25,6 @@ public class CreateMeetingHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        //TODO: THINK ABOUT NOTIFY ALL PARTICIPANTS THROUGH SIGNALR
-        
         return meeting.Adapt<MeetingDto>();
     }
 }

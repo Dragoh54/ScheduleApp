@@ -3,5 +3,5 @@
 public record JwtSettings
 {
     public int ParticipantConfirmationExpiresHours { get; set; }
-    public int ParticipantStatusChangedExpiresHours { get; set; }
+    public int ParticipantDeclinationExpiresHours { get; set; }
 }

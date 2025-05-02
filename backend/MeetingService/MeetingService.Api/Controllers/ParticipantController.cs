@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
+using MeetingService.Application.UseCases.Participants.Command.ConfirmParticipationCommand;
 using MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
-using MeetingService.Application.UseCases.Participants.Command.UpdateParticipantStatusCommand;
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantQuery;
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantsByMeetingIdQuery;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +16,28 @@ namespace MeetingService.Api.Controllers;
 public class ParticipantController(
     IMediator mediator
     ) : Controller
-{
+{                                        
     [HttpPost("meetings/{meetingId:guid}")]
     public async Task<IResult> AddParticipantToMeeting([FromRoute]Guid meetingId, 
         [FromForm] AddParticipantToMeetingDto dto, CancellationToken cancellationToken)
     {
-        var command = new AddParticipantToMeetingCommand(meetingId, dto);
+        var callbackUrl = Url.RouteUrl(
+            "ConfirmParticipation",
+            values: null,
+            protocol: Request.Scheme);
+        
+        var command = new AddParticipantToMeetingCommand(meetingId, dto, callbackUrl!);
+        
+        var participant = await mediator.Send(command, cancellationToken);
+        return Results.Ok(participant);
+    }
+    
+    //TODO: RENAME TO CONFIRM_PARTICIPATION
+    [HttpGet("meetings/{meetingId:guid}/confirm", Name = "ConfirmParticipation")]
+    public async Task<IResult> ConfirmParticipantStatus([FromRoute] Guid meetingId, 
+        [FromQuery] UpdateParticipantStatusDto dto, CancellationToken cancellationToken)
+    {
+        var command = new ConfirmParticipationCommand(meetingId, dto);
         
         var participant = await mediator.Send(command, cancellationToken);
         return Results.Ok(participant);
@@ -32,16 +48,6 @@ public class ParticipantController(
         [FromQuery] RemoveParticipantFromMeetingDto dto, CancellationToken cancellationToken)
     {
         var command = new RemoveParticipantFromMeetingCommand(meetingId, dto);
-        
-        var participant = await mediator.Send(command, cancellationToken);
-        return Results.Ok(participant);
-    }
-    
-    [HttpPatch("meetings/{meetingId:guid}/status")]
-    public async Task<IResult> UpdateParticipantStatus([FromRoute] Guid meetingId, 
-        [FromForm] UpdateParticipantStatusDto dto, CancellationToken cancellationToken)
-    {
-        var command = new UpdateParticipantStatusCommand(meetingId, dto);
         
         var participant = await mediator.Send(command, cancellationToken);
         return Results.Ok(participant);
