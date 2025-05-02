@@ -16,6 +16,7 @@ namespace MeetingService.Application.UseCases.Participants.Command.AddParticipan
 public class AddParticipantToMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
+    ITokenService tokenService,
     IEmailTokenProvider emailTokenProvider
     ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantDto>
 {
@@ -36,8 +37,8 @@ public class AddParticipantToMeetingHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
 
-        var confirmToken = await emailTokenProvider.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantConfirmation, cancellationToken);
-        var declineToken = await emailTokenProvider.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantDeclination, cancellationToken);
+        var confirmToken = await tokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantConfirmation, cancellationToken);
+        var declineToken = await tokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantDeclination, cancellationToken);
         
         var confirmLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, ParticipationStatus.Accepted, confirmToken);
         var declineLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, ParticipationStatus.Declined, declineToken);

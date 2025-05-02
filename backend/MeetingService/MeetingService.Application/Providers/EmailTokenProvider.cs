@@ -17,36 +17,39 @@ using Microsoft.IdentityModel.Tokens;
 namespace MeetingService.Application.Providers;
 
 public class EmailTokenProvider(
-    IOptions<JwtSettings> jwtSettings,
-    IEmailCacheService emailCacheService
-    ) : IEmailTokenProvider
+    IConfiguration configuration, 
+    IOptions<JwtSettings> jwtSettings
+    ) : JwtProvider(configuration, jwtSettings), IEmailTokenProvider
 {
-    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
-
-    public async Task<string> GenerateEmailToken(Guid meetingId, string email, TokenTypes tokenType, CancellationToken cancellationToken)
+    public string GenerateEmailToken(Guid meetingId, string email, TokenTypes tokenType, CancellationToken cancellationToken)
     {
-        var tokenKey = emailCacheService.CreateParticipantEmailTokenKey(meetingId, email);
-        
-        var token = await emailCacheService.Get(tokenKey, cancellationToken);
-        if (!string.IsNullOrEmpty(token))
-        {
-            return token;
-        }
+        List<Claim> claims=
+        [
+            new(ClaimTypes.Email, email),
+        ];
 
-        var confirmToken = Encoding.UTF8.GetBytes(email);
-        var newToken = WebEncoders.Base64UrlEncode(confirmToken);
-        
-        await emailCacheService.AddEmailTokenToCacheAsync(tokenKey, newToken, tokenType, GetTokenExistingTime(tokenType), cancellationToken);
-        
-        return newToken;
+        var signingCredentials = new SigningCredentials(
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey)),
+            SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            claims: claims,
+            signingCredentials: signingCredentials,
+            expires: GetExpirationDate(tokenType)
+        );
+         
+        var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+        cancellationToken.ThrowIfCancellationRequested();
+         
+        return tokenValue;
     }
 
     public int GetTokenExistingTime(TokenTypes tokenTypesType)
     {
         return tokenTypesType switch
         {
-            TokenTypes.ParticipantConfirmation => _jwtSettings.ParticipantConfirmationExpiresHours,
-            TokenTypes.ParticipantDeclination => _jwtSettings.ParticipantDeclinationExpiresHours,
+            TokenTypes.ParticipantConfirmation => JwtSettings.ParticipantConfirmationExpiresHours,
+            TokenTypes.ParticipantDeclination => JwtSettings.ParticipantDeclinationExpiresHours,
             _ => throw new BadRequestException("Invalid token type")
         };
     }
@@ -56,5 +59,16 @@ public class EmailTokenProvider(
     {
         var decodedString = Encoding.UTF8.GetString(stringBytes);
         return email.Equals(decodedString);
+    }
+
+    public DateTime GetExpirationDate(TokenTypes tokenType)
+    {
+        return tokenType switch
+        {
+            TokenTypes.ParticipantConfirmation => DateTime.UtcNow.AddHours(JwtSettings
+                .ParticipantConfirmationExpiresHours),
+            TokenTypes.ParticipantDeclination => DateTime.UtcNow.AddHours(JwtSettings.ParticipantDeclinationExpiresHours),
+            _ => throw new BadRequestException("Invalid token type")
+        };
     }
 }

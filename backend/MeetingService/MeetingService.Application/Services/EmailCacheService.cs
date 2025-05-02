@@ -8,12 +8,13 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace MeetingService.Application.Services;
 
 public class EmailCacheService(
-    IDistributedCache cache
+    IDistributedCache cache,
+    IEmailTokenProvider emailTokenProvider
     ) : CacheService<string>(cache), IEmailCacheService
 {
     private readonly IDistributedCache _cache = cache;
     
-    public async Task AddEmailTokenToCacheAsync(string key, string token, TokenTypes type, int existingTime, CancellationToken cancellationToken)
+    public async Task AddEmailTokenToCacheAsync(string key, string token, TokenTypes type, CancellationToken cancellationToken)
     {
         var tokenFromCache = await _cache.GetStringAsync(key, cancellationToken);
         
@@ -24,7 +25,7 @@ public class EmailCacheService(
         
         await _cache.SetStringAsync(key, token, new DistributedCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(existingTime)
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(emailTokenProvider.GetTokenExistingTime(type))
         }, cancellationToken);
     }
 
