@@ -19,10 +19,7 @@ public class ConfirmParticipationHandler(
 {
     public async Task<ParticipantDto> Handle(ConfirmParticipationCommand request, CancellationToken cancellationToken)
     {
-        //TODO: CHECK TOKENS
-        var success =
-            await emailTokenService.CheckEmailToken(request.MeetingId, request.Email, request.Token, cancellationToken);
-
+        var success = await emailTokenService.CheckEmailToken(request.MeetingId, request.Email, request.Token, cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Invalid token");
@@ -31,19 +28,39 @@ public class ConfirmParticipationHandler(
         var statusFromQuery = (ParticipationStatus)Enum.Parse(typeof(ParticipationStatus), request.ParticipationStatusString);
         
         var isStatusAccepted = ValidateParticipantStatus(statusFromQuery);
-
         if (!isStatusAccepted)
         {
             throw new BadRequestException("User declined participation");
         }
         
-        //TODO: GET FROM CACHE PARTICIPANT
+        var key = participantCacheService.CreateKey(request.MeetingId, request.Email);
+        var participant = await participantCacheService.Get(key, cancellationToken)
+            ?? throw new BadRequestException("Participant not found");
+
+        await participantCacheService.Delete(key, cancellationToken);
+
+        participant.Status = ParticipationStatus.Accepted;
         
-        //TODO: ADD TO DATABASE PARTICIPANT
+        var participantInDatabase = await unitOfWork.ParticipantRepository.Add(participant, cancellationToken)
+            ?? throw new BadRequestException("Participant could not be added");
+
+        await unitOfWork.SaveChangesAsync();
+
+        var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
+            ?? throw new NotFoundException("Meeting not found");
         
-        //TODO: SEND EMAIL TO PARTICIPANT
+        cancellationToken.ThrowIfCancellationRequested();
+
+        BackgroundJob.Enqueue(() =>
+            emailService.SendEmailAsync(participant.Email,
+                $"Welcome on board",
+                $"You are subscribed to meeting {meeting.Title} at {meeting.StartTime:D} {meeting.StartTime:hh:mm}!",
+                cancellationToken
+            ));
         
-        throw new NotImplementedException();
+        SendNotifications(meeting, participantInDatabase, cancellationToken);
+        
+        return participantInDatabase.Adapt<ParticipantDto>();
     }
     
     private void SendNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)

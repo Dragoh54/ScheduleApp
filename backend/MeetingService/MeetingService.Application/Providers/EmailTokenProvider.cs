@@ -26,8 +26,7 @@ public class EmailTokenProvider(
     {
         List<Claim> claims=
         [
-            new(ClaimTypes.Email, email),
-            new("ParticipantStatus", tokenType.ToString())
+            new(ClaimTypes.Email, email)
         ];
 
         var signingCredentials = new SigningCredentials(
@@ -54,13 +53,6 @@ public class EmailTokenProvider(
             TokenTypes.ParticipantDeclination => _jwtSettings.ParticipantDeclinationExpiresHours,
             _ => throw new BadRequestException("Invalid token type")
         };
-    }
-
-
-    public bool ValidateEmailToken(byte[] stringBytes, string email)
-    {
-        var decodedString = Encoding.UTF8.GetString(stringBytes);
-        return email.Equals(decodedString);
     }
 
     public DateTime GetExpirationDate(TokenTypes tokenType)

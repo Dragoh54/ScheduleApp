@@ -3,6 +3,7 @@ using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
+using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.Mappings;
@@ -19,7 +20,7 @@ public class ParticipantMappingConfig
             .Map(dest => dest.Username, src => src.Username)
             .Map(dest => dest.FirstName, src => src.FirstName)
             .Map(dest => dest.LastName, src => src.LastName)
-            .Map(dest => dest.Status, src => src.Status);
+            .Map(dest => dest.Status, src => ParticipationStatus.Pending);
 
         TypeAdapterConfig<Participant, ParticipantDto>.NewConfig()
             .Ignore(dest => dest.Meeting)

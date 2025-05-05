@@ -7,6 +7,5 @@ public interface IEmailTokenProvider : IJwtProvider
 {
     public string GenerateEmailToken(Guid meetingId, string email, TokenTypes tokenType, CancellationToken cancellationToken);
     public int GetTokenExistingTime(TokenTypes tokenTypesType);
-    public bool ValidateEmailToken(byte[] stringBytes, string email);
     DateTime GetExpirationDate(TokenTypes tokenType);
 }

@@ -33,8 +33,5 @@ public class AddParticipantToMeetingValidator : AbstractValidator<AddParticipant
             .NotNull().WithMessage("LastName is required.")
             .MaximumLength(ParticipantSettings.LastNameMaxLength)
             .WithMessage($"Last name must not exceed {ParticipantSettings.LastNameMaxLength} characters.");
-        
-        RuleFor(x => x.Status)
-            .NotNull().WithMessage("Status is required.");
     }
 }

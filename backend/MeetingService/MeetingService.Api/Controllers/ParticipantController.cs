@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MeetingService.Api.Extensions;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 using MeetingService.Application.UseCases.Participants.Command.ConfirmParticipationCommand;
@@ -46,7 +47,9 @@ public class ParticipantController(
     public async Task<IResult> RemoveParticipantFromMeeting([FromRoute]Guid meetingId, 
         [FromQuery] RemoveParticipantFromMeetingDto dto, CancellationToken cancellationToken)
     {
-        var command = new RemoveParticipantFromMeetingCommand(meetingId, dto);
+        var accessToken = HttpContext.GetBearerToken();
+        
+        var command = new RemoveParticipantFromMeetingCommand(meetingId, dto, accessToken);
         
         var participant = await mediator.Send(command, cancellationToken);
         return Results.Ok(participant);

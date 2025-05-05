@@ -39,7 +39,6 @@ public class AddParticipantToMeetingHandler(
         cancellationToken.ThrowIfCancellationRequested();
 
         var confirmToken = await emailTokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantConfirmation, cancellationToken);
-        //var declineToken = await emailTokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantDeclination, cancellationToken);
         
         var confirmLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, confirmToken, ParticipationStatus.Accepted);
         var declineLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, confirmToken, ParticipationStatus.Declined);

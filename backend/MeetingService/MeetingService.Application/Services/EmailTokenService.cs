@@ -53,9 +53,6 @@ public class EmailTokenService(
     public async Task<string> GetEmailFromToken(string token, CancellationToken cancellationToken) =>
         await jwtProvider.GetClaimFromToken(token, ClaimTypes.Email);
 
-    public async Task<string> GetParticipantStatusFromToken(string token, CancellationToken cancellationToken) =>
-        await jwtProvider.GetClaimFromToken(token, "ParticipantStatus");
-
     private bool CheckTokens(string token, string encodedToken)
     {
         var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));

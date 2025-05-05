@@ -19,7 +19,6 @@ public record AddParticipantToMeetingCommand : IRequest<ParticipantDto>
         Username = dto.Username;
         FirstName = dto.FirstName;
         LastName = dto.LastName;
-        Status = dto.Status;
         CallbackUrl = url;
     }
 
@@ -29,7 +28,5 @@ public record AddParticipantToMeetingCommand : IRequest<ParticipantDto>
     public string Username { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public ParticipationStatus Status { get; set; } = ParticipationStatus.Pending;
-    
     public string CallbackUrl { get; set; } = string.Empty; 
 }

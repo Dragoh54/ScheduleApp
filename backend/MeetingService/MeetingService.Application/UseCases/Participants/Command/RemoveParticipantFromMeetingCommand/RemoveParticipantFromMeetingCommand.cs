@@ -10,12 +10,14 @@ public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantDto>
     {
     }
 
-    public RemoveParticipantFromMeetingCommand(Guid meetingId, RemoveParticipantFromMeetingDto dto)
+    public RemoveParticipantFromMeetingCommand(Guid meetingId, RemoveParticipantFromMeetingDto dto, string accessToken)
     {
         MeetingId = meetingId;
         UserId = dto.UserId;
+        AccessToken = accessToken;
     }
 
     public Guid UserId { get; set; }
     public Guid MeetingId { get; set; }
+    public string AccessToken { get; set; }
 }

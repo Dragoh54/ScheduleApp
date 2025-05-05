@@ -60,4 +60,10 @@ public class JwtProvider(
         
         return claim.Value;
     }
+
+    public async Task<Guid> GetUserIdFromToken(string token)
+    {
+        var id = await GetClaimFromToken(token, "Id");
+        return Guid.Parse(id);
+    }
 }
