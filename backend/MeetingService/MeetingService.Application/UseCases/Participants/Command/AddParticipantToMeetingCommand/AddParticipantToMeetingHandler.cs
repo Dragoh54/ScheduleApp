@@ -16,8 +16,8 @@ namespace MeetingService.Application.UseCases.Participants.Command.AddParticipan
 public class AddParticipantToMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
-    ITokenService tokenService,
-    IEmailTokenProvider emailTokenProvider
+    IEmailTokenService emailTokenService,
+    IParticipantCacheService participantCacheService
     ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantDto>
 {
     public async Task<ParticipantDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
@@ -30,18 +30,19 @@ public class AddParticipantToMeetingHandler(
             throw new AlreadyExistsException("User already on board!");
         }
 
-        var participant = await unitOfWork.ParticipantRepository.Add(request.Adapt<Participant>(), cancellationToken)
-            ?? throw new BadRequestException("Participant could not be added");
-        
-        await unitOfWork.SaveChangesAsync();
+        var participant = new Participant();
+        request.Adapt(participant);
+
+        var key = participantCacheService.CreateKey(participant.MeetingId, participant.Email);
+        await participantCacheService.Set(participant, key, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
 
-        var confirmToken = await tokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantConfirmation, cancellationToken);
-        var declineToken = await tokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantDeclination, cancellationToken);
+        var confirmToken = await emailTokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantConfirmation, cancellationToken);
+        //var declineToken = await emailTokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantDeclination, cancellationToken);
         
-        var confirmLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, ParticipationStatus.Accepted, confirmToken);
-        var declineLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, ParticipationStatus.Declined, declineToken);
+        var confirmLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, confirmToken, ParticipationStatus.Accepted);
+        var declineLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, confirmToken, ParticipationStatus.Declined);
 
         BackgroundJob.Enqueue(() =>
             emailService.SendEmailAsync(
@@ -57,20 +58,18 @@ public class AddParticipantToMeetingHandler(
                 cancellationToken
             ));
         
-        //TODO: THINK ABOUT DELETION FROM AFK 24 HOURS
-        
         //TODO: SEND NOTIFICATIONS THROUGH SIGNALR
         
         return participant.Adapt<ParticipantDto>();
     }
     
-    private static string GenerateEmailTokenLink(string baseUrl, string email, ParticipationStatus status, string token)
+    private static string GenerateEmailTokenLink(string baseUrl, string email, string token, ParticipationStatus participationStatus)
     {
         var query = HttpUtility.ParseQueryString(string.Empty);
 
         query["email"] = email;
         query["token"] = HttpUtility.UrlEncode(token);
-        query["status"] = ((int)status).ToString();
+        query["participation_status"] = participationStatus.ToString();
     
         var uriBuilder = new UriBuilder(baseUrl)
         {

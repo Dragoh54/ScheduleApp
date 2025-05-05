@@ -21,11 +21,13 @@ public class EmailTokenProvider(
     IOptions<JwtSettings> jwtSettings
     ) : JwtProvider(configuration, jwtSettings), IEmailTokenProvider
 {
+    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
     public string GenerateEmailToken(Guid meetingId, string email, TokenTypes tokenType, CancellationToken cancellationToken)
     {
         List<Claim> claims=
         [
             new(ClaimTypes.Email, email),
+            new("ParticipantStatus", tokenType.ToString())
         ];
 
         var signingCredentials = new SigningCredentials(
@@ -48,8 +50,8 @@ public class EmailTokenProvider(
     {
         return tokenTypesType switch
         {
-            TokenTypes.ParticipantConfirmation => JwtSettings.ParticipantConfirmationExpiresHours,
-            TokenTypes.ParticipantDeclination => JwtSettings.ParticipantDeclinationExpiresHours,
+            TokenTypes.ParticipantConfirmation => _jwtSettings.ParticipantConfirmationExpiresHours,
+            TokenTypes.ParticipantDeclination => _jwtSettings.ParticipantDeclinationExpiresHours,
             _ => throw new BadRequestException("Invalid token type")
         };
     }
@@ -65,9 +67,9 @@ public class EmailTokenProvider(
     {
         return tokenType switch
         {
-            TokenTypes.ParticipantConfirmation => DateTime.UtcNow.AddHours(JwtSettings
+            TokenTypes.ParticipantConfirmation => DateTime.UtcNow.AddHours(_jwtSettings
                 .ParticipantConfirmationExpiresHours),
-            TokenTypes.ParticipantDeclination => DateTime.UtcNow.AddHours(JwtSettings.ParticipantDeclinationExpiresHours),
+            TokenTypes.ParticipantDeclination => DateTime.UtcNow.AddHours(_jwtSettings.ParticipantDeclinationExpiresHours),
             _ => throw new BadRequestException("Invalid token type")
         };
     }

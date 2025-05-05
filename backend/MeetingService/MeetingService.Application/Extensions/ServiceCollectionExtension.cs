@@ -30,7 +30,8 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailCacheService, EmailCacheService>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IEmailTokenService, EmailTokenService>();
+        services.AddScoped<IParticipantCacheService, ParticipantCacheService>();
     }
 
     public static void AddProviders(this IServiceCollection services)

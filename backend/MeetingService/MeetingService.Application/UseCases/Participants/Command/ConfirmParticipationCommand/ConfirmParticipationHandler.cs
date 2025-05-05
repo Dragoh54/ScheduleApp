@@ -12,56 +12,38 @@ namespace MeetingService.Application.UseCases.Participants.Command.ConfirmPartic
 
 public class ConfirmParticipationHandler(
     IUnitOfWork unitOfWork,
-    IEmailService emailService
+    IEmailService emailService,
+    IParticipantCacheService participantCacheService,
+    IEmailTokenService emailTokenService
     ) : IRequestHandler<ConfirmParticipationCommand, ParticipantDto>
 {
     public async Task<ParticipantDto> Handle(ConfirmParticipationCommand request, CancellationToken cancellationToken)
     {
-        // var participant = await unitOfWork.ParticipantRepository.GetParticipantWithMeeting(request.MeetingId, request.UserId, cancellationToken)
-        //                   ?? throw new NullReferenceException("Participant not found");
-        //
-        // //TODO: THINK ABOUT DELETING IN THIS HANDLER
-        // if (request.Status == ParticipationStatus.Declined)
-        // {
-        //     await DeleteParticipant(participant, cancellationToken);
-        //
-        //     return participant.Adapt<ParticipantDto>();
-        // }
-        //
-        // participant.Status = request.Status;
-        //
-        // var updatedParticipant = await unitOfWork.ParticipantRepository.Update(participant, cancellationToken)
-        //     ?? throw new BadRequestException("Participant not updated");
-        //
-        // await unitOfWork.SaveChangesAsync();
-        //
-        // cancellationToken.ThrowIfCancellationRequested();
-        //
-        // BackgroundJob.Enqueue(() =>
-        //     emailService.SendEmailAsync(
-        //         participant.Email,
-        //         $"Your status of participating updated",
-        //         $"Your status for meeting {participant.Meeting.Title} is {participant.Status}!",
-        //         cancellationToken
-        //     ));
-        //
-        // return updatedParticipant.Adapt<ParticipantDto>();
-        
-        throw new NotImplementedException();
-    }
+        //TODO: CHECK TOKENS
+        var success =
+            await emailTokenService.CheckEmailToken(request.MeetingId, request.Email, request.Token, cancellationToken);
 
-    private async Task DeleteParticipant(Participant participant, CancellationToken cancellationToken)
-    {
-        var success = await unitOfWork.ParticipantRepository.Delete(participant, cancellationToken);
-        
         if (!success)
         {
-            throw new BadRequestException("Failed to delete declined participant");
+            throw new BadRequestException("Invalid token");
+        }
+
+        var statusFromQuery = (ParticipationStatus)Enum.Parse(typeof(ParticipationStatus), request.ParticipationStatusString);
+        
+        var isStatusAccepted = ValidateParticipantStatus(statusFromQuery);
+
+        if (!isStatusAccepted)
+        {
+            throw new BadRequestException("User declined participation");
         }
         
-        await unitOfWork.SaveChangesAsync();
+        //TODO: GET FROM CACHE PARTICIPANT
         
-        cancellationToken.ThrowIfCancellationRequested();
+        //TODO: ADD TO DATABASE PARTICIPANT
+        
+        //TODO: SEND EMAIL TO PARTICIPANT
+        
+        throw new NotImplementedException();
     }
     
     private void SendNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)
@@ -85,4 +67,11 @@ public class ConfirmParticipationHandler(
                 cancellationToken
             ), notifyBeforeHour);
     }
+
+    private bool ValidateParticipantStatus(ParticipationStatus participantStatus) => participantStatus switch
+    {
+        ParticipationStatus.Accepted => true,
+        ParticipationStatus.Declined => false,
+        _ => throw new BadRequestException("Invalid participation status")
+    };
 }

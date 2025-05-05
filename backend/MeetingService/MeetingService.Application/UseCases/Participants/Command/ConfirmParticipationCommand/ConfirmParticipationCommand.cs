@@ -10,16 +10,16 @@ public record ConfirmParticipationCommand : IRequest<ParticipantDto>
     {
     }
 
-    public ConfirmParticipationCommand(Guid meetingId, UpdateParticipantStatusDto dto)
+    public ConfirmParticipationCommand(Guid meetingId, ConfirmParticipantStatusDto dto)
     {
         MeetingId = meetingId;
         Email = dto.Email;
         Token = dto.Token;
-        Status = dto.Status;
+        ParticipationStatusString = dto.ParticipationStatusString;
     }
 
     public Guid MeetingId { get; set; }
     public string Email { get; set; }
     public string Token { get; set; }
-    public ParticipationStatus Status { get; set; }
+    public string ParticipationStatusString { get; set; }
 }

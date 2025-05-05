@@ -16,13 +16,6 @@ public class EmailCacheService(
     
     public async Task AddEmailTokenToCacheAsync(string key, string token, TokenTypes type, CancellationToken cancellationToken)
     {
-        var tokenFromCache = await _cache.GetStringAsync(key, cancellationToken);
-        
-        if (tokenFromCache is not null)
-        {
-            throw new BadRequestException("Email Token already exists");
-        }
-        
         await _cache.SetStringAsync(key, token, new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(emailTokenProvider.GetTokenExistingTime(type))
@@ -36,6 +29,8 @@ public class EmailCacheService(
         sb.Append(meetingId);
         sb.Append('_');
         sb.Append(email);
+        sb.Append('_');
+        sb.Append("Token");
         
         return sb.ToString();
     }

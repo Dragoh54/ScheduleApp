@@ -18,8 +18,5 @@ public class ConfirmParticipationValidator : AbstractValidator<ConfirmParticipat
         
         RuleFor(x => x.MeetingId)
             .NotNull().WithMessage("Meeting Id cannot be null.");
-        
-        RuleFor(x => x.Status)
-            .NotNull().WithMessage("Status cannot be null.");
     }
 }

@@ -23,7 +23,7 @@ public class ParticipantController(
     {
         var callbackUrl = Url.RouteUrl(
             "ConfirmParticipation",
-            values: null,
+            values: new { meetingId },
             protocol: Request.Scheme);
         
         var command = new AddParticipantToMeetingCommand(meetingId, dto, callbackUrl!);
@@ -32,10 +32,9 @@ public class ParticipantController(
         return Results.Ok(participant);
     }
     
-    //TODO: RENAME TO CONFIRM_PARTICIPATION
     [HttpGet("meetings/{meetingId:guid}/confirm", Name = "ConfirmParticipation")]
     public async Task<IResult> ConfirmParticipantStatus([FromRoute] Guid meetingId, 
-        [FromQuery] UpdateParticipantStatusDto dto, CancellationToken cancellationToken)
+        [FromQuery] ConfirmParticipantStatusDto dto, CancellationToken cancellationToken)
     {
         var command = new ConfirmParticipationCommand(meetingId, dto);
         
