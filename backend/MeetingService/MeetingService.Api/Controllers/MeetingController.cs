@@ -30,6 +30,9 @@ public class MeetingController(
     public async Task<IResult> CreateMeeting([FromForm] CreateMeetingCommand command, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(command, cancellationToken);
+
+        await notifier.NotifyMeetingAsync(meeting.Id, meeting.StartTime);
+        
         return Results.Ok(meeting);
     }
 

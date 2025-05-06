@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using Hangfire;
+using MeetingService.Api.Helpers;
 using MeetingService.Api.Hubs;
 using MeetingService.Api.Interfaces;
 using MeetingService.Api.Interfaces.Hubs;
@@ -12,6 +14,25 @@ public class MeetingNotifier(
     IHubContext<MeetingNotificationHub, IMeetingNotificationHub> hubContext
     ) : IMeetingNotifier
 {
+    public async Task NotifyMeetingAsync(Guid meetingId, DateTime date)
+    {
+        var stringId = meetingId.ToString();
+        var stringDate = date.ToString(CultureInfo.InvariantCulture);
+        
+        var notifyTime = date.AddDays(-1);
+        
+        if (notifyTime <= DateTime.UtcNow)
+        {
+            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(stringId, stringDate);
+        }
+        else
+        {
+            BackgroundJob.Schedule<MeetingHubHelper>(h =>
+                    h.SendData(stringId, stringDate),
+                notifyTime);
+        }
+    }
+
     public async Task NotifyTimeChangedAsync(Guid meetingId, DateTime newStartTime)
     {
         await hubContext

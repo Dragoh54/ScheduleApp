@@ -1,5 +1,7 @@
 ﻿using System.Text;
+using MeetingService.Api.Helpers;
 using MeetingService.Api.Interfaces;
+using MeetingService.Api.Interfaces.Helpers;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Api.Managers;
 using MeetingService.Api.Notifier;
@@ -71,5 +73,10 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IMeetingNotifier, MeetingNotifier>();
         services.AddScoped<IParticipantNotifier, ParticipantNotifier>();
+    }
+
+    public static void AddHelpers(this IServiceCollection services)
+    {
+        services.AddTransient<IMeetingHubHelper, MeetingHubHelper>();
     }
 }

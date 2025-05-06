@@ -41,6 +41,7 @@ public class Startup(
         GeneralMappingConfig.RegisterMappers();
         
         services.AddManagers();
+        services.AddHelpers();
         services.AddNotifiers();
         
         services.AddServices();
