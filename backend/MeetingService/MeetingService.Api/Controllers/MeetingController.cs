@@ -1,5 +1,9 @@
-﻿using MediatR;
+﻿using System.Globalization;
+using MediatR;
 using MeetingService.Api.Extensions;
+using MeetingService.Api.Hubs;
+using MeetingService.Api.Interfaces.Hubs;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
 using MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
@@ -10,6 +14,7 @@ using MeetingService.Application.UseCases.Meetings.Query.GetMeetingsOrganizedByU
 using MeetingService.Application.UseCases.Meetings.Query.GetMeetingWithParticipantsQuery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Controllers;
 
@@ -17,7 +22,8 @@ namespace MeetingService.Api.Controllers;
 [Authorize]
 [Route("meetings")]
 public class MeetingController(
-    IMediator mediator
+    IMediator mediator,
+    IMeetingNotifier notifier
     ) : Controller
 {
     [HttpPost]
@@ -31,6 +37,9 @@ public class MeetingController(
     public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingCommand command, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(command, cancellationToken);
+        
+        await notifier.NotifyMeetingDeletedAsync(meeting.Id);
+        
         return Results.Ok(meeting);
     }
     
@@ -41,6 +50,9 @@ public class MeetingController(
         var command = new RescheduleMeetingCommand(meetingId, dto);
         
         var meeting = await mediator.Send(command, cancellationToken);
+        
+        await notifier.NotifyTimeChangedAsync(meeting.Id, meeting.StartTime);
+        
         return Results.Ok(meeting);
     }
     
@@ -51,6 +63,7 @@ public class MeetingController(
         var command = new UpdateMeetingInformationCommand(meetingId, dto);
         
         var meeting = await mediator.Send(command, cancellationToken);
+        
         return Results.Ok(meeting);
     }
     

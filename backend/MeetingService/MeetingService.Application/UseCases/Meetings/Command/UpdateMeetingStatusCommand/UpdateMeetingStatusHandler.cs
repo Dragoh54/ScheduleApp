@@ -19,6 +19,8 @@ public class UpdateMeetingStatusHandler(
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
+        //TODO: ADD LOGIC IF STATUS IS CANCELLED
+        
         meeting.Status = request.Status;
         
         var updatedMeeting = await unitOfWork.MeetingRepository.Update(meeting, cancellationToken)

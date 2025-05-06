@@ -1,5 +1,8 @@
 ﻿using Hangfire;
 using MeetingService.Api.Extensions;
+using MeetingService.Api.Hubs;
+using MeetingService.Api.Interfaces;
+using MeetingService.Api.Managers;
 using MeetingService.Application.Extensions;
 using MeetingService.Application.Mappings;
 using MeetingService.Application.Settings;
@@ -37,6 +40,9 @@ public class Startup(
 
         GeneralMappingConfig.RegisterMappers();
         
+        services.AddManagers();
+        services.AddNotifiers();
+        
         services.AddServices();
         services.AddProviders();
         
@@ -44,16 +50,18 @@ public class Startup(
         services.AddSwaggerGen();
 
         services.AddMediatRServices();
+
+        services.AddSignalR();
         
-        
-        services.AddSwaggerGenAuthenticationExtension();
+        services.AddSwaggerGenAuthentication();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, string[] args)
+    public void Configure(WebApplication app, IWebHostEnvironment env, string[] args)
     {
         app.UseSwagger();
         app.UseSwaggerUI();
         
+        app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseRouting();
 
@@ -68,7 +76,6 @@ public class Startup(
         
         app.UseMiddleware<ExceptionHandlerMiddleware>();
         
-        app.UseHangfireServer();
         app.UseHangfireDashboard();
 
         app.UseCookiePolicy(new CookiePolicyOptions
@@ -82,5 +89,8 @@ public class Startup(
         {
             endpoints.MapControllers();
         });
+        
+        app.MapHub<MeetingNotificationHub>("/notify");
+        app.MapHub<ParticipantNotificationHub>("/notify-participant");
     }
 }

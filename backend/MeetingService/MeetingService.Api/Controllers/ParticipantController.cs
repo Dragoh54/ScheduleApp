@@ -1,5 +1,9 @@
 ﻿using MediatR;
 using MeetingService.Api.Extensions;
+using MeetingService.Api.Hubs;
+using MeetingService.Api.Interfaces;
+using MeetingService.Api.Interfaces.Hubs;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 using MeetingService.Application.UseCases.Participants.Command.ConfirmParticipationCommand;
@@ -8,6 +12,7 @@ using MeetingService.Application.UseCases.Participants.Query.GetParticipantQuery
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantsByMeetingIdQuery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Controllers;
 
@@ -15,7 +20,8 @@ namespace MeetingService.Api.Controllers;
 [Authorize]
 [Route("participants")]
 public class ParticipantController(
-    IMediator mediator
+    IMediator mediator,
+    IParticipantNotifier notifier
     ) : Controller
 {                                        
     [HttpPost("meetings/{meetingId:guid}")]
@@ -30,6 +36,9 @@ public class ParticipantController(
         var command = new AddParticipantToMeetingCommand(meetingId, dto, callbackUrl!);
         
         var participant = await mediator.Send(command, cancellationToken);
+        
+        await notifier.NotifyInvitedAsync(meetingId, participant.UserId);
+        
         return Results.Ok(participant);
     }
     
@@ -40,6 +49,9 @@ public class ParticipantController(
         var command = new ConfirmParticipationCommand(meetingId, dto);
         
         var participant = await mediator.Send(command, cancellationToken);
+        
+        await notifier.NotifyJoinedAsync(meetingId, participant.UserId);
+        
         return Results.Ok(participant);
     }
     
@@ -52,6 +64,9 @@ public class ParticipantController(
         var command = new RemoveParticipantFromMeetingCommand(meetingId, dto, accessToken);
         
         var participant = await mediator.Send(command, cancellationToken);
+        
+        await notifier.NotifyRemovedAsync(meetingId, participant.UserId);
+        
         return Results.Ok(participant);
     }
 

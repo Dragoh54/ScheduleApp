@@ -1,4 +1,8 @@
 ﻿using System.Text;
+using MeetingService.Api.Interfaces;
+using MeetingService.Api.Interfaces.Notifiers;
+using MeetingService.Api.Managers;
+using MeetingService.Api.Notifier;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -29,7 +33,7 @@ public static class ServiceCollectionExtension
         services.AddAuthorization(); 
     }
     
-    public static void AddSwaggerGenAuthenticationExtension(this IServiceCollection services)
+    public static void AddSwaggerGenAuthentication(this IServiceCollection services)
     {
         services.AddSwaggerGen(options =>
         {
@@ -56,5 +60,16 @@ public static class ServiceCollectionExtension
                 }
             });
         });
+    }
+
+    public static void AddManagers(this IServiceCollection services)
+    {
+        services.AddSingleton<IUserConnectionManager, UserConnectionManager>();
+    }
+
+    public static void AddNotifiers(this IServiceCollection services)
+    {
+        services.AddScoped<IMeetingNotifier, MeetingNotifier>();
+        services.AddScoped<IParticipantNotifier, ParticipantNotifier>();
     }
 }
