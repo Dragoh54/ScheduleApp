@@ -6,6 +6,7 @@ using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
+using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInformationCommand;
 
@@ -18,8 +19,6 @@ public class UpdateMeetingInformationHandler(
     {
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
-        
-        var oldTitle = meeting.Title;
 
         request.Adapt(meeting);
         
@@ -30,22 +29,36 @@ public class UpdateMeetingInformationHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        //TODO: THINK ABOUT NOTIFY ALL PARTICIPANTS THROUGH SIGNALR
-        foreach (var participant in updatedMeeting.Participants)
-        {
-            BackgroundJob.Enqueue(() =>
-                emailService.SendEmailAsync(
-                    participant.Email,
-                    "Meeting information Updated",
-                    $"""
-                     Meeting {oldTitle} was updated! 
-                     Title: {updatedMeeting.Title},
-                     Description: {updatedMeeting.Description}
-                     """,
-                    cancellationToken
-                ));
-        }
+        var oldTitle = meeting.Title!;
+        var newTitle = updatedMeeting.Title!;
+        var newDescription = updatedMeeting.Description!;
+        
+        await Parallel.ForEachAsync(
+            updatedMeeting.Participants,
+            cancellationToken,
+            async (participant, ct) =>
+            {
+                await SendEmailAsync(participant, oldTitle, newTitle, newDescription, ct);
+            });
         
         return updatedMeeting.Adapt<MeetingDto>();
+    }
+    
+    private Task SendEmailAsync(Participant participant, string oldTitle, string updatedTitle, string updatedDescription, CancellationToken ct)
+    {
+        return Task.Run(() =>
+        {
+            BackgroundJob.Enqueue(() =>
+                 emailService.SendEmailAsync(
+                     participant.Email,
+                     "Meeting information Updated",
+                     $"""
+                      Meeting {oldTitle} was updated! 
+                      Title: {updatedTitle},
+                      Description: {updatedDescription}
+                      """,
+                     ct
+                 ));
+        }, ct);
     }
 }

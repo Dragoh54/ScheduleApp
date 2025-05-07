@@ -49,22 +49,6 @@ public class MeetingRepository(
         return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
 
-    //TODO: REWORK (m.Status == MeetingStatus.Scheduled || m.Status == MeetingStatus.Rescheduled))
-    //TODO: REMOVE THIS METHOD FROM REPOSITORY
-    // public async Task<bool> IsUserHasMeetingAsync(Guid userId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
-    // {
-    //     // var meetings = await Collection.Find(m =>
-    //     //     m.UserId == userId  &&
-    //     //     (m.Status == MeetingStatus.Scheduled || m.Status == MeetingStatus.Rescheduled))
-    //     //     .ToListAsync(cancellationToken);
-    //
-    //     var overlappedMeetings = meetings.Select(m =>
-    //         startTime < m.EndTime && m.StartTime < endTime
-    //     );
-    //     
-    //     return overlappedMeetings.Any();
-    // }
-
     public async Task UpdateMeetingStatusAsync(Guid meetingId, MeetingStatus status, CancellationToken cancellationToken)
     {
         var filter = Builders<Meeting>.Filter.Eq(m => m.Id, meetingId);

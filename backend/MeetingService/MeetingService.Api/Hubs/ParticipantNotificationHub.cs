@@ -11,12 +11,9 @@ public class ParticipantNotificationHub(
     IJwtProvider jwtProvider
     ) : Hub<IParticipantNotificationHub>
 {
-    public async Task<string> GetConnectionId()
+    public async Task<string> SetConnectionId(string userId)
     {
-        var token = Context.GetHttpContext()?.GetBearerToken();
-        var userId = await jwtProvider.GetUserIdFromToken(token);
-
-        userConnectionManager.KeepUserConnection(userId.ToString(), Context.ConnectionId);
+        userConnectionManager.KeepUserConnection(userId, Context.ConnectionId);
 
         return Context.ConnectionId;
     }

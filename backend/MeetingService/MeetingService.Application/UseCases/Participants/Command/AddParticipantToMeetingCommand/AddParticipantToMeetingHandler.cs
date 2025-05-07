@@ -57,8 +57,6 @@ public class AddParticipantToMeetingHandler(
                 cancellationToken
             ));
         
-        //TODO: SEND NOTIFICATIONS THROUGH SIGNALR
-        
         return participant.Adapt<ParticipantDto>();
     }
     

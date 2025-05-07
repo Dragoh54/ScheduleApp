@@ -3,24 +3,28 @@ using Mapster;
 using MediatR;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Interfaces.Providers;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
+using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
 
 public class DeleteMeetingHandler(
     IUnitOfWork unitOfWork,
-    IEmailService emailService
+    IEmailService emailService,
+    IJwtProvider jwtProvider
     ) : IRequestHandler<DeleteMeetingCommand, MeetingDto>
 {
     public async Task<MeetingDto> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
     {
-        //TODO: GET WITH PARTICIPANTS TO NOTIFY THEM
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
-
-        if (meeting.OrganizationUserId != request.UserId)
+        
+        var idFromToken = await jwtProvider.GetUserIdFromToken(request.Token);
+        
+        if (meeting.OrganizationUserId != idFromToken)
         {
             throw new BadRequestException("You are not an organization user");
         }
@@ -36,8 +40,30 @@ public class DeleteMeetingHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        //TODO: THINK ABOUT NOTIFY ALL PARTICIPANTS THROUGH SIGNALR
+        var meetingTitle = meeting.Title!;
+        
+        await Parallel.ForEachAsync(
+            meeting.Participants,
+            cancellationToken,
+            async (participant, ct) =>
+            {
+                await SendEmailAsync(participant, meetingTitle, ct);
+            });
         
         return meeting.Adapt<MeetingDto>();
+    }
+
+    private Task SendEmailAsync(Participant participant, string meetingTitle, CancellationToken ct)
+    {
+        return Task.Run(() =>
+        {
+            BackgroundJob.Enqueue(() =>
+                emailService.SendEmailAsync(
+                    participant.Email,
+                    "Meeting Deleted",
+                    $"Meeting {meetingTitle} was deleted! ",
+                    ct
+                ));
+        }, ct);
     }
 }

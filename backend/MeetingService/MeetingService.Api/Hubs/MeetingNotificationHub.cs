@@ -8,16 +8,6 @@ namespace MeetingService.Api.Hubs;
 
 public class MeetingNotificationHub : Hub<IMeetingNotificationHub>
 {
-    public async Task JoinMeetingGroup(string meetingId)
-    {
-        await Groups.AddToGroupAsync(Context.ConnectionId, meetingId);
-    }
-
-    public async Task LeaveMeetingGroup(string meetingId)
-    {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, meetingId);
-    }
-    
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         await base.OnDisconnectedAsync(exception);

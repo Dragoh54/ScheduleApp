@@ -1,8 +1,5 @@
-﻿using System.Globalization;
-using MediatR;
+﻿using MediatR;
 using MeetingService.Api.Extensions;
-using MeetingService.Api.Hubs;
-using MeetingService.Api.Interfaces.Hubs;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
@@ -14,7 +11,6 @@ using MeetingService.Application.UseCases.Meetings.Query.GetMeetingsOrganizedByU
 using MeetingService.Application.UseCases.Meetings.Query.GetMeetingWithParticipantsQuery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Controllers;
 
@@ -27,8 +23,12 @@ public class MeetingController(
     ) : Controller
 {
     [HttpPost]
-    public async Task<IResult> CreateMeeting([FromForm] CreateMeetingCommand command, CancellationToken cancellationToken)
+    public async Task<IResult> CreateMeeting([FromForm] CreateMeetingDto dto, CancellationToken cancellationToken)
     {
+        var accessToken = HttpContext.GetBearerToken();
+        
+        var command = new CreateMeetingCommand(dto, accessToken);
+        
         var meeting = await mediator.Send(command, cancellationToken);
 
         await notifier.NotifyMeetingAsync(meeting.Id, meeting.StartTime);
@@ -37,8 +37,10 @@ public class MeetingController(
     }
 
     [HttpDelete]
-    public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingCommand command, CancellationToken cancellationToken)
+    public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingDto dto, CancellationToken cancellationToken)
     {
+        var command = new DeleteMeetingCommand(dto, HttpContext.GetBearerToken());
+        
         var meeting = await mediator.Send(command, cancellationToken);
         
         await notifier.NotifyMeetingDeletedAsync(meeting.Id);

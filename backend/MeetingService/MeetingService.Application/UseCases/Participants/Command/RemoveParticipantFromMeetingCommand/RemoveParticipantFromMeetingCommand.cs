@@ -14,7 +14,6 @@ public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantDto>
     {
         MeetingId = meetingId;
         UserId = dto.UserId;
-        AccessToken = accessToken;
     }
 
     public Guid UserId { get; set; }

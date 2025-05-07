@@ -7,8 +7,8 @@ public class CreateMeetingValidator : AbstractValidator<CreateMeetingCommand>
 {
     public CreateMeetingValidator()
     {
-        RuleFor(x => x.OrganizationUserId)
-            .NotEmpty().WithMessage("OrganizationUserId is required.");
+        RuleFor(x => x.AccessToken)
+            .NotEmpty().WithMessage("AccessToken is required");
 
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")
@@ -27,8 +27,5 @@ public class CreateMeetingValidator : AbstractValidator<CreateMeetingCommand>
         RuleFor(x => x.EndTime)
             .NotNull().WithMessage("EndTime is required.")
             .GreaterThan(x => x.StartTime).WithMessage("EndTime must be after StartTime.");
-
-        RuleFor(x => x.Status)
-            .NotNull().WithMessage("Status is required.");
     }
 }

@@ -5,7 +5,9 @@ using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Exceptions;
+using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
 
@@ -19,8 +21,6 @@ public class UpdateMeetingStatusHandler(
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
-        //TODO: ADD LOGIC IF STATUS IS CANCELLED
-        
         meeting.Status = request.Status;
         
         var updatedMeeting = await unitOfWork.MeetingRepository.Update(meeting, cancellationToken)
@@ -29,22 +29,35 @@ public class UpdateMeetingStatusHandler(
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
+
+        var meetingTitle = updatedMeeting.Title!;
+        var updatedMeetingStatus = updatedMeeting.Status;
         
-        //TODO: THINK ABOUT NOTIFY ALL PARTICIPANTS THROUGH SIGNALR
-        foreach (var participant in updatedMeeting.Participants)
+        await Parallel.ForEachAsync(
+            updatedMeeting.Participants,
+            cancellationToken,
+            async (participant, ct) =>
+            {
+                await SendEmailAsync(participant, meetingTitle, updatedMeetingStatus, ct);
+            });
+
+        return updatedMeeting.Adapt<MeetingDto>();
+    }
+    
+    private Task SendEmailAsync(Participant participant, string meetingTitle, MeetingStatus updatedMeetingStatus,  CancellationToken ct)
+    {
+        return Task.Run(() =>
         {
             BackgroundJob.Enqueue(() =>
                 emailService.SendEmailAsync(
                     participant.Email,
                     $"Meeting status Updated",
                     $"""
-                     Meeting {updatedMeeting.Title} was updated! 
-                     Status: {updatedMeeting.Status}
+                     Meeting {meetingTitle} was updated! 
+                     Status: {updatedMeetingStatus}
                      """,
-                    cancellationToken
+                    ct
                 )); 
-        }
-
-        return updatedMeeting.Adapt<MeetingDto>();
+        }, ct);
     }
 }

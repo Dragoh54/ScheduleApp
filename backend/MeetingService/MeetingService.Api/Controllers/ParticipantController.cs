@@ -1,8 +1,5 @@
 ﻿using MediatR;
 using MeetingService.Api.Extensions;
-using MeetingService.Api.Hubs;
-using MeetingService.Api.Interfaces;
-using MeetingService.Api.Interfaces.Hubs;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
@@ -12,7 +9,6 @@ using MeetingService.Application.UseCases.Participants.Query.GetParticipantQuery
 using MeetingService.Application.UseCases.Participants.Query.GetParticipantsByMeetingIdQuery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Controllers;
 

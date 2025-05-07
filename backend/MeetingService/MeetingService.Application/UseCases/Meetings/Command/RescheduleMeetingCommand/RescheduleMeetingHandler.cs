@@ -6,6 +6,7 @@ using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
+using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
 
@@ -27,23 +28,37 @@ public class RescheduleMeetingHandler(
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        var oldTitle = meeting.Title!;
+        var newStartTime = updatedMeeting.StartTime;
+        var newEndTime = updatedMeeting.EndTime;
+        
+        await Parallel.ForEachAsync(
+            updatedMeeting.Participants,
+            cancellationToken,
+            async (participant, ct) =>
+            {
+                await SendEmailAsync(participant, oldTitle, newStartTime, newEndTime, ct);
+            });
+        
+        return updatedMeeting.Adapt<MeetingDto>();
+    }
 
-        //TODO: THINK ABOUT NOTIFY ALL PARTICIPANTS THROUGH SIGNALR
-        foreach (var participant in updatedMeeting.Participants)
+    private Task SendEmailAsync(Participant participant, string oldTitle, DateTime newStartTime, DateTime newEndTime, CancellationToken ct)
+    {
+        return Task.Run(() =>
         {
             BackgroundJob.Enqueue(() =>
                 emailService.SendEmailAsync(
                     participant.Email,
                     "Meeting Rescheduled",
                     $"""
-                     Meeting {meeting.Title} was rescheduled! 
-                     Start time: {updatedMeeting.StartTime},
-                     End time: {updatedMeeting.EndTime}
+                     Meeting {oldTitle} was rescheduled! 
+                     Start time: {newStartTime},
+                     End time: {newEndTime}
                      """,
-                    cancellationToken
+                    ct
                 ));
-        }
-        
-        return updatedMeeting.Adapt<MeetingDto>();
+        }, ct);
     }
 }

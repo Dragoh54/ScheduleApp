@@ -21,12 +21,11 @@ public class MeetingMappingConfig
     {
         TypeAdapterConfig<CreateMeetingCommand, Meeting>.NewConfig()
             .Map(dest => dest.Id, _ => Guid.NewGuid())
-            .Map(dest => dest.OrganizationUserId, src => src.OrganizationUserId)
             .Map(dest => dest.Title, src => src.Title)
             .Map(dest => dest.Description, src => src.Description)
             .Map(dest => dest.StartTime, src => src.StartTime)
             .Map(dest => dest.EndTime, src => src.EndTime)
-            .Map(dest => dest.Status, src => src.Status)
+            .Map(dest => dest.Status, src => MeetingStatus.Scheduled)
             .Map(dest => dest.CreatedAt, _ => DateTime.UtcNow)
             .Map(dest => dest.Participants, _ => new List<Participant>());
         
