@@ -9,15 +9,15 @@ namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingWithParti
 
 public class GetMeetingWithParticipantsHandler(
     IUnitOfWork unitOfWork
-    ) : IRequestHandler<GetMeetingWithParticipantsQuery, MeetingDto>
+    ) : IRequestHandler<GetMeetingWithParticipantsQuery, MeetingWithParticipantsDto>
 {
-    public async Task<MeetingDto> Handle(GetMeetingWithParticipantsQuery request, CancellationToken cancellationToken)
+    public async Task<MeetingWithParticipantsDto> Handle(GetMeetingWithParticipantsQuery request, CancellationToken cancellationToken)
     {
         var meetings = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.MeetingId, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        return meetings.Adapt<MeetingDto>();
+        return meetings.Adapt<MeetingWithParticipantsDto>();
     }
 }

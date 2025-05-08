@@ -4,7 +4,7 @@ using MeetingService.Application.Dtos.MeetingDtos;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
 
-public record RescheduleMeetingCommand : IRequest<MeetingDto>
+public record RescheduleMeetingCommand : IRequest<MeetingWithParticipantsDto>
 {
     public RescheduleMeetingCommand()
     {

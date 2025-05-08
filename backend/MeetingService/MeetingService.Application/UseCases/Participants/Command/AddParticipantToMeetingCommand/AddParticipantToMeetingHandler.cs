@@ -13,14 +13,15 @@ using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 
+//TODO: REMOVE TOKEN IF NEW PARTICIPANT ADDED
 public class AddParticipantToMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
     IEmailTokenService emailTokenService,
     IParticipantCacheService participantCacheService
-    ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantDto>
+    ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantWithMeetingDto>
 {
-    public async Task<ParticipantDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<ParticipantWithMeetingDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.MeetingId, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
@@ -32,6 +33,8 @@ public class AddParticipantToMeetingHandler(
 
         var participant = new Participant();
         request.Adapt(participant);
+
+        participant.Meeting = meeting;
 
         var key = participantCacheService.CreateKey(participant.MeetingId, participant.Email);
         await participantCacheService.Set(participant, key, cancellationToken);
@@ -57,7 +60,7 @@ public class AddParticipantToMeetingHandler(
                 cancellationToken
             ));
         
-        return participant.Adapt<ParticipantDto>();
+        return participant.Adapt<ParticipantWithMeetingDto>();
     }
     
     private static string GenerateEmailTokenLink(string baseUrl, string email, string token, ParticipationStatus participationStatus)

@@ -4,7 +4,7 @@ using MeetingService.Application.Dtos.ParticipantDtos;
 
 namespace MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
 
-public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantDto>
+public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantWithMeetingDto>
 {
     public RemoveParticipantFromMeetingCommand()
     {
@@ -14,6 +14,7 @@ public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantDto>
     {
         MeetingId = meetingId;
         UserId = dto.UserId;
+        AccessToken = accessToken;
     }
 
     public Guid UserId { get; set; }

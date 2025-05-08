@@ -4,7 +4,7 @@ using MeetingService.Application.Dtos.MeetingDtos;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
 
-public record DeleteMeetingCommand : IRequest<MeetingDto>
+public record DeleteMeetingCommand : IRequest<MeetingWithParticipantsDto>
 {
     public DeleteMeetingCommand(DeleteMeetingDto dto, string token)
     {

@@ -15,9 +15,9 @@ public class ConfirmParticipationHandler(
     IEmailService emailService,
     IParticipantCacheService participantCacheService,
     IEmailTokenService emailTokenService
-    ) : IRequestHandler<ConfirmParticipationCommand, ParticipantDto>
+    ) : IRequestHandler<ConfirmParticipationCommand, ParticipantWithMeetingDto>
 {
-    public async Task<ParticipantDto> Handle(ConfirmParticipationCommand request, CancellationToken cancellationToken)
+    public async Task<ParticipantWithMeetingDto> Handle(ConfirmParticipationCommand request, CancellationToken cancellationToken)
     {
         var success = await emailTokenService.CheckEmailToken(request.MeetingId, request.Email, request.Token, cancellationToken);
         if (!success)
@@ -60,7 +60,7 @@ public class ConfirmParticipationHandler(
         
         SendNotifications(meeting, participantInDatabase, cancellationToken);
         
-        return participantInDatabase.Adapt<ParticipantDto>();
+        return participantInDatabase.Adapt<ParticipantWithMeetingDto>();
     }
     
     private void SendNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)

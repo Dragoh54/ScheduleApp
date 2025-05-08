@@ -14,8 +14,8 @@ public class MeetingHubHelper : IMeetingHubHelper
         _hubContext = hubContext;
     }
 
-    public async Task SendData(string meetingId, string date)
+    public async Task SendData(string meetingId, string meetingTitle, string date)
     {
-        await _hubContext.Clients.Group(meetingId).MeetingNotification(meetingId, date);
+        await _hubContext.Clients.Group(meetingId).MeetingNotification(meetingId, meetingTitle, date);
     }
 }

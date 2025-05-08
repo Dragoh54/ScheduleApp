@@ -4,7 +4,7 @@ using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Application.UseCases.Participants.Command.ConfirmParticipationCommand;
 
-public record ConfirmParticipationCommand : IRequest<ParticipantDto>
+public record ConfirmParticipationCommand : IRequest<ParticipantWithMeetingDto>
 {
     public ConfirmParticipationCommand()
     {

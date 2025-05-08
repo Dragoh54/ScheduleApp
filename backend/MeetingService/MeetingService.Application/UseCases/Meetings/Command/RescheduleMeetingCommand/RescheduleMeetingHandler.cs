@@ -13,9 +13,9 @@ namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeeting
 public class RescheduleMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService
-    ) : IRequestHandler<RescheduleMeetingCommand, MeetingDto>
+    ) : IRequestHandler<RescheduleMeetingCommand, MeetingWithParticipantsDto>
 {
-    public async Task<MeetingDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<MeetingWithParticipantsDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
@@ -41,7 +41,7 @@ public class RescheduleMeetingHandler(
                 await SendEmailAsync(participant, oldTitle, newStartTime, newEndTime, ct);
             });
         
-        return updatedMeeting.Adapt<MeetingDto>();
+        return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }
 
     private Task SendEmailAsync(Participant participant, string oldTitle, DateTime newStartTime, DateTime newEndTime, CancellationToken ct)

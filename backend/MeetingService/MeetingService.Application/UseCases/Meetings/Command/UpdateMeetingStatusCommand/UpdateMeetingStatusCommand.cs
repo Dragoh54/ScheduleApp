@@ -5,7 +5,7 @@ using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
 
-public record UpdateMeetingStatusCommand : IRequest<MeetingDto>
+public record UpdateMeetingStatusCommand : IRequest<MeetingWithParticipantsDto>
 {
     public UpdateMeetingStatusCommand()
     {

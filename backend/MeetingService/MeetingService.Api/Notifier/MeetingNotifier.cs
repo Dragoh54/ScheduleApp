@@ -14,7 +14,7 @@ public class MeetingNotifier(
     IHubContext<MeetingNotificationHub, IMeetingNotificationHub> hubContext
     ) : IMeetingNotifier
 {
-    public async Task NotifyMeetingAsync(Guid meetingId, DateTime date)
+    public async Task NotifyMeetingAsync(Guid meetingId, string meetingTitle, DateTime date)
     {
         var stringId = meetingId.ToString();
         var stringDate = date.ToString(CultureInfo.InvariantCulture);
@@ -23,29 +23,29 @@ public class MeetingNotifier(
         
         if (notifyTime <= DateTime.UtcNow)
         {
-            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(stringId, stringDate);
+            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(stringId, stringDate, meetingTitle);
         }
         else
         {
             BackgroundJob.Schedule<MeetingHubHelper>(h =>
-                    h.SendData(stringId, stringDate),
+                    h.SendData(stringId, meetingTitle, stringDate),
                 notifyTime);
         }
     }
 
-    public async Task NotifyTimeChangedAsync(Guid meetingId, DateTime newStartTime)
+    public async Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime)
     {
         await hubContext
             .Clients
             .Group(meetingId.ToString())
-            .MeetingTimeChanged(meetingId.ToString(), newStartTime.ToString(CultureInfo.InvariantCulture));
+            .MeetingTimeChanged(meetingId.ToString(), meetingTitle, newStartTime.ToString(CultureInfo.InvariantCulture));
     }
 
-    public async Task NotifyMeetingDeletedAsync(Guid meetingId)
+    public async Task NotifyMeetingDeletedAsync(Guid meetingId, string meetingTitle)
     {
         await hubContext
             .Clients
             .Group(meetingId.ToString())
-            .MeetingDeleted(meetingId.ToString());
+            .MeetingDeleted(meetingId.ToString(), meetingTitle);
     }
 }

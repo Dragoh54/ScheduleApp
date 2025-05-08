@@ -3,7 +3,7 @@ using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Application.Dtos.MeetingDtos;
 
-public record MeetingDto
+public record MeetingWithParticipantsDto
 {
     public Guid Id { get; set; }
     public Guid OrganizationUserId { get; set; }
@@ -16,4 +16,6 @@ public record MeetingDto
     public DateTime EndTime { get; set; }
     
     public MeetingStatus Status { get; set; }
+    
+    public ICollection<ParticipantDto> Participants { get; set; } = [];
 }

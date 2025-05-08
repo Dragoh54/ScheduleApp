@@ -13,9 +13,9 @@ namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInfo
 public class UpdateMeetingInformationHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService
-    ) : IRequestHandler<UpdateMeetingInformationCommand, MeetingDto>
+    ) : IRequestHandler<UpdateMeetingInformationCommand, MeetingWithParticipantsDto>
 {
-    public async Task<MeetingDto> Handle(UpdateMeetingInformationCommand request, CancellationToken cancellationToken)
+    public async Task<MeetingWithParticipantsDto> Handle(UpdateMeetingInformationCommand request, CancellationToken cancellationToken)
     {
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
@@ -41,7 +41,7 @@ public class UpdateMeetingInformationHandler(
                 await SendEmailAsync(participant, oldTitle, newTitle, newDescription, ct);
             });
         
-        return updatedMeeting.Adapt<MeetingDto>();
+        return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }
     
     private Task SendEmailAsync(Participant participant, string oldTitle, string updatedTitle, string updatedDescription, CancellationToken ct)

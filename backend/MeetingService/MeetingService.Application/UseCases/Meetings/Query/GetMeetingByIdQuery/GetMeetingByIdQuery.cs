@@ -4,7 +4,7 @@ using MeetingService.Application.Dtos.MeetingDtos;
 
 namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingByIdQuery;
 
-public record GetMeetingByIdQuery : IRequest<MeetingDto>
+public record GetMeetingByIdQuery : IRequest<MeetingWithParticipantsDto>
 {
     public Guid Id { get; set; }
 }

@@ -9,15 +9,15 @@ namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantB
 
 public class GetParticipantByEmailHandler(
     IUnitOfWork unitOfWork
-    ) : IRequestHandler<GetParticipantByEmailQuery, ParticipantDto>
+    ) : IRequestHandler<GetParticipantByEmailQuery, ParticipantWithMeetingDto>
 {
-    public async Task<ParticipantDto> Handle(GetParticipantByEmailQuery request, CancellationToken cancellationToken)
+    public async Task<ParticipantWithMeetingDto> Handle(GetParticipantByEmailQuery request, CancellationToken cancellationToken)
     {
         var participant = unitOfWork.ParticipantRepository.GetParticipantByEmail(request.MeetingId, request.Email, cancellationToken)
             ?? throw new NotFoundException("Participant not found");
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        return participant.Adapt<ParticipantDto>();
+        return participant.Adapt<ParticipantWithMeetingDto>();
     }
 }

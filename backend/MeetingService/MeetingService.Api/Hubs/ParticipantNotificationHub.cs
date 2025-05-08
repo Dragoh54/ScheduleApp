@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace MeetingService.Api.Hubs;
 
 public class ParticipantNotificationHub(
-    IUserConnectionManager userConnectionManager,
-    IJwtProvider jwtProvider
+    IUserConnectionManager userConnectionManager
     ) : Hub<IParticipantNotificationHub>
 {
     public async Task<string> SetConnectionId(string userId)
@@ -18,7 +17,7 @@ public class ParticipantNotificationHub(
         return Context.ConnectionId;
     }
     
-    public async override Task OnDisconnectedAsync(Exception exception)
+    public override async Task OnDisconnectedAsync(Exception exception)
     {
         var connectionId = Context.ConnectionId;
         userConnectionManager.RemoveUserConnection(connectionId);

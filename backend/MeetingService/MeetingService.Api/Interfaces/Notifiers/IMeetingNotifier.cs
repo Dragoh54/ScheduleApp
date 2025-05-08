@@ -2,10 +2,9 @@
 
 namespace MeetingService.Api.Interfaces.Notifiers;
 
-//TODO: ADD PARALLEL FOR PARALLEL SENDING
 public interface IMeetingNotifier
 {
-    Task NotifyMeetingAsync(Guid meetingId, DateTime date);
-    Task NotifyTimeChangedAsync(Guid meetingId, DateTime newStartTime);
-    Task NotifyMeetingDeletedAsync(Guid meetingId);
+    Task NotifyMeetingAsync(Guid meetingId, string meetingTitle, DateTime date);
+    Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime);
+    Task NotifyMeetingDeletedAsync(Guid meetingId, string meetingTitle);
 }

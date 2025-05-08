@@ -31,7 +31,7 @@ public class MeetingController(
         
         var meeting = await mediator.Send(command, cancellationToken);
 
-        await notifier.NotifyMeetingAsync(meeting.Id, meeting.StartTime);
+        await notifier.NotifyMeetingAsync(meeting.Id, meeting.Title!, meeting.StartTime);
         
         return Results.Ok(meeting);
     }
@@ -43,7 +43,7 @@ public class MeetingController(
         
         var meeting = await mediator.Send(command, cancellationToken);
         
-        await notifier.NotifyMeetingDeletedAsync(meeting.Id);
+        await notifier.NotifyMeetingDeletedAsync(meeting.Id, meeting.Title!);
         
         return Results.Ok(meeting);
     }
@@ -56,7 +56,7 @@ public class MeetingController(
         
         var meeting = await mediator.Send(command, cancellationToken);
         
-        await notifier.NotifyTimeChangedAsync(meeting.Id, meeting.StartTime);
+        await notifier.NotifyTimeChangedAsync(meeting.Id, meeting.Title!, meeting.StartTime);
         
         return Results.Ok(meeting);
     }

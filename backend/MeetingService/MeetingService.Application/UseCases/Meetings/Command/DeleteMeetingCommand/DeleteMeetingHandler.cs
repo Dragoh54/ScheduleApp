@@ -15,9 +15,9 @@ public class DeleteMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
     IJwtProvider jwtProvider
-    ) : IRequestHandler<DeleteMeetingCommand, MeetingDto>
+    ) : IRequestHandler<DeleteMeetingCommand, MeetingWithParticipantsDto>
 {
-    public async Task<MeetingDto> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<MeetingWithParticipantsDto> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
@@ -50,7 +50,7 @@ public class DeleteMeetingHandler(
                 await SendEmailAsync(participant, meetingTitle, ct);
             });
         
-        return meeting.Adapt<MeetingDto>();
+        return meeting.Adapt<MeetingWithParticipantsDto>();
     }
 
     private Task SendEmailAsync(Participant participant, string meetingTitle, CancellationToken ct)

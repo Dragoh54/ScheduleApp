@@ -4,7 +4,7 @@ using MeetingService.Application.Dtos.MeetingDtos;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInformationCommand;
 
-public record UpdateMeetingInformationCommand : IRequest<MeetingDto>
+public record UpdateMeetingInformationCommand : IRequest<MeetingWithParticipantsDto>
 {
     public UpdateMeetingInformationCommand()
     {

@@ -16,9 +16,9 @@ public class RemoveParticipantFromMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
     IJwtProvider jwtProvider
-    ) : IRequestHandler<RemoveParticipantFromMeetingCommand, ParticipantDto>
+    ) : IRequestHandler<RemoveParticipantFromMeetingCommand, ParticipantWithMeetingDto>
 {
-    public async Task<ParticipantDto> Handle(RemoveParticipantFromMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<ParticipantWithMeetingDto> Handle(RemoveParticipantFromMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
                       ?? throw new NotFoundException("Meeting not found");
@@ -52,6 +52,6 @@ public class RemoveParticipantFromMeetingHandler(
                  cancellationToken
              ));
 
-        return participant.Adapt<ParticipantDto>();
+        return participant.Adapt<ParticipantWithMeetingDto>();
     }
 }

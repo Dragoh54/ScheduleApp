@@ -33,7 +33,7 @@ public class ParticipantController(
         
         var participant = await mediator.Send(command, cancellationToken);
         
-        await notifier.NotifyInvitedAsync(meetingId, participant.UserId);
+        await notifier.NotifyInvitedAsync(meetingId, participant.UserId, participant.Meeting.Title!);
         
         return Results.Ok(participant);
     }
@@ -46,7 +46,7 @@ public class ParticipantController(
         
         var participant = await mediator.Send(command, cancellationToken);
         
-        await notifier.NotifyJoinedAsync(meetingId, participant.UserId);
+        await notifier.NotifyJoinedAsync(meetingId, participant.UserId, participant.Meeting.Title!);
         
         return Results.Ok(participant);
     }
@@ -61,7 +61,7 @@ public class ParticipantController(
         
         var participant = await mediator.Send(command, cancellationToken);
         
-        await notifier.NotifyRemovedAsync(meetingId, participant.UserId);
+        await notifier.NotifyRemovedAsync(meetingId, participant.UserId, participant.Meeting.Title!);
         
         return Results.Ok(participant);
     }

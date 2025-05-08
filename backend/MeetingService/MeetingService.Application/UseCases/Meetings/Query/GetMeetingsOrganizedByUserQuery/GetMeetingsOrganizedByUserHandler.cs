@@ -9,15 +9,15 @@ namespace MeetingService.Application.UseCases.Meetings.Query.GetMeetingsOrganize
 
 public class GetMeetingsOrganizedByUserHandler(
     IUnitOfWork unitOfWork
-    ) : IRequestHandler<GetMeetingsOrganizedByUserQuery, IEnumerable<MeetingDto>>
+    ) : IRequestHandler<GetMeetingsOrganizedByUserQuery, IEnumerable<MeetingWithParticipantsDto>>
 {
-    public async Task<IEnumerable<MeetingDto>> Handle(GetMeetingsOrganizedByUserQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MeetingWithParticipantsDto>> Handle(GetMeetingsOrganizedByUserQuery request, CancellationToken cancellationToken)
     {
         var meetings = await unitOfWork.MeetingRepository.GetMeetingsForUser(request.OrganizerId, cancellationToken)
             ?? throw new NotFoundException("Meetings not found");
         
         cancellationToken.ThrowIfCancellationRequested();
 
-        return meetings.Adapt<IEnumerable<MeetingDto>>();
+        return meetings.Adapt<IEnumerable<MeetingWithParticipantsDto>>();
     }
 }
