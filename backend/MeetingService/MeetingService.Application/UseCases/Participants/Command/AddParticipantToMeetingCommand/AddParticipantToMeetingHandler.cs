@@ -2,6 +2,7 @@
 using Hangfire;
 using Mapster;
 using MediatR;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.Interfaces.Providers;
@@ -18,7 +19,8 @@ public class AddParticipantToMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
     IEmailTokenService emailTokenService,
-    IParticipantCacheService participantCacheService
+    IParticipantCacheService participantCacheService,
+    IParticipantNotifier notifier
     ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantWithMeetingDto>
 {
     public async Task<ParticipantWithMeetingDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
@@ -33,8 +35,6 @@ public class AddParticipantToMeetingHandler(
 
         var participant = new Participant();
         request.Adapt(participant);
-
-        participant.Meeting = meeting;
 
         var key = participantCacheService.CreateKey(participant.MeetingId, participant.Email);
         await participantCacheService.Set(participant, key, cancellationToken);
@@ -59,6 +59,8 @@ public class AddParticipantToMeetingHandler(
                  """,
                 cancellationToken
             ));
+        
+        await notifier.NotifyJoinedAsync(meeting.Id, participant.UserId, meeting.Title!);
         
         return participant.Adapt<ParticipantWithMeetingDto>();
     }

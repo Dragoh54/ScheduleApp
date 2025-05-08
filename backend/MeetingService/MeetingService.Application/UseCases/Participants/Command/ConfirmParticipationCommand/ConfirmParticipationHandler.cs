@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Mapster;
 using MediatR;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
@@ -14,7 +15,8 @@ public class ConfirmParticipationHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
     IParticipantCacheService participantCacheService,
-    IEmailTokenService emailTokenService
+    IEmailTokenService emailTokenService,
+    IParticipantNotifier notifier
     ) : IRequestHandler<ConfirmParticipationCommand, ParticipantWithMeetingDto>
 {
     public async Task<ParticipantWithMeetingDto> Handle(ConfirmParticipationCommand request, CancellationToken cancellationToken)
@@ -59,6 +61,8 @@ public class ConfirmParticipationHandler(
             ));
         
         SendNotifications(meeting, participantInDatabase, cancellationToken);
+        
+        await notifier.NotifyJoinedAsync(meeting.Id, participant.UserId, meeting.Title!);
         
         return participantInDatabase.Adapt<ParticipantWithMeetingDto>();
     }

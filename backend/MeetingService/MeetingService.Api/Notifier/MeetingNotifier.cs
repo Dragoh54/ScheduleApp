@@ -6,6 +6,7 @@ using MeetingService.Api.Interfaces;
 using MeetingService.Api.Interfaces.Hubs;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.DomainModel.Enums;
 using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Notifier;
@@ -47,5 +48,21 @@ public class MeetingNotifier(
             .Clients
             .Group(meetingId.ToString())
             .MeetingDeleted(meetingId.ToString(), meetingTitle);
+    }
+
+    public async Task NotifyMeetingInformationChangedAsync(Guid meetingId, string oldTitle, string newTitle)
+    {
+        await hubContext
+            .Clients
+            .Group(meetingId.ToString())
+            .MeetingInformationUpdated(meetingId.ToString(), oldTitle, newTitle);
+    }
+
+    public async Task NotifyMeetingStatusChangedAsync(Guid meetingId, string meetingTitle, MeetingStatus newStatus)
+    {
+        await hubContext
+            .Clients
+            .Group(meetingId.ToString())
+            .MeetingStatusChanged(meetingId.ToString(), meetingTitle, newStatus.ToString());
     }
 }

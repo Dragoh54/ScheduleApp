@@ -2,6 +2,7 @@
 using Hangfire;
 using Mapster;
 using MediatR;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.Interfaces.Providers;
@@ -15,7 +16,8 @@ namespace MeetingService.Application.UseCases.Participants.Command.RemovePartici
 public class RemoveParticipantFromMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
-    IJwtProvider jwtProvider
+    IJwtProvider jwtProvider,
+    IParticipantNotifier notifier
     ) : IRequestHandler<RemoveParticipantFromMeetingCommand, ParticipantWithMeetingDto>
 {
     public async Task<ParticipantWithMeetingDto> Handle(RemoveParticipantFromMeetingCommand request, CancellationToken cancellationToken)
@@ -48,9 +50,11 @@ public class RemoveParticipantFromMeetingHandler(
              emailService.SendEmailAsync(
                  participant.Email,
                  $"Removed from meeting",
-                 $"You were removed from meeting {participant.Meeting.Title}!",
+                 $"You were removed from meeting {meeting.Title}!",
                  cancellationToken
              ));
+         
+         await notifier.NotifyRemovedAsync(meeting.Id, participant.UserId, meeting.Title!);
 
         return participant.Adapt<ParticipantWithMeetingDto>();
     }

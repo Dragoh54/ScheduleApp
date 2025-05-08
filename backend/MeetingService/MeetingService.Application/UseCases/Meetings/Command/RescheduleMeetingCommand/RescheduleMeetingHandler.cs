@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Mapster;
 using MediatR;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Interfaces.Services;
@@ -12,7 +13,8 @@ namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeeting
 
 public class RescheduleMeetingHandler(
     IUnitOfWork unitOfWork,
-    IEmailService emailService
+    IEmailService emailService,
+    IMeetingNotifier notifier
     ) : IRequestHandler<RescheduleMeetingCommand, MeetingWithParticipantsDto>
 {
     public async Task<MeetingWithParticipantsDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
@@ -29,7 +31,7 @@ public class RescheduleMeetingHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        var oldTitle = meeting.Title!;
+        var meetingTitle = meeting.Title!;
         var newStartTime = updatedMeeting.StartTime;
         var newEndTime = updatedMeeting.EndTime;
         
@@ -38,8 +40,10 @@ public class RescheduleMeetingHandler(
             cancellationToken,
             async (participant, ct) =>
             {
-                await SendEmailAsync(participant, oldTitle, newStartTime, newEndTime, ct);
+                await SendEmailAsync(participant, meetingTitle, newStartTime, newEndTime, ct);
             });
+        
+        await notifier.NotifyTimeChangedAsync(meeting.Id, meetingTitle, newStartTime);
         
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }

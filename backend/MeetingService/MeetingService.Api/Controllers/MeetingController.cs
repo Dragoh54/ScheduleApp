@@ -18,8 +18,7 @@ namespace MeetingService.Api.Controllers;
 [Authorize]
 [Route("meetings")]
 public class MeetingController(
-    IMediator mediator,
-    IMeetingNotifier notifier
+    IMediator mediator
     ) : Controller
 {
     [HttpPost]
@@ -30,8 +29,6 @@ public class MeetingController(
         var command = new CreateMeetingCommand(dto, accessToken);
         
         var meeting = await mediator.Send(command, cancellationToken);
-
-        await notifier.NotifyMeetingAsync(meeting.Id, meeting.Title!, meeting.StartTime);
         
         return Results.Ok(meeting);
     }
@@ -43,8 +40,6 @@ public class MeetingController(
         
         var meeting = await mediator.Send(command, cancellationToken);
         
-        await notifier.NotifyMeetingDeletedAsync(meeting.Id, meeting.Title!);
-        
         return Results.Ok(meeting);
     }
     
@@ -55,8 +50,6 @@ public class MeetingController(
         var command = new RescheduleMeetingCommand(meetingId, dto);
         
         var meeting = await mediator.Send(command, cancellationToken);
-        
-        await notifier.NotifyTimeChangedAsync(meeting.Id, meeting.Title!, meeting.StartTime);
         
         return Results.Ok(meeting);
     }
@@ -79,6 +72,7 @@ public class MeetingController(
         var command = new UpdateMeetingStatusCommand(meetingId, dto);
         
         var meeting = await mediator.Send(command, cancellationToken);
+        
         return Results.Ok(meeting);
     }
 
@@ -86,6 +80,7 @@ public class MeetingController(
     public async Task<IResult> GetMeetingsOrganizedByUser([FromRoute] GetMeetingsOrganizedByUserQuery query, CancellationToken cancellationToken)
     {
         var meetings = await mediator.Send(query, cancellationToken);
+        
         return Results.Ok(meetings);
     }
     
@@ -93,6 +88,7 @@ public class MeetingController(
     public async Task<IResult> GetMeetings([FromRoute] GetMeetingWithParticipantsQuery query, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(query, cancellationToken);
+        
         return Results.Ok(meeting);
     }
 }

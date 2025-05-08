@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Mapster;
 using MediatR;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Interfaces.Providers;
@@ -13,7 +14,8 @@ namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingComm
 
 public class CreateMeetingHandler(
     IUnitOfWork unitOfWork,
-    IJwtProvider jwtProvider
+    IJwtProvider jwtProvider,
+    IMeetingNotifier notifier
     ) : IRequestHandler<CreateMeetingCommand, MeetingDto>
 {
     public async Task<MeetingDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
@@ -29,6 +31,8 @@ public class CreateMeetingHandler(
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        await notifier.NotifyMeetingAsync(meeting.Id, meeting.Title!, meeting.StartTime);
         
         return meeting.Adapt<MeetingDto>();
     }

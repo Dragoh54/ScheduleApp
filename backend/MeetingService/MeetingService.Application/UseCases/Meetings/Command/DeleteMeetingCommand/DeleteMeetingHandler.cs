@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Mapster;
 using MediatR;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Interfaces.Providers;
@@ -14,7 +15,8 @@ namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingComm
 public class DeleteMeetingHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
-    IJwtProvider jwtProvider
+    IJwtProvider jwtProvider,
+    IMeetingNotifier notifier
     ) : IRequestHandler<DeleteMeetingCommand, MeetingWithParticipantsDto>
 {
     public async Task<MeetingWithParticipantsDto> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
@@ -49,6 +51,8 @@ public class DeleteMeetingHandler(
             {
                 await SendEmailAsync(participant, meetingTitle, ct);
             });
+        
+        await notifier.NotifyMeetingDeletedAsync(meeting.Id, meetingTitle);
         
         return meeting.Adapt<MeetingWithParticipantsDto>();
     }

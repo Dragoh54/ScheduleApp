@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Mapster;
 using MediatR;
+using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Interfaces.Services;
@@ -12,7 +13,8 @@ namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInfo
 
 public class UpdateMeetingInformationHandler(
     IUnitOfWork unitOfWork,
-    IEmailService emailService
+    IEmailService emailService,
+    IMeetingNotifier notifier
     ) : IRequestHandler<UpdateMeetingInformationCommand, MeetingWithParticipantsDto>
 {
     public async Task<MeetingWithParticipantsDto> Handle(UpdateMeetingInformationCommand request, CancellationToken cancellationToken)
@@ -40,6 +42,8 @@ public class UpdateMeetingInformationHandler(
             {
                 await SendEmailAsync(participant, oldTitle, newTitle, newDescription, ct);
             });
+        
+        await notifier.NotifyMeetingInformationChangedAsync(meeting.Id, oldTitle, newTitle);
         
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }
