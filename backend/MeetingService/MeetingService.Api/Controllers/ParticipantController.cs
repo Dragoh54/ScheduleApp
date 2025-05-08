@@ -16,8 +16,7 @@ namespace MeetingService.Api.Controllers;
 [Authorize]
 [Route("participants")]
 public class ParticipantController(
-    IMediator mediator,
-    IParticipantNotifier notifier
+    IMediator mediator
     ) : Controller
 {                                        
     [HttpPost("meetings/{meetingId:guid}")]

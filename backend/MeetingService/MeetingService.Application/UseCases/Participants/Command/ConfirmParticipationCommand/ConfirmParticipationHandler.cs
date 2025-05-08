@@ -60,33 +60,39 @@ public class ConfirmParticipationHandler(
                 cancellationToken
             ));
         
-        SendNotifications(meeting, participantInDatabase, cancellationToken);
+        SendScheduledNotifications(meeting, participantInDatabase, cancellationToken);
         
         await notifier.NotifyJoinedAsync(meeting.Id, participant.UserId, meeting.Title!);
         
         return participantInDatabase.Adapt<ParticipantWithMeetingDto>();
     }
     
-    private void SendNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)
+    private void SendScheduledNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)
     {
         var notifyBeforeDay = meeting.StartTime.AddDays(-1);
         var notifyBeforeHour = meeting.StartTime.AddHours(-1);
-        
-        BackgroundJob.Schedule(() => 
-            emailService.SendEmailAsync(
-                participant.Email,
-                $"Reminder",
-                $"Meeting {meeting.Title} will be next day at {meeting.StartTime:hh:mm}!",
-                cancellationToken
-            ), notifyBeforeDay);
-        
-        BackgroundJob.Schedule(() => 
-            emailService.SendEmailAsync(
-                participant.Email,
-                $"Reminder",
-                $"Meeting {meeting.Title} starts soon: {meeting.StartTime:hh:mm}!",
-                cancellationToken
-            ), notifyBeforeHour);
+
+        if (notifyBeforeDay > DateTime.Now.AddDays(-1))
+        {
+            BackgroundJob.Schedule(() => 
+                emailService.SendEmailAsync(
+                    participant.Email,
+                    $"Reminder",
+                    $"Meeting {meeting.Title} will be next day at {meeting.StartTime:hh:mm}!",
+                    cancellationToken
+                ), notifyBeforeDay);
+        }
+
+        if (notifyBeforeDay > DateTime.Now.AddHours(-1))
+        {
+            BackgroundJob.Schedule(() => 
+                emailService.SendEmailAsync(
+                    participant.Email,
+                    $"Reminder",
+                    $"Meeting {meeting.Title} starts soon: {meeting.StartTime:hh:mm}!",
+                    cancellationToken
+                ), notifyBeforeHour);
+        }
     }
 
     private bool ValidateParticipantStatus(ParticipationStatus participantStatus) => participantStatus switch

@@ -6,6 +6,7 @@ namespace MeetingService.DataAccess.UnitOfWork;
 public class UnitOfWork(
     IMeetingRepository meetingRepository,
     IParticipantRepository participantRepository,
+    IScheduledJobRepository scheduledJobRepository,
     MeetingServiceDbContext dbContext
     ) : IUnitOfWork
 {
@@ -13,6 +14,7 @@ public class UnitOfWork(
 
     public IMeetingRepository MeetingRepository { get; } = meetingRepository;
     public IParticipantRepository ParticipantRepository { get; } = participantRepository;
+    public IScheduledJobRepository ScheduledJobRepository { get; } = scheduledJobRepository;
 
     public async Task SaveChangesAsync()
     {

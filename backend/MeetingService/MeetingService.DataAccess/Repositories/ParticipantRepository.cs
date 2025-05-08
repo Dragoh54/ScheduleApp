@@ -10,7 +10,7 @@ public class ParticipantRepository(
 {
     public async Task<IEnumerable<Participant>> GetParticipantsByMeetingId(Guid meetingId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Participants
+        return await DbContext.Participants
             .Where(p => p.MeetingId == meetingId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
@@ -18,14 +18,14 @@ public class ParticipantRepository(
 
     public async Task<Participant?> GetParticipant(Guid meetingId, Guid userId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Participants
+        return await DbContext.Participants
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.MeetingId == meetingId && p.UserId == userId, cancellationToken);
     }
 
     public async Task<Participant?> GetParticipantWithMeeting(Guid meetingId, Guid userId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Participants
+        return await DbContext.Participants
             .Include(p => p.Meeting)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.MeetingId == meetingId && p.UserId == userId, cancellationToken);
@@ -33,7 +33,7 @@ public class ParticipantRepository(
 
     public async Task<Participant?> GetParticipantByEmail(Guid meetingId, string email, CancellationToken cancellationToken)
     {
-        return await _dbContext.Participants
+        return await DbContext.Participants
             .AsNoTracking()
             .FirstOrDefaultAsync(p => 
                 p.Email.Equals(email, StringComparison.CurrentCultureIgnoreCase) &&

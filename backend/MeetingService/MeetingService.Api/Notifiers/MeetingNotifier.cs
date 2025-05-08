@@ -6,16 +6,19 @@ using MeetingService.Api.Interfaces;
 using MeetingService.Api.Interfaces.Hubs;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
+using MeetingService.DomainModel.Models;
 using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Notifier;
 
 public class MeetingNotifier(
-    IHubContext<MeetingNotificationHub, IMeetingNotificationHub> hubContext
+    IHubContext<MeetingNotificationHub, IMeetingNotificationHub> hubContext,
+    IUnitOfWork unitOfWork
     ) : IMeetingNotifier
 {
-    public async Task NotifyMeetingAsync(Guid meetingId, string meetingTitle, DateTime date)
+    public async Task NotifyMeetingAsync(Guid meetingId, string meetingTitle, DateTime date, CancellationToken cancellationToken)
     {
         var stringId = meetingId.ToString();
         var stringDate = date.ToString(CultureInfo.InvariantCulture);
@@ -28,9 +31,18 @@ public class MeetingNotifier(
         }
         else
         {
-            BackgroundJob.Schedule<MeetingHubHelper>(h =>
-                    h.SendData(stringId, meetingTitle, stringDate),
+            var jobId = BackgroundJob.Schedule<MeetingHubHelper>(h =>
+                    h.SendMeetingNotification(stringId, meetingTitle, stringDate),
                 notifyTime);
+
+            var scheduledJob = new ScheduledJob
+            {
+                JobId = jobId,
+                MeetingId = meetingId,
+                ExecuteAt = notifyTime
+            };
+
+            await unitOfWork.ScheduledJobRepository.Add(scheduledJob, cancellationToken);
         }
     }
 

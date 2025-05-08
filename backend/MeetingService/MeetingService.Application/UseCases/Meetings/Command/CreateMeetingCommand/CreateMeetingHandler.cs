@@ -32,7 +32,7 @@ public class CreateMeetingHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        await notifier.NotifyMeetingAsync(meeting.Id, meeting.Title!, meeting.StartTime);
+        await notifier.NotifyMeetingAsync(meeting.Id, meeting.Title!, meeting.StartTime, cancellationToken);
         
         return meeting.Adapt<MeetingDto>();
     }

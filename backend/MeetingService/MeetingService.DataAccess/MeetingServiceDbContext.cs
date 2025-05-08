@@ -9,6 +9,7 @@ public class MeetingServiceDbContext(
 {
     public DbSet<Meeting> Meetings { get; set; }
     public DbSet<Participant> Participants { get; set; }
+    public DbSet<ScheduledJob> ScheduledJobs { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

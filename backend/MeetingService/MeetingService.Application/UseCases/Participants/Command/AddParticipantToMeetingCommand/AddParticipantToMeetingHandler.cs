@@ -60,7 +60,7 @@ public class AddParticipantToMeetingHandler(
                 cancellationToken
             ));
         
-        await notifier.NotifyJoinedAsync(meeting.Id, participant.UserId, meeting.Title!);
+        await notifier.NotifyInvitedAsync(meeting.Id, participant.UserId, meeting.Title!);
         
         return participant.Adapt<ParticipantWithMeetingDto>();
     }

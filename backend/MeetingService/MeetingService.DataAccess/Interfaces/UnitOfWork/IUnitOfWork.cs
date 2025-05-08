@@ -15,6 +15,11 @@ public interface IUnitOfWork : IDisposable
     public IParticipantRepository ParticipantRepository { get; }
     
     /// <summary>
+    /// Repository for working with Scheduled jobs entities
+    /// </summary>
+    public IScheduledJobRepository ScheduledJobRepository { get; }
+    
+    /// <summary>
     /// Save all changes in UnitOfWork context
     /// </summary>
     /// <returns></returns>

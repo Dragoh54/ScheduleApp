@@ -9,18 +9,18 @@ namespace MeetingService.DataAccess.Repositories;
 public class BaseRepository<T> : IBaseRepository<T> 
     where T : IdEntity
 {
-    protected readonly MeetingServiceDbContext _dbContext;
-    protected readonly DbSet<T> _dbSet;
+    protected readonly MeetingServiceDbContext DbContext;
+    protected readonly DbSet<T> DbSet;
 
     protected BaseRepository(MeetingServiceDbContext dbContext)
     {
-        _dbContext = dbContext;
-        _dbSet = _dbContext.Set<T>();
+        DbContext = dbContext;
+        DbSet = DbContext.Set<T>();
     }
     
     public virtual async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken)
     {
-        var entities = await _dbSet
+        var entities = await DbSet
             .AsNoTracking()
             .ToListAsync(cancellationToken);
         
@@ -31,7 +31,7 @@ public class BaseRepository<T> : IBaseRepository<T>
 
     public virtual async Task<T?> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _dbSet
+        var entity = await DbSet
             .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id.Equals(id), cancellationToken);
         
@@ -42,7 +42,7 @@ public class BaseRepository<T> : IBaseRepository<T>
 
     public virtual async Task<T> Add(T item, CancellationToken cancellationToken)
     {
-        var addedEntity = await _dbSet.AddAsync(item, cancellationToken);
+        var addedEntity = await DbSet.AddAsync(item, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -51,7 +51,7 @@ public class BaseRepository<T> : IBaseRepository<T>
 
     public virtual async Task<T?> Update(T item, CancellationToken cancellationToken)
     {
-        _dbSet.Update(item);
+        DbSet.Update(item);
         
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -60,7 +60,7 @@ public class BaseRepository<T> : IBaseRepository<T>
 
     public virtual async Task<bool> Delete(T item, CancellationToken cancellationToken)
     {
-        _dbSet.Remove(item);
+        DbSet.Remove(item);
         
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -69,7 +69,7 @@ public class BaseRepository<T> : IBaseRepository<T>
     
     public virtual async Task SaveAsync(CancellationToken cancellationToken)
     {
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await DbContext.SaveChangesAsync(cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
     }

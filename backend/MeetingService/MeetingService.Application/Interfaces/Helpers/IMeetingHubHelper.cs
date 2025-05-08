@@ -2,5 +2,5 @@
 
 public interface IMeetingHubHelper
 {
-    Task SendData(string meetingId, string meetingTitle, string date);
+    Task SendMeetingNotification(string meetingId, string meetingTitle, string date);
 }

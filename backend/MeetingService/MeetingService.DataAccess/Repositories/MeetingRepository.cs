@@ -10,7 +10,7 @@ public class MeetingRepository(
 {
     public async Task<IEnumerable<Meeting>> GetMeetingsForUser(Guid userId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Meetings
+        return await DbContext.Meetings
             .Where(m => m.OrganizationUserId == userId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
@@ -18,7 +18,7 @@ public class MeetingRepository(
 
     public async Task<IEnumerable<Meeting>> GetMeetingsInRange(DateTime from, DateTime to, CancellationToken cancellationToken)
     {
-        return await _dbContext.Meetings
+        return await DbContext.Meetings
             .Where(m => m.StartTime >= from && m.EndTime <= to)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
@@ -26,7 +26,7 @@ public class MeetingRepository(
 
     public async Task<Meeting?> GetMeetingWithParticipants(Guid meetingId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Meetings
+        return await DbContext.Meetings
             .Include(m => m.Participants)
             .AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == meetingId, cancellationToken);

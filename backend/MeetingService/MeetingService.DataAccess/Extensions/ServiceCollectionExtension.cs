@@ -15,6 +15,7 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IMeetingRepository, MeetingRepository>();
         services.AddScoped<IParticipantRepository, ParticipantRepository>();
+        services.AddScoped<IScheduledJobRepository, ScheduledJobRepository>();
     }
     
     public static void AddMeetingDbContext(this IServiceCollection services, IConfiguration configuration)
