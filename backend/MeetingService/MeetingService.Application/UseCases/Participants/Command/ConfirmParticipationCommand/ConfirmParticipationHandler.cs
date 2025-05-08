@@ -45,14 +45,10 @@ public class ConfirmParticipationHandler(
         
         var participantInDatabase = await unitOfWork.ParticipantRepository.Add(participant, cancellationToken)
             ?? throw new BadRequestException("Participant could not be added");
-
-        await unitOfWork.SaveChangesAsync();
-
+        
         var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
-        cancellationToken.ThrowIfCancellationRequested();
-
         BackgroundJob.Enqueue(() =>
             emailService.SendEmailAsync(participant.Email,
                 $"Welcome on board",
@@ -60,38 +56,34 @@ public class ConfirmParticipationHandler(
                 cancellationToken
             ));
         
-        SendScheduledNotifications(meeting, participantInDatabase, cancellationToken);
+        await SendScheduledNotifications(meeting, participantInDatabase, cancellationToken);
         
         await notifier.NotifyJoinedAsync(meeting.Id, participant.UserId, meeting.Title!);
+        
+        await unitOfWork.SaveChangesAsync();
+        
+        cancellationToken.ThrowIfCancellationRequested();
         
         return participantInDatabase.Adapt<ParticipantWithMeetingDto>();
     }
     
-    private void SendScheduledNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)
+    private async Task SendScheduledNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)
     {
         var notifyBeforeDay = meeting.StartTime.AddDays(-1);
-        var notifyBeforeHour = meeting.StartTime.AddHours(-1);
 
         if (notifyBeforeDay > DateTime.Now.AddDays(-1))
         {
-            BackgroundJob.Schedule(() => 
+            var jobId = BackgroundJob.Schedule(() => 
                 emailService.SendEmailAsync(
                     participant.Email,
                     $"Reminder",
                     $"Meeting {meeting.Title} will be next day at {meeting.StartTime:hh:mm}!",
                     cancellationToken
                 ), notifyBeforeDay);
-        }
 
-        if (notifyBeforeDay > DateTime.Now.AddHours(-1))
-        {
-            BackgroundJob.Schedule(() => 
-                emailService.SendEmailAsync(
-                    participant.Email,
-                    $"Reminder",
-                    $"Meeting {meeting.Title} starts soon: {meeting.StartTime:hh:mm}!",
-                    cancellationToken
-                ), notifyBeforeHour);
+            var scheduleJob = new ScheduledJob(meeting.Id, jobId, notifyBeforeDay);
+
+            await unitOfWork.ScheduledJobRepository.Add(scheduleJob, cancellationToken);
         }
     }
 

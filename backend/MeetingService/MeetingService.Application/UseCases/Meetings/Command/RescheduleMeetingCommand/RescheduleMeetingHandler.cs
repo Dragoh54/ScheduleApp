@@ -39,13 +39,30 @@ public class RescheduleMeetingHandler(
             updatedMeeting.Participants,
             cancellationToken,
             async (participant, ct) =>
-            {
-                await SendEmailAsync(participant, meetingTitle, newStartTime, newEndTime, ct);
-            });
+                await SendEmailAsync(participant, meetingTitle, newStartTime, newEndTime, ct));
         
-        await notifier.NotifyTimeChangedAsync(meeting.Id, meetingTitle, newStartTime);
+        await DeleteScheduledJobs(meeting.Id, cancellationToken);
+        
+        await notifier.NotifyTimeChangedAsync(meeting.Id, meetingTitle, newStartTime, cancellationToken);
         
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
+    }
+
+    private async Task DeleteScheduledJobs(Guid meetingId, CancellationToken cancellationToken)
+    {
+        var currentScheduledJobs = await unitOfWork.ScheduledJobRepository.GetScheduledJobsByMeetingId(meetingId, cancellationToken)
+            ?? throw new NotFoundException("Scheduled jobs not found");
+
+        foreach (var job in currentScheduledJobs)
+        {
+            var success = BackgroundJob.Delete(job.JobId);
+            if (!success)
+            {
+                throw new BadRequestException("Scheduled job could not be deleted");
+            }
+            
+            await unitOfWork.ScheduledJobRepository.Delete(job, cancellationToken);
+        }
     }
 
     private Task SendEmailAsync(Participant participant, string oldTitle, DateTime newStartTime, DateTime newEndTime, CancellationToken ct)

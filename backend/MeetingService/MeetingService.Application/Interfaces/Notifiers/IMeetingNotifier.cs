@@ -6,7 +6,7 @@ namespace MeetingService.Api.Interfaces.Notifiers;
 public interface IMeetingNotifier
 {
     Task NotifyMeetingAsync(Guid meetingId, string meetingTitle, DateTime date, CancellationToken cancellationToken);
-    Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime);
+    Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, CancellationToken cancellationToken);
     Task NotifyMeetingDeletedAsync(Guid meetingId, string meetingTitle);
     Task NotifyMeetingInformationChangedAsync(Guid meetingId, string oldTitle, string newTitle);
     Task NotifyMeetingStatusChangedAsync(Guid meetingId, string meetingTitle, MeetingStatus newStatus);

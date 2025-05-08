@@ -20,38 +20,34 @@ public class MeetingNotifier(
 {
     public async Task NotifyMeetingAsync(Guid meetingId, string meetingTitle, DateTime date, CancellationToken cancellationToken)
     {
-        var stringId = meetingId.ToString();
         var stringDate = date.ToString(CultureInfo.InvariantCulture);
         
         var notifyTime = date.AddDays(-1);
         
         if (notifyTime <= DateTime.UtcNow)
         {
-            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(stringId, stringDate, meetingTitle);
+            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(meetingId.ToString(), stringDate, meetingTitle);
         }
         else
         {
-            var jobId = BackgroundJob.Schedule<MeetingHubHelper>(h =>
-                    h.SendMeetingNotification(stringId, meetingTitle, stringDate),
-                notifyTime);
-
-            var scheduledJob = new ScheduledJob
-            {
-                JobId = jobId,
-                MeetingId = meetingId,
-                ExecuteAt = notifyTime
-            };
-
-            await unitOfWork.ScheduledJobRepository.Add(scheduledJob, cancellationToken);
+            await SetScheduledJob(meetingId, meetingTitle, stringDate, notifyTime, cancellationToken);
         }
     }
 
-    public async Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime)
+    public async Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, CancellationToken cancellationToken)
     {
-        await hubContext
-            .Clients
-            .Group(meetingId.ToString())
-            .MeetingTimeChanged(meetingId.ToString(), meetingTitle, newStartTime.ToString(CultureInfo.InvariantCulture));
+        var stringDate = newStartTime.ToString(CultureInfo.InvariantCulture);
+        
+        var notifyTime = newStartTime.AddDays(-1);
+        
+        if (notifyTime <= DateTime.UtcNow)
+        {
+            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(meetingId.ToString(), stringDate, meetingTitle);
+        }
+        else
+        {
+            await SetScheduledJob(meetingId, meetingTitle, stringDate, notifyTime, cancellationToken);
+        }
     }
 
     public async Task NotifyMeetingDeletedAsync(Guid meetingId, string meetingTitle)
@@ -77,4 +73,17 @@ public class MeetingNotifier(
             .Group(meetingId.ToString())
             .MeetingStatusChanged(meetingId.ToString(), meetingTitle, newStatus.ToString());
     }
+
+    private async Task SetScheduledJob(Guid meetingId, string meetingTitle, string date, DateTime notifyTime, CancellationToken cancellationToken)
+    {
+        var jobId = BackgroundJob.Schedule<MeetingHubHelper>(h =>
+                h.SendMeetingNotification(meetingId.ToString(), meetingTitle, date), 
+            notifyTime);
+
+        var scheduledJob = new ScheduledJob(meetingId, jobId, notifyTime);
+
+        await unitOfWork.ScheduledJobRepository.Add(scheduledJob, cancellationToken);
+
+        await unitOfWork.SaveChangesAsync();
+    } 
 }
