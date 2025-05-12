@@ -18,27 +18,9 @@ public class MeetingNotifier(
     IUnitOfWork unitOfWork
     ) : IMeetingNotifier
 {
-    public async Task NotifyMeetingAsync(Guid meetingId, string meetingTitle, DateTime date, CancellationToken cancellationToken)
-    {
-        var stringDate = date.ToString(CultureInfo.InvariantCulture);
-        
-        var notifyTime = date.AddDays(-1);
-        
-        if (notifyTime <= DateTime.UtcNow)
-        {
-            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(meetingId.ToString(), stringDate, meetingTitle);
-        }
-        else
-        {
-            await SetScheduledJob(meetingId, meetingTitle, stringDate, notifyTime, cancellationToken);
-        }
-    }
-
-    public async Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, CancellationToken cancellationToken)
+    public async Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, DateTime notifyTime, CancellationToken cancellationToken)
     {
         var stringDate = newStartTime.ToString(CultureInfo.InvariantCulture);
-        
-        var notifyTime = newStartTime.AddDays(-1);
         
         if (notifyTime <= DateTime.UtcNow)
         {

@@ -2,6 +2,7 @@
 using Mapster;
 using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
+using MeetingService.Application.Dtos.NotificationDtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
@@ -16,6 +17,7 @@ public class ConfirmParticipationHandler(
     IEmailService emailService,
     IParticipantCacheService participantCacheService,
     IEmailTokenService emailTokenService,
+    IEmailNotificationService emailNotificationService,
     IParticipantNotifier notifier
     ) : IRequestHandler<ConfirmParticipationCommand, ParticipantWithMeetingDto>
 {
@@ -35,12 +37,14 @@ public class ConfirmParticipationHandler(
             throw new BadRequestException("User declined participation");
         }
         
+        //todo: move to participantCacheService from here
         var key = participantCacheService.CreateKey(request.MeetingId, request.Email);
         var participant = await participantCacheService.Get(key, cancellationToken)
             ?? throw new BadRequestException("Participant not found");
 
         await participantCacheService.Delete(key, cancellationToken);
 
+        //todo: to here
         participant.Status = ParticipationStatus.Accepted;
         
         var participantInDatabase = await unitOfWork.ParticipantRepository.Add(participant, cancellationToken)
@@ -56,35 +60,13 @@ public class ConfirmParticipationHandler(
                 cancellationToken
             ));
         
-        await SendScheduledNotifications(meeting, participantInDatabase, cancellationToken);
+        await SendEmailNotification(meeting, participant, cancellationToken);
         
         await notifier.NotifyJoinedAsync(meeting.Id, participant.UserId, meeting.Title!);
-        
-        await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
         
         return participantInDatabase.Adapt<ParticipantWithMeetingDto>();
-    }
-    
-    private async Task SendScheduledNotifications(Meeting meeting, Participant participant, CancellationToken cancellationToken)
-    {
-        var notifyBeforeDay = meeting.StartTime.AddDays(-1);
-
-        if (notifyBeforeDay > DateTime.Now.AddDays(-1))
-        {
-            var jobId = BackgroundJob.Schedule(() => 
-                emailService.SendEmailAsync(
-                    participant.Email,
-                    $"Reminder",
-                    $"Meeting {meeting.Title} will be next day at {meeting.StartTime:hh:mm}!",
-                    cancellationToken
-                ), notifyBeforeDay);
-
-            var scheduleJob = new ScheduledJob(meeting.Id, jobId, notifyBeforeDay);
-
-            await unitOfWork.ScheduledJobRepository.Add(scheduleJob, cancellationToken);
-        }
     }
 
     private bool ValidateParticipantStatus(ParticipationStatus participantStatus) => participantStatus switch
@@ -93,4 +75,19 @@ public class ConfirmParticipationHandler(
         ParticipationStatus.Declined => false,
         _ => throw new BadRequestException("Invalid participation status")
     };
+
+    private async Task SendEmailNotification(Meeting meeting, Participant participant, CancellationToken cancellationToken)
+    {
+        var notifyTime = meeting.NotifyTime;
+        
+        var emailNotificationDto = new EmailNotificationDto(participant.Email, meeting.Title!, meeting.StartTime);
+        if (notifyTime > DateTime.UtcNow)
+        {
+            await emailNotificationService.SendNotificationAtNotifyTime(meeting.Id,  emailNotificationDto, notifyTime, cancellationToken);
+        }
+        else
+        {
+            await emailNotificationService.SendNotification(emailNotificationDto, cancellationToken);
+        }
+    }
 }

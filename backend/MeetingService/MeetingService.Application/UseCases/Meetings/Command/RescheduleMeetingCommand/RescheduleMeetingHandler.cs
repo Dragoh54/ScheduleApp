@@ -20,10 +20,17 @@ public class RescheduleMeetingHandler(
 {
     public async Task<MeetingWithParticipantsDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
     {
+        var notifyTime = request.NotifyTime ?? request.StartTime.AddDays(-1);
+        if (notifyTime < DateTime.Now)
+        {
+            throw new BadRequestException("Notify time cannot be in past");
+        }
+        
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
 
         request.Adapt(meeting);
+        request.NotifyTime = notifyTime;
         
         var updatedMeeting = await unitOfWork.MeetingRepository.Update(meeting, cancellationToken)
             ?? throw new BadRequestException("Meeting not updated");
@@ -44,7 +51,7 @@ public class RescheduleMeetingHandler(
         
         await scheduledJobsService.DeleteScheduledJobs(meeting.Id, cancellationToken);
         
-        await notifier.NotifyTimeChangedAsync(meeting.Id, meetingTitle, newStartTime, cancellationToken);
+        await notifier.NotifyTimeChangedAsync(meeting.Id, meetingTitle, newStartTime, notifyTime, cancellationToken);
         
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }

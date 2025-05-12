@@ -12,6 +12,7 @@ public class Meeting : IdEntity
     public DateTime CreatedAt { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
+    public DateTime NotifyTime { get; set; }
     
     public MeetingStatus Status { get; set; } = MeetingStatus.Scheduled;   
     

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MeetingService.Api.Controllers;
 
+//TODO: ADD NOTIFICATION TIME
 [ApiController]
 [Authorize]
 [Route("meetings")]

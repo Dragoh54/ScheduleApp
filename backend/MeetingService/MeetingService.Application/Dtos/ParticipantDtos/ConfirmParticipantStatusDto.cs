@@ -4,7 +4,7 @@ namespace MeetingService.Application.Dtos.ParticipantDtos;
 
 public record ConfirmParticipantStatusDto
 {
-    public string Email { get; set; }
-    public string Token { get; set; }
-    public string ParticipationStatusString { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
+    public string ParticipationStatusString { get; set; } = string.Empty;
 }

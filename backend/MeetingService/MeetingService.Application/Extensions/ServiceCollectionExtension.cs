@@ -31,7 +31,10 @@ public static class ServiceCollectionExtension
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailCacheService, EmailCacheService>();
         services.AddScoped<IEmailTokenService, EmailTokenService>();
+        services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+
         services.AddScoped<IParticipantCacheService, ParticipantCacheService>();
+        
         services.AddScoped<IScheduledJobsService, ScheduledJobsService>();
     }
 

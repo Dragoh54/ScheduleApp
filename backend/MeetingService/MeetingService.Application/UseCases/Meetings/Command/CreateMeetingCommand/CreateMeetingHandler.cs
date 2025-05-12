@@ -14,8 +14,7 @@ namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingComm
 
 public class CreateMeetingHandler(
     IUnitOfWork unitOfWork,
-    IJwtProvider jwtProvider,
-    IMeetingNotifier notifier
+    IJwtProvider jwtProvider
     ) : IRequestHandler<CreateMeetingCommand, MeetingDto>
 {
     public async Task<MeetingDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
@@ -24,6 +23,14 @@ public class CreateMeetingHandler(
         
         var meeting = request.Adapt<Meeting>();
         meeting.OrganizationUserId = organizationUserId;
+
+        var notifyTime = request.NotifyTime ?? meeting.StartTime.AddDays(-1);
+        if (notifyTime < DateTime.Now)
+        {
+            throw new BadRequestException("Notify time cannot be in past");
+        }
+
+        meeting.NotifyTime = notifyTime;
         
         meeting = await unitOfWork.MeetingRepository.Add(meeting, cancellationToken)
             ?? throw new BadRequestException("Meeting not created");
@@ -31,8 +38,6 @@ public class CreateMeetingHandler(
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
-        
-        await notifier.NotifyMeetingAsync(meeting.Id, meeting.Title!, meeting.StartTime, cancellationToken);
         
         return meeting.Adapt<MeetingDto>();
     }

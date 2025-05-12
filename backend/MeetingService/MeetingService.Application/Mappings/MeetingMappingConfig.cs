@@ -20,6 +20,7 @@ public class MeetingMappingConfig
     private static void RegisterCommandToCommandMappers()
     {
         TypeAdapterConfig<CreateMeetingCommand, Meeting>.NewConfig()
+            .Ignore(dest => dest.NotifyTime)
             .Map(dest => dest.Id, _ => Guid.NewGuid())
             .Map(dest => dest.Title, src => src.Title)
             .Map(dest => dest.Description, src => src.Description)
@@ -36,7 +37,8 @@ public class MeetingMappingConfig
             .Map(dest => dest.CreatedAt, src => src.CreatedAt)
             .Map(dest => dest.StartTime, src => src.StartTime)
             .Map(dest => dest.EndTime, src => src.EndTime)
-            .Map(dest => dest.Status, src => src.Status);
+            .Map(dest => dest.Status, src => src.Status)
+            .Map(dest => dest.NotifyTime , src => src.NotifyTime);
             
         TypeAdapterConfig<Meeting, MeetingWithParticipantsDto>.NewConfig()
             .Map(dest => dest.OrganizationUserId, src => src.OrganizationUserId)
@@ -46,6 +48,7 @@ public class MeetingMappingConfig
             .Map(dest => dest.StartTime, src => src.StartTime)
             .Map(dest => dest.EndTime, src => src.EndTime)
             .Map(dest => dest.Status, src => src.Status)
+            .Map(dest => dest.NotifyTime , src => src.NotifyTime)
             .Map(dest => dest.Participants, src => src.Participants.Adapt<IEnumerable<ParticipantDto>>());
 
         TypeAdapterConfig<RescheduleMeetingCommand, Meeting>.NewConfig()

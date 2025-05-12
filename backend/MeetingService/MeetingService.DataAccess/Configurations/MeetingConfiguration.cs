@@ -32,6 +32,10 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
             .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
             .IsRequired();
         
+        builder.Property(u => u.NotifyTime)
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            .IsRequired();
+        
         builder
             .HasMany(u => u.Participants)
             .WithOne(p => p.Meeting)
