@@ -21,6 +21,9 @@ public class MeetingController(
     IMediator mediator
     ) : Controller
 {
+    //todo: add participant who will be organizator through grpc
+    //todo: create new token with organizator id
+    //todo: store this token in cookie on server side
     [HttpPost]
     public async Task<IResult> CreateMeeting([FromForm] CreateMeetingDto dto, CancellationToken cancellationToken)
     {
