@@ -1,11 +1,12 @@
 ﻿using System.Globalization;
+using System.Security.Authentication;
 using System.Web;
 using Hangfire;
 using Mapster;
 using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
-using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Providers;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
@@ -15,9 +16,9 @@ using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 
-//TODO: REMOVE TOKEN IF NEW PARTICIPANT ADDED
 public class AddParticipantToMeetingHandler(
     IUnitOfWork unitOfWork,
+    IJwtProvider jwtProvider,
     IEmailService emailService,
     IEmailTokenService emailTokenService,
     IParticipantCacheService participantCacheService,
@@ -29,18 +30,21 @@ public class AddParticipantToMeetingHandler(
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.MeetingId, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
+        var idFromAccessToken = await jwtProvider.GetUserIdFromToken(request.AccessToken);
+        
+        var isUserValid = idFromAccessToken == meeting.OrganizationUserId;
+        if (!isUserValid)
+        {
+            throw new AuthenticationException("Only organization admin can add participants");
+        }
+        
         if (meeting.Participants.Any(p => p.UserId == request.UserId))
         {
             throw new AlreadyExistsException("User already on board!");
         }
-
-        var participant = new Participant();
-        request.Adapt(participant);
-
-        //todo: remove this to other method
-        var key = participantCacheService.CreateKey(participant.MeetingId, participant.Email);
-        await participantCacheService.Set(participant, key, cancellationToken);
-        //todo: end here
+        
+        var participant = request.Adapt<Participant>();
+        await participantCacheService.AddParticipantToCacheAsync(participant, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -53,13 +57,7 @@ public class AddParticipantToMeetingHandler(
             emailService.SendEmailAsync(
                 participant.Email,
                 "Meeting confirmation",
-                $"""
-                    <h1> Confirmation to {meeting.Title} </h1>
-                    <p>Go thought this link to confirm:</p>
-                    <a href="{confirmLink}">Confirm!</a>
-                    <p>If you are not going to participate decline this or just ignore 24 hours.</p>
-                    <a href="{declineLink}">Decline!</a>
-                 """,
+                ParticipantEmailMessageHandler.MeetingConfirmationBody(meeting.Title!, confirmLink, declineLink),
                 cancellationToken
             ));
         

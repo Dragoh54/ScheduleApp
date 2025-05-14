@@ -11,7 +11,7 @@ public record AddParticipantToMeetingCommand : IRequest<ParticipantWithMeetingDt
     {
     }
 
-    public AddParticipantToMeetingCommand(Guid meetingId, AddParticipantToMeetingDto dto, string url)
+    public AddParticipantToMeetingCommand(Guid meetingId, AddParticipantToMeetingDto dto, string url, string accessToken)
     {
         MeetingId = meetingId;
         UserId = dto.UserId;
@@ -20,6 +20,7 @@ public record AddParticipantToMeetingCommand : IRequest<ParticipantWithMeetingDt
         FirstName = dto.FirstName;
         LastName = dto.LastName;
         CallbackUrl = url;
+        AccessToken = accessToken;
     }
 
     public Guid MeetingId { get; set; }
@@ -29,4 +30,5 @@ public record AddParticipantToMeetingCommand : IRequest<ParticipantWithMeetingDt
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string CallbackUrl { get; set; } = string.Empty; 
+    public string AccessToken { get; set; } = string.Empty;
 }

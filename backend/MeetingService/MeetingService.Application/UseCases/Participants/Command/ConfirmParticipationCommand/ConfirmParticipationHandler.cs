@@ -4,6 +4,7 @@ using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.NotificationDtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
@@ -37,32 +38,26 @@ public class ConfirmParticipationHandler(
             throw new BadRequestException("User declined participation");
         }
         
-        //todo: move to participantCacheService from here
-        var key = participantCacheService.CreateKey(request.MeetingId, request.Email);
-        var participant = await participantCacheService.Get(key, cancellationToken)
-            ?? throw new BadRequestException("Participant not found");
-
-        await participantCacheService.Delete(key, cancellationToken);
-
-        //todo: to here
+        var participant = await participantCacheService.GetParticipantFromCache(request.MeetingId, request.Email, cancellationToken);
         participant.Status = ParticipationStatus.Accepted;
         
         var participantInDatabase = await unitOfWork.ParticipantRepository.Add(participant, cancellationToken)
             ?? throw new BadRequestException("Participant could not be added");
+
+        var meeting = participantInDatabase.Meeting;
         
-        var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
-            ?? throw new NotFoundException("Meeting not found");
+        // var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
+        //     ?? throw new NotFoundException("Meeting not found");
         
         BackgroundJob.Enqueue(() =>
             emailService.SendEmailAsync(participant.Email,
                 $"Welcome on board",
-                $"You are subscribed to meeting {meeting.Title} at {meeting.StartTime:D} {meeting.StartTime:hh:mm}!",
+                ParticipantEmailMessageHandler.ParticipationConfirmedBody(meeting.Title!, meeting.StartTime),
                 cancellationToken
             ));
         
-        await SendEmailNotification(meeting, participant, cancellationToken);
-        
-        await notifier.NotifyJoinedAsync(meeting.Id, participant.UserId, meeting.Title!);
+        await SendEmailNotification(meeting, participantInDatabase, cancellationToken);
+        await notifier.NotifyJoinedAsync(meeting.Id, participantInDatabase.UserId, meeting.Title!);
         
         cancellationToken.ThrowIfCancellationRequested();
         

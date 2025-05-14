@@ -4,6 +4,7 @@ using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
@@ -56,11 +57,7 @@ public class UpdateMeetingInformationHandler(
                  emailService.SendEmailAsync(
                      participant.Email,
                      "Meeting information Updated",
-                     $"""
-                      Meeting {oldTitle} was updated! 
-                      Title: {updatedTitle},
-                      Description: {updatedDescription}
-                      """,
+                     MeetingEmailMessageHandler.MeetingInformationUpdatedBody(oldTitle, updatedTitle, updatedDescription),
                      ct
                  ));
         }, ct);

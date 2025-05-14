@@ -1,9 +1,12 @@
-﻿using Hangfire;
+﻿using System.Security.Authentication;
+using Hangfire;
 using Mapster;
 using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Handlers.Email;
+using MeetingService.Application.Interfaces.Providers;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
@@ -15,7 +18,8 @@ namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStat
 public class UpdateMeetingStatusHandler(
     IUnitOfWork unitOfWork,
     IEmailService emailService,
-    IMeetingNotifier notifier
+    IMeetingNotifier notifier,
+    IJwtProvider jwtProvider
     ) : IRequestHandler<UpdateMeetingStatusCommand, MeetingWithParticipantsDto>
 {
     public async Task<MeetingWithParticipantsDto> Handle(UpdateMeetingStatusCommand request, CancellationToken cancellationToken)
@@ -56,10 +60,7 @@ public class UpdateMeetingStatusHandler(
                 emailService.SendEmailAsync(
                     participant.Email,
                     $"Meeting status Updated",
-                    $"""
-                     Meeting {meetingTitle} was updated! 
-                     Status: {updatedMeetingStatus}
-                     """,
+                    MeetingEmailMessageHandler.MeetingStatusUpdatedBody(meetingTitle, updatedMeetingStatus),
                     ct
                 )); 
         }, ct);

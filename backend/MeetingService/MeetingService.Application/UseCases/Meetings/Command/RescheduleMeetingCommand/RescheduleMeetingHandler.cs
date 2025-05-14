@@ -4,6 +4,7 @@ using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
@@ -56,7 +57,7 @@ public class RescheduleMeetingHandler(
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }
 
-    private Task SendEmailAsync(Participant participant, string oldTitle, DateTime newStartTime, DateTime newEndTime, CancellationToken ct)
+    private Task SendEmailAsync(Participant participant, string meetingTitle, DateTime newStartTime, DateTime newEndTime, CancellationToken ct)
     {
         return Task.Run(() =>
         {
@@ -64,11 +65,7 @@ public class RescheduleMeetingHandler(
                 emailService.SendEmailAsync(
                     participant.Email,
                     "Meeting Rescheduled",
-                    $"""
-                     Meeting {oldTitle} was rescheduled! 
-                     Start time: {newStartTime},
-                     End time: {newEndTime}
-                     """,
+                    MeetingEmailMessageHandler.MeetingRescheduledBody(meetingTitle, newStartTime, newEndTime),
                     ct
                 ));
         }, ct);

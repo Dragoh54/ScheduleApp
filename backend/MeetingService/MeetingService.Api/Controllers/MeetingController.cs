@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MeetingService.Api.Controllers;
 
-//TODO: ADD NOTIFICATION TIME
 [ApiController]
 [Authorize]
 [Route("meetings")]
@@ -34,6 +33,7 @@ public class MeetingController(
         return Results.Ok(meeting);
     }
 
+    //todo: add [OrganizatorOnly]
     [HttpDelete]
     public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingDto dto, CancellationToken cancellationToken)
     {
@@ -44,6 +44,7 @@ public class MeetingController(
         return Results.Ok(meeting);
     }
     
+    //todo: add [OrganizatorOnly]
     [HttpPatch("{meetingId:guid}/reschedule")]
     public async Task<IResult> RescheduleMeeting([FromRoute] Guid meetingId, 
         [FromForm] RescheduleMeetingDto dto, CancellationToken cancellationToken)
@@ -55,6 +56,7 @@ public class MeetingController(
         return Results.Ok(meeting);
     }
     
+    //todo: add [OrganizatorOnly]
     [HttpPatch("{meetingId:guid}/information")]
     public async Task<IResult> UpdateInformation([FromRoute] Guid meetingId, 
         [FromForm] UpdateMeetingInformationDto dto, CancellationToken cancellationToken)
@@ -66,6 +68,7 @@ public class MeetingController(
         return Results.Ok(meeting);
     }
     
+    //todo: add [OrganizatorOnly]
     [HttpPatch("{meetingId:guid}/status")]
     public async Task<IResult> UpdateMeetingStatus([FromRoute] Guid meetingId,
         [FromForm] UpdateMeetingStatusDto dto, CancellationToken cancellationToken)
@@ -76,7 +79,7 @@ public class MeetingController(
         
         return Results.Ok(meeting);
     }
-
+    
     [HttpGet("user/{OrganizerId:guid}")]
     public async Task<IResult> GetMeetingsOrganizedByUser([FromRoute] GetMeetingsOrganizedByUserQuery query, CancellationToken cancellationToken)
     {

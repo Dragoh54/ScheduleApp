@@ -4,6 +4,7 @@ using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Providers;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
@@ -65,7 +66,7 @@ public class DeleteMeetingHandler(
                 emailService.SendEmailAsync(
                     participant.Email,
                     "Meeting Deleted",
-                    $"Meeting {meetingTitle} was deleted! ",
+                    MeetingEmailMessageHandler.MeetingDeletedBody(meetingTitle),
                     ct
                 ));
         }, ct);

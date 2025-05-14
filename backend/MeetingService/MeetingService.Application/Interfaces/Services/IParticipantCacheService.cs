@@ -4,5 +4,6 @@ namespace MeetingService.Application.Interfaces.Services;
 
 public interface IParticipantCacheService  : ICacheService<Participant>
 {
-    public string CreateKey(Guid meetingId, string email);
+    public Task AddParticipantToCacheAsync(Participant participant, CancellationToken cancellationToken);
+    public Task<Participant> GetParticipantFromCache(Guid meetingId, string email, CancellationToken cancellationToken);
 }

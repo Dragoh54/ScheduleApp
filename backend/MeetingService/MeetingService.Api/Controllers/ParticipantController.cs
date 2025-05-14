@@ -18,17 +18,20 @@ namespace MeetingService.Api.Controllers;
 public class ParticipantController(
     IMediator mediator
     ) : Controller
-{                                        
+{                            
+    //todo: add [OrganizatorOnly]
     [HttpPost("meetings/{meetingId:guid}")]
     public async Task<IResult> AddParticipantToMeeting([FromRoute]Guid meetingId, 
         [FromForm] AddParticipantToMeetingDto dto, CancellationToken cancellationToken)
     {
+        var accessToken = HttpContext.GetBearerToken();
+        
         var callbackUrl = Url.RouteUrl(
             "ConfirmParticipation",
             values: new { meetingId },
             protocol: Request.Scheme);
         
-        var command = new AddParticipantToMeetingCommand(meetingId, dto, callbackUrl!);
+        var command = new AddParticipantToMeetingCommand(meetingId, dto, callbackUrl!, accessToken);
         
         var participant = await mediator.Send(command, cancellationToken);
         
@@ -46,6 +49,7 @@ public class ParticipantController(
         return Results.Ok(participant);
     }
     
+    //todo: add [OrganizatorOnly]
     [HttpDelete("meetings/{meetingId:guid}")]
     public async Task<IResult> RemoveParticipantFromMeeting([FromRoute]Guid meetingId, 
         [FromQuery] RemoveParticipantFromMeetingDto dto, CancellationToken cancellationToken)

@@ -5,6 +5,7 @@ using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Providers;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
@@ -50,7 +51,7 @@ public class RemoveParticipantFromMeetingHandler(
              emailService.SendEmailAsync(
                  participant.Email,
                  $"Removed from meeting",
-                 $"You were removed from meeting {meeting.Title}!",
+                 ParticipantEmailMessageHandler.RemoveParticipantBody(meeting.Title!),
                  cancellationToken
              ));
          
