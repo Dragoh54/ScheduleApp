@@ -6,21 +6,26 @@ using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingCommand;
 
-public class UpdateMeetingHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<UpdateMeetingCommand, MeetingDto>
+public class UpdateMeetingCommandHandler : IRequestHandler<UpdateMeetingCommand, MeetingDto>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UpdateMeetingCommandHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<MeetingDto> Handle(UpdateMeetingCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
+        var meeting = await _unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
         request.Adapt(meeting);
         
-        var updatedMeeting = await unitOfWork.Meetings.UpdateAsync(meeting, cancellationToken)
+        var updatedMeeting = await _unitOfWork.Meetings.UpdateAsync(meeting, cancellationToken)
             ?? throw new BadRequestException("Meeting not updated");
         
-        var success = await unitOfWork.Commit(cancellationToken);
+        var success = await _unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to update meeting");

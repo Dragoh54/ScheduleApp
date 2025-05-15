@@ -6,21 +6,26 @@ using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.AddTemplateCommand;
 
-public class AddTemplateHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<AddTemplateCommand, AvailabilityTemplateDto>
+public class AddTemplateCommandHandler : IRequestHandler<AddTemplateCommand, AvailabilityTemplateDto>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public AddTemplateCommandHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<AvailabilityTemplateDto> Handle(AddTemplateCommand request, CancellationToken cancellationToken)
     {
-        var addedTemplate = await unitOfWork.AvailabilityTemplates.AddAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken)
+        var addedTemplate = await _unitOfWork.AvailabilityTemplates.AddAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken)
             ?? throw new BadRequestException("Failed to add template to database");
 
         if (request.IsDefault)
         {
-            await unitOfWork.AvailabilityTemplates.SetDefaultTemplateAsync(addedTemplate.UserId, addedTemplate.Id, cancellationToken);
+            await _unitOfWork.AvailabilityTemplates.SetDefaultTemplateAsync(addedTemplate.UserId, addedTemplate.Id, cancellationToken);
         }
             
-        var success = await unitOfWork.Commit(cancellationToken);
+        var success = await _unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to add template to database");

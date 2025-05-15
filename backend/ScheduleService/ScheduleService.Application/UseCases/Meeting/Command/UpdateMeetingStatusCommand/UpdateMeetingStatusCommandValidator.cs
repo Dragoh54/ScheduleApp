@@ -2,9 +2,9 @@
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingStatusCommand;
 
-public class UpdateMeetingStatusValidator : AbstractValidator<UpdateMeetingStatusCommand>
+public class UpdateMeetingStatusCommandValidator : AbstractValidator<UpdateMeetingStatusCommand>
 {
-    public UpdateMeetingStatusValidator()
+    public UpdateMeetingStatusCommandValidator()
     {
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Id cannot be empty");

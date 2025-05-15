@@ -3,9 +3,9 @@ using ScheduleService.Application.Validation;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.UpdateTemplateCommand;
 
-public class UpdateTemplateValidator : AbstractValidator<UpdateTemplateCommand>
+public class UpdateTemplateCommandValidator : AbstractValidator<UpdateTemplateCommand>
 {
-    public UpdateTemplateValidator()
+    public UpdateTemplateCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Template name is required")

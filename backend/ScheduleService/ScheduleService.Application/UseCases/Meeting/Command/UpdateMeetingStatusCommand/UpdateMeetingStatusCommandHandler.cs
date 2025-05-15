@@ -7,13 +7,18 @@ using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingStatusCommand;
 
-public class UpdateMeetingStatusHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<UpdateMeetingStatusCommand, MeetingDto>
+public class UpdateMeetingStatusCommandHandler : IRequestHandler<UpdateMeetingStatusCommand, MeetingDto>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UpdateMeetingStatusCommandHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<MeetingDto> Handle(UpdateMeetingStatusCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
+        var meeting = await _unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
 
         var isStatusInvalid = meeting.Status is MeetingStatus.Cancelled or MeetingStatus.Completed;
@@ -22,15 +27,15 @@ public class UpdateMeetingStatusHandler(
             throw new BadRequestException("This meeting is cancelled or completed");
         }
         
-        await unitOfWork.Meetings.UpdateMeetingStatusAsync(request.Id, request.Status, cancellationToken);
+        await _unitOfWork.Meetings.UpdateMeetingStatusAsync(request.Id, request.Status, cancellationToken);
         
-        var success = await unitOfWork.Commit(cancellationToken);
+        var success = await _unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to create meeting");
         }
         
-        var updatedMeeting = await unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
+        var updatedMeeting = await _unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
         return updatedMeeting.Adapt<MeetingDto>();

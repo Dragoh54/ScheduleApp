@@ -7,13 +7,16 @@ using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DomainModel.Intefaces;
 
 namespace ScheduleService.DataAccess.Repositories;
-public abstract class BaseRepository<T>(
-    IScheduleDbContext dbContext, 
-    string collectionName
-    ) : IBaseRepository<T> where T : IEntity
+public abstract class BaseRepository<T> : IBaseRepository<T> where T : IEntity
 {
-    protected readonly IMongoCollection<T> Collection = dbContext.GetCollection<T>(collectionName);
-    protected readonly IScheduleDbContext DbContext = dbContext;
+    protected readonly IMongoCollection<T> Collection;
+    protected readonly IScheduleDbContext DbContext;
+
+    protected BaseRepository(IScheduleDbContext dbContext, string collectionName)
+    {
+        Collection = dbContext.GetCollection<T>(collectionName);
+        DbContext = dbContext;
+    }
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {

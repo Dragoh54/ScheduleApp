@@ -2,9 +2,9 @@
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.CreateMeetingCommand;
 
-public class CreateMeetingValidator : AbstractValidator<CreateMeetingCommand>
+public class CreateMeetingCommandValidator : AbstractValidator<CreateMeetingCommand>
 {
-    public CreateMeetingValidator()
+    public CreateMeetingCommandValidator()
     {
         RuleFor(x => x.UserId)
             .NotEmpty().WithMessage("UserId is required");

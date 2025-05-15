@@ -4,9 +4,9 @@ using ScheduleService.Application.Validation;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.AddTemplateCommand;
 
-public class AddTemplateValidator : AbstractValidator<AddTemplateCommand>
+public class AddTemplateCommandValidator : AbstractValidator<AddTemplateCommand>
 {
-    public AddTemplateValidator()
+    public AddTemplateCommandValidator()
     {
         RuleFor(x => x.UserId)
             .NotEmpty().WithMessage("User ID is required");

@@ -2,9 +2,9 @@
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingCommand;
 
-public class UpdateMeetingValidator : AbstractValidator<UpdateMeetingCommand>
+public class UpdateMeetingCommandValidator : AbstractValidator<UpdateMeetingCommand>
 {
-    public UpdateMeetingValidator()
+    public UpdateMeetingCommandValidator()
     {
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Id is required");

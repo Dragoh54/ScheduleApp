@@ -6,13 +6,18 @@ using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;
 
-public class DeleteTemplateHandler(
-    IUnitOfWork unitOfWork
-) : IRequestHandler<DeleteTemplateCommand, bool>
+public class DeleteTemplateCommandHandler : IRequestHandler<DeleteTemplateCommand, bool>
 {
+    private readonly IUnitOfWork _unitOfWork;
+    
+    public DeleteTemplateCommandHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<bool> Handle(DeleteTemplateCommand request, CancellationToken cancellationToken)
     {
-        var template = await unitOfWork.AvailabilityTemplates.GetByIdAsync(request.Id, cancellationToken)
+        var template = await _unitOfWork.AvailabilityTemplates.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Template not found");
 
         if (template.IsDefault)
@@ -20,9 +25,9 @@ public class DeleteTemplateHandler(
             throw new BadRequestException("Default template cannot be deleted");
         }
         
-        await unitOfWork.AvailabilityTemplates.DeleteAsync(template.Id, cancellationToken);
+        await _unitOfWork.AvailabilityTemplates.DeleteAsync(template.Id, cancellationToken);
         
-        var success = await unitOfWork.Commit(cancellationToken);
+        var success = await _unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to delete template to database");

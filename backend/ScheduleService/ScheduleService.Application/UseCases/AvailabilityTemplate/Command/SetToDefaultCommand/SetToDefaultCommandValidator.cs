@@ -2,9 +2,9 @@
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.SetToDefaultCommand;
 
-public class SetToDefaultValidator : AbstractValidator<SetToDefaultCommand>
+public class SetToDefaultCommandValidator : AbstractValidator<SetToDefaultCommand>
 {
-    public SetToDefaultValidator()
+    public SetToDefaultCommandValidator()
     {
         RuleFor(x => x.TemplateId)
             .NotEmpty().WithMessage("Template ID is required");

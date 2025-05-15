@@ -20,59 +20,59 @@ public class AvailabilityTemplateController(
     ) : Controller
 {
     [HttpPost]
-    public async Task<IResult> AddAvailabilityTemplate([FromBody] AddTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddAvailabilityTemplate([FromBody] AddTemplateCommand command, CancellationToken cancellationToken)
     {
         var newTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(newTemplate);
+        return Ok(newTemplate);
     }
     
     [HttpPut]
-    public async Task<IResult> UpdateAvailabilityTemplate([FromBody] UpdateTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateAvailabilityTemplate([FromBody] UpdateTemplateCommand command, CancellationToken cancellationToken)
     {
         var updatedTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(updatedTemplate);
+        return Ok(updatedTemplate);
     }
 
     [HttpDelete]
-    public async Task<IResult> DeleteAvailabilityTemplate([FromQuery] DeleteTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteAvailabilityTemplate([FromQuery] DeleteTemplateCommand command, CancellationToken cancellationToken)
     {
         var updatedTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(updatedTemplate);
+        return Ok(updatedTemplate);
     }
     
     [HttpPatch("default")]
-    public async Task<IResult> SetToDefaultTemplate([FromQuery] SetToDefaultCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> SetToDefaultTemplate([FromQuery] SetToDefaultCommand command, CancellationToken cancellationToken)
     {
         var updatedTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(updatedTemplate);
+        return Ok(updatedTemplate);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IResult> GetAvailabilityTemplate([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAvailabilityTemplate([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var query = new GetByIdTemplateQuery { Id = id };
         var updatedTemplate = await mediator.Send(query, cancellationToken);
-        return Results.Ok(updatedTemplate);
+        return Ok(updatedTemplate);
     }
 
     [HttpGet("me")]
-    public async Task<IResult> GetUserAvailabilityTemplates([FromQuery] GetUserTemplatesQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserAvailabilityTemplates([FromQuery] GetUserTemplatesQuery query, CancellationToken cancellationToken)
     {
         var templates = await mediator.Send(query, cancellationToken);
-        return Results.Ok(templates);
+        return Ok(templates);
     }
     
     [HttpGet("default")]
-    public async Task<IResult> GetDefaultTemplate([FromQuery] GetDefaultTemplateQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDefaultTemplate([FromQuery] GetDefaultTemplateQuery query, CancellationToken cancellationToken)
     {
         var template = await mediator.Send(query, cancellationToken);
-        return Results.Ok(template);
+        return Ok(template);
     }
 
     [HttpGet("check")]
-    public async Task<IResult> IsUserFree([FromQuery] IsUserFreeQuery query, CancellationToken token)
+    public async Task<IActionResult> IsUserFree([FromQuery] IsUserFreeQuery query, CancellationToken token)
     {
         var isFree = await mediator.Send(query, token);
-        return Results.Ok(isFree);
+        return Ok(isFree);
     }
 }

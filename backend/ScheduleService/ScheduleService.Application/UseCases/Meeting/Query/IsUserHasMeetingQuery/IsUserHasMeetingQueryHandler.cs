@@ -3,13 +3,18 @@ using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 
 namespace ScheduleService.Application.UseCases.Meeting.Query.IsUserHasMeetingQuery;
 
-public class IsUserHasMeetingHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<IsUserHasMeetingQuery, bool>
+public class IsUserHasMeetingQueryHandler : IRequestHandler<IsUserHasMeetingQuery, bool>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public IsUserHasMeetingQueryHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<bool> Handle(IsUserHasMeetingQuery request, CancellationToken cancellationToken)
     {
-        var meetings = await unitOfWork.Meetings.GetMeetingsForUserInRangeAsync(request.UserId, request.StartDate,
+        var meetings = await _unitOfWork.Meetings.GetMeetingsForUserInRangeAsync(request.UserId, request.StartDate,
             request.EndDate, cancellationToken);
         
         var isUserHasAnyMeeting = meetings.Any(m => 

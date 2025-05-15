@@ -7,15 +7,20 @@ using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Query.GetUpcomingMeetingsQuery;
 
-public class GetUpcomingMeetingsHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<GetUpcomingMeetingsQuery, IEnumerable<MeetingDto>>
+public class GetUpcomingMeetingsQueryHandler : IRequestHandler<GetUpcomingMeetingsQuery, IEnumerable<MeetingDto>>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public GetUpcomingMeetingsQueryHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<IEnumerable<MeetingDto>> Handle(GetUpcomingMeetingsQuery request, CancellationToken cancellationToken)
     {
         var today = DateTime.Today;
         
-        var meetings = await unitOfWork.Meetings.GetUserUpcomingMeetingsAsync(request.UserId, today, cancellationToken)
+        var meetings = await _unitOfWork.Meetings.GetUserUpcomingMeetingsAsync(request.UserId, today, cancellationToken)
             ?? throw new NotFoundException("Meetings not found");
 
         return meetings.Adapt<IEnumerable<MeetingDto>>();

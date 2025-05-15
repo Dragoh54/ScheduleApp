@@ -6,18 +6,23 @@ using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
 
-public class DeleteMeetingHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<DeleteMeetingCommand, bool>
+public class DeleteMeetingCommandHandler : IRequestHandler<DeleteMeetingCommand, bool>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public DeleteMeetingCommandHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<bool> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
+        var meeting = await _unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
-        await unitOfWork.Meetings.DeleteAsync(meeting.Id, cancellationToken);
+        await _unitOfWork.Meetings.DeleteAsync(meeting.Id, cancellationToken);
 
-        var success = await unitOfWork.Commit(cancellationToken);
+        var success = await _unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to delete meeting");

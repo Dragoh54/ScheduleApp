@@ -6,12 +6,14 @@ using ScheduleService.DomainModel.Models;
 
 namespace ScheduleService.DataAccess.Repositories;
 
-public class MeetingRepository(
-    IScheduleDbContext dbContext
-) : BaseRepository<Meeting>(dbContext, CollectionName), IMeetingRepository
+public class MeetingRepository : BaseRepository<Meeting>, IMeetingRepository
 {
     private const string CollectionName = "meetings";
-    
+
+    public MeetingRepository(IScheduleDbContext dbContext) : base(dbContext, CollectionName)
+    {
+    }
+
     public async Task<IEnumerable<Meeting>> GetMeetingsForUserOnDateAsync(Guid userId, DateTime date, CancellationToken cancellationToken)
     {
         var filter = Builders<Meeting>.Filter.And(

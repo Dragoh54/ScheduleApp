@@ -22,72 +22,72 @@ public class MeetingController(
     ) : Controller
 {
     [HttpPost]
-    public async Task<IResult> CreateMeeting([FromBody] CreateMeetingCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateMeeting([FromBody] CreateMeetingCommand command, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
+        return Ok(meeting);
     }
     
     [HttpPut]
-    public async Task<IResult> UpdateMeeting([FromBody] UpdateMeetingCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateMeeting([FromBody] UpdateMeetingCommand command, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
+        return Ok(meeting);
     }
     
     [HttpPatch("status")]
-    public async Task<IResult> UpdateMeetingStatus([FromQuery] UpdateMeetingStatusCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateMeetingStatus([FromQuery] UpdateMeetingStatusCommand command, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
+        return Ok(meeting);
     }
 
     [HttpDelete]
-    public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteMeeting([FromQuery] DeleteMeetingCommand command, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
+        return Ok(meeting);
     }
     
     [HttpGet]
-    public async Task<IResult> GetMeeting([FromQuery] GetMeetingByIdQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMeeting([FromQuery] GetMeetingByIdQuery query, CancellationToken cancellationToken)
     {
         var meeting = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meeting);
+        return Ok(meeting);
     }
     
     [HttpGet("user/in-range")]
-    public async Task<IResult> GetMeetingsInRange([FromQuery] GetMeetingsForUserInRangeQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMeetingsInRange([FromQuery] GetMeetingsForUserInRangeQuery query, CancellationToken cancellationToken)
     {
         var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        return Ok(meetings);
     }
     
     [HttpGet("user/on-date")]
-    public async Task<IResult> GetMeetingsOnDate([FromQuery] GetMeetingsForUserOnDateQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMeetingsOnDate([FromQuery] GetMeetingsForUserOnDateQuery query, CancellationToken cancellationToken)
     {
         var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        return Ok(meetings);
     }
 
     [HttpGet("user/upcoming")]
-    public async Task<IResult> GetUpcomingMeetings([FromQuery] GetUpcomingMeetingsQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUpcomingMeetings([FromQuery] GetUpcomingMeetingsQuery query, CancellationToken cancellationToken)
     {
         var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        return Ok(meetings);
     }
 
     [HttpGet("user")]
-    public async Task<IResult> GetUserMeetings([FromQuery] GetUserMeetingsQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserMeetings([FromQuery] GetUserMeetingsQuery query, CancellationToken cancellationToken)
     {
         var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        return Ok(meetings);
     }
 
     [HttpGet("check")]
-    public async Task<IResult> IsUserHasMeetings([FromQuery] IsUserHasMeetingQuery query, CancellationToken cancellationToken)
+    public async Task<IActionResult> IsUserHasMeetings([FromQuery] IsUserHasMeetingQuery query, CancellationToken cancellationToken)
     {
         var isUserHasMeetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(isUserHasMeetings);
+        return Ok(isUserHasMeetings);
     }
 }

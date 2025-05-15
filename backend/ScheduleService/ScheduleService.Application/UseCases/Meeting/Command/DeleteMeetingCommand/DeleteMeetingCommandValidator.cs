@@ -2,9 +2,9 @@
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
 
-public class DeleteMeetingValidator : AbstractValidator<DeleteMeetingCommand>
+public class DeleteMeetingCommandValidator : AbstractValidator<DeleteMeetingCommand>
 {
-    public DeleteMeetingValidator()
+    public DeleteMeetingCommandValidator()
     {
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Id cannot be empty");

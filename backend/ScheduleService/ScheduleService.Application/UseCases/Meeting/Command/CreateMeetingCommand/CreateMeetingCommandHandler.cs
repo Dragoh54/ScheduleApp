@@ -7,15 +7,20 @@ using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.CreateMeetingCommand;
 
-public class CreateMeetingHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<CreateMeetingCommand, MeetingDto>
+public class CreateMeetingCommandHandler : IRequestHandler<CreateMeetingCommand, MeetingDto>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateMeetingCommandHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<MeetingDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await unitOfWork.Meetings.AddAsync(request.Adapt<DomainModel.Models.Meeting>(), cancellationToken);
+        var meeting = await _unitOfWork.Meetings.AddAsync(request.Adapt<DomainModel.Models.Meeting>(), cancellationToken);
 
-        var success = await unitOfWork.Commit(cancellationToken);
+        var success = await _unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to create meeting");

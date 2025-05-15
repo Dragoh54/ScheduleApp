@@ -5,13 +5,18 @@ using ScheduleService.DomainModel.Models;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Query.IsUserFreeQuery;
 
-public class IsUserFreeHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<IsUserFreeQuery, bool>
+public class IsUserFreeQueryHandler : IRequestHandler<IsUserFreeQuery, bool>
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public IsUserFreeQueryHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
     public async Task<bool> Handle(IsUserFreeQuery request, CancellationToken cancellationToken)
     {
-        var template = await unitOfWork.AvailabilityTemplates.GetDefaultTemplateAsync(request.UserId, cancellationToken)
+        var template = await _unitOfWork.AvailabilityTemplates.GetDefaultTemplateAsync(request.UserId, cancellationToken)
                        ?? throw new NotFoundException("Default template not found");
         
         var dayOfWeek = request.StartDate.DayOfWeek;

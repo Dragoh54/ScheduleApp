@@ -2,9 +2,9 @@
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;
 
-public class DeleteTemplateValidator : AbstractValidator<DeleteTemplateCommand>
+public class DeleteTemplateCommandValidator : AbstractValidator<DeleteTemplateCommand>
 {
-    public DeleteTemplateValidator()
+    public DeleteTemplateCommandValidator()
     {
         RuleFor(x => x.Id)
             .NotEmpty()
