@@ -11,10 +11,10 @@ public record SetToDefaultCommand : IRequest<AvailabilityTemplateResponseDto>
     {
     }
 
-    public SetToDefaultCommand(SetToDefaultRequestDto dto)
+    public SetToDefaultCommand(Guid userId, SetToDefaultRequestDto dto)
     {
         TemplateId = dto.TemplateId;
-        UserId = dto.UserId;
+        UserId = userId;
     }
 
     public Guid TemplateId { get; set; }

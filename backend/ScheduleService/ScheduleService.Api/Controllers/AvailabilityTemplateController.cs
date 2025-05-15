@@ -55,11 +55,11 @@ public class AvailabilityTemplateController : Controller
         return Ok(updatedTemplate);
     }
 
-    [HttpPatch("default")]
-    public async Task<IActionResult> SetToDefaultTemplate([FromQuery] SetToDefaultRequestDto dto,
+    [HttpPatch("user/{userId}/default")]
+    public async Task<IActionResult> SetToDefaultTemplate([FromRoute] Guid userId,[FromQuery] SetToDefaultRequestDto dto,
         CancellationToken cancellationToken)
     {
-        var command = new SetToDefaultCommand(dto);
+        var command = new SetToDefaultCommand(userId, dto);
 
         var updatedTemplate = await _mediator.Send(command, cancellationToken);
         return Ok(updatedTemplate);
@@ -93,7 +93,7 @@ public class AvailabilityTemplateController : Controller
     }
     
     [HttpGet("user/{userId:guid}/free")]
-    public async Task<IActionResult> IsUserFree([FromRoute] Guid userId,[FromBody] IsUserFreeRequestDto dto, CancellationToken token)
+    public async Task<IActionResult> IsUserFree([FromRoute] Guid userId, [FromBody] IsUserFreeRequestDto dto, CancellationToken token)
     {
         var query = new IsUserFreeQuery(userId, dto);
         
