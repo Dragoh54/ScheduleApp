@@ -1,6 +1,7 @@
-﻿namespace ScheduleService.Application.Dto.AvailabilityTemplates.Requests;
+﻿namespace ScheduleService.Application.Dto.AvailabilityTemplates.Requests.Commands;
 
 public record SetToDefaultRequestDto
 {
-    
+    public Guid TemplateId { get; set; }
+    public Guid UserId { get; set; }
 }

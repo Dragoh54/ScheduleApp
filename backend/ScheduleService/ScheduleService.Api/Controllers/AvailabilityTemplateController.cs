@@ -1,6 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Requests;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Requests.Commands;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Requests.Queries;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.AddTemplateCommand;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.SetToDefaultCommand;
@@ -23,65 +26,77 @@ public class AvailabilityTemplateController : Controller
     {
         _mediator = mediator;
     }
-    
+
     [HttpPost]
-    //[HttpPost("{userId:guid}")]
-    public async Task<IActionResult> AddAvailabilityTemplate([FromBody] AddTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddAvailabilityTemplate([FromBody] AddTemplateRequestDto dto,
+        CancellationToken cancellationToken)
     {
-        var newTemplate = await _mediator.Send(command, cancellationToken);
-        return Ok(newTemplate);
+        var command = new AddTemplateCommand(dto);
+
+        var template = await _mediator.Send(command, cancellationToken);
+        return Ok(template);
     }
-    
+
     [HttpPut]
-    //[HttpPut("{userId:guid}")]
-    public async Task<IActionResult> UpdateAvailabilityTemplate([FromBody] UpdateTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateAvailabilityTemplate([FromBody] UpdateTemplateRequestDto dto, CancellationToken cancellationToken)
     {
-        var updatedTemplate = await _mediator.Send(command, cancellationToken);
-        return Ok(updatedTemplate);
-    }
-
-    [HttpDelete]
-    //[HttpDelete("{UserId:guid}")]
-    public async Task<IActionResult> DeleteAvailabilityTemplate([FromQuery] DeleteTemplateCommand command, CancellationToken cancellationToken)
-    {
+        var command = new UpdateTemplateCommand(dto);
+        
         var updatedTemplate = await _mediator.Send(command, cancellationToken);
         return Ok(updatedTemplate);
     }
     
-    [HttpPatch("default")]
-    public async Task<IActionResult> SetToDefaultTemplate([FromQuery] SetToDefaultCommand command, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> DeleteAvailabilityTemplate([FromQuery] DeleteTemplateRequestDto dto, CancellationToken cancellationToken)
     {
+        var command = new DeleteTemplateCommand(dto);
+        
         var updatedTemplate = await _mediator.Send(command, cancellationToken);
         return Ok(updatedTemplate);
     }
 
-    [HttpGet("{id:guid}")]
-    //[HttpGet("{Id:guid}")]
-    public async Task<IActionResult> GetAvailabilityTemplate([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpPatch("default")]
+    public async Task<IActionResult> SetToDefaultTemplate([FromQuery] SetToDefaultRequestDto dto,
+        CancellationToken cancellationToken)
     {
-        var query = new GetByIdTemplateQuery { Id = id };
+        var command = new SetToDefaultCommand(dto);
+
+        var updatedTemplate = await _mediator.Send(command, cancellationToken);
+        return Ok(updatedTemplate);
+    }
+
+    [HttpGet("{Id:guid}")]
+    public async Task<IActionResult> GetAvailabilityTemplateById([FromRoute] GetTemplateByIdRequestDto dto, CancellationToken cancellationToken)
+    {
+        var query = new GetByIdTemplateQuery(dto);
+        
         var updatedTemplate = await _mediator.Send(query, cancellationToken);
         return Ok(updatedTemplate);
     }
-
-    [HttpGet("me")]
-    public async Task<IActionResult> GetUserAvailabilityTemplates([FromQuery] GetUserTemplatesQuery query, CancellationToken cancellationToken)
+    
+    [HttpGet("user/{UserId:guid}")]
+    public async Task<IActionResult> GetUserAvailabilityTemplates([FromRoute] GetUserTemplatesRequestDto dto, CancellationToken cancellationToken)
     {
+        var query = new GetUserTemplatesQuery(dto);
+        
         var templates = await _mediator.Send(query, cancellationToken);
         return Ok(templates);
     }
     
-    [HttpGet("default")]
-    public async Task<IActionResult> GetDefaultTemplate([FromQuery] GetDefaultTemplateQuery query, CancellationToken cancellationToken)
+    [HttpGet("user/{UserId:guid}/default")]
+    public async Task<IActionResult> GetDefaultTemplate([FromQuery] GetDefaultTemplateRequestDto dto, CancellationToken cancellationToken)
     {
+        var query = new GetDefaultTemplateQuery(dto);
+        
         var template = await _mediator.Send(query, cancellationToken);
         return Ok(template);
     }
-
-    [HttpGet("check")]
-    //[HttpGet("check/{userId:guid}")]
-    public async Task<IActionResult> IsUserFree([FromQuery] IsUserFreeQuery query, CancellationToken token)
+    
+    [HttpGet("user/{userId:guid}/free")]
+    public async Task<IActionResult> IsUserFree([FromRoute] Guid userId,[FromBody] IsUserFreeRequestDto dto, CancellationToken token)
     {
+        var query = new IsUserFreeQuery(userId, dto);
+        
         var isFree = await _mediator.Send(query, token);
         return Ok(isFree);
     }

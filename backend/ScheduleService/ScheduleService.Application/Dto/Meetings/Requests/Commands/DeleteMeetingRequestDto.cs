@@ -2,5 +2,5 @@
 
 public record DeleteMeetingRequestDto
 {
-    public Guid Id { get; set; }
+    public Guid MeetingId { get; set; }
 }
