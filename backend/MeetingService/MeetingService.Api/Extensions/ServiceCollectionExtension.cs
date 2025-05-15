@@ -5,6 +5,7 @@ using MeetingService.Api.Interfaces.Helpers;
 using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Api.Managers;
 using MeetingService.Api.Notifier;
+using MeetingService.Api.Notifiers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;

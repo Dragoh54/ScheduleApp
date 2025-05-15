@@ -19,7 +19,8 @@ public class ConfirmParticipationHandler(
     IParticipantCacheService participantCacheService,
     IEmailTokenService emailTokenService,
     IEmailNotificationService emailNotificationService,
-    IParticipantNotifier notifier
+    IParticipantNotifier participantNotifier,
+    IMeetingNotifier meetingNotifier
     ) : IRequestHandler<ConfirmParticipationCommand, ParticipantWithMeetingDto>
 {
     public async Task<ParticipantWithMeetingDto> Handle(ConfirmParticipationCommand request, CancellationToken cancellationToken)
@@ -38,16 +39,14 @@ public class ConfirmParticipationHandler(
             throw new BadRequestException("User declined participation");
         }
         
+        var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
+                      ?? throw new BadRequestException("Meeting could not be found");
+        
         var participant = await participantCacheService.GetParticipantFromCache(request.MeetingId, request.Email, cancellationToken);
         participant.Status = ParticipationStatus.Accepted;
         
         var participantInDatabase = await unitOfWork.ParticipantRepository.Add(participant, cancellationToken)
             ?? throw new BadRequestException("Participant could not be added");
-
-        var meeting = participantInDatabase.Meeting;
-        
-        // var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
-        //     ?? throw new NotFoundException("Meeting not found");
         
         BackgroundJob.Enqueue(() =>
             emailService.SendEmailAsync(participant.Email,
@@ -57,7 +56,9 @@ public class ConfirmParticipationHandler(
             ));
         
         await SendEmailNotification(meeting, participantInDatabase, cancellationToken);
-        await notifier.NotifyJoinedAsync(meeting.Id, participantInDatabase.UserId, meeting.Title!);
+        await participantNotifier.NotifyJoinedAsync(meeting.Id, participantInDatabase.UserId, meeting.Title!);
+        await meetingNotifier.NotifyOnTimeAsync(meeting.Id, meeting.Title!, meeting.StartTime, meeting.NotifyTime,
+            cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         

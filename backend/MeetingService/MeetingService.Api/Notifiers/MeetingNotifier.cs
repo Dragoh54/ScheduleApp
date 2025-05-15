@@ -2,23 +2,21 @@
 using Hangfire;
 using MeetingService.Api.Helpers;
 using MeetingService.Api.Hubs;
-using MeetingService.Api.Interfaces;
 using MeetingService.Api.Interfaces.Hubs;
 using MeetingService.Api.Interfaces.Notifiers;
-using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.DataAccess.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Models;
 using Microsoft.AspNetCore.SignalR;
 
-namespace MeetingService.Api.Notifier;
+namespace MeetingService.Api.Notifiers;
 
 public class MeetingNotifier(
     IHubContext<MeetingNotificationHub, IMeetingNotificationHub> hubContext,
     IUnitOfWork unitOfWork
     ) : IMeetingNotifier
 {
-    public async Task NotifyTimeChangedAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, DateTime notifyTime, CancellationToken cancellationToken)
+    public async Task NotifyOnTimeAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, DateTime notifyTime, CancellationToken cancellationToken)
     {
         var stringDate = newStartTime.ToString(CultureInfo.InvariantCulture);
         

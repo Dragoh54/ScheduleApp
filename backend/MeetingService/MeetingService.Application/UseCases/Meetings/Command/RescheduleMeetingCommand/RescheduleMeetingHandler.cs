@@ -52,7 +52,7 @@ public class RescheduleMeetingHandler(
         
         await scheduledJobsService.DeleteScheduledJobs(meeting.Id, cancellationToken);
         
-        await notifier.NotifyTimeChangedAsync(meeting.Id, meetingTitle, newStartTime, notifyTime, cancellationToken);
+        await notifier.NotifyOnTimeAsync(meeting.Id, meetingTitle, newStartTime, notifyTime, cancellationToken);
         
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }

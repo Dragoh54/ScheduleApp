@@ -21,9 +21,9 @@ public class EmailTokenService(
         var key = emailCacheService.CreateParticipantEmailTokenKey(meetingId, email);
         
         var token = await cache.GetStringAsync(key, cancellationToken);
-        if (!string.IsNullOrEmpty(token))
+        if (token is not null)
         {
-            return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            return token;
         }
         
         var confirmToken = emailTokenProvider.GenerateEmailToken(meetingId, email, tokenType, cancellationToken)
@@ -43,7 +43,7 @@ public class EmailTokenService(
         var tokenFromCache = await cache.GetStringAsync(key, cancellationToken)
             ?? throw new NotFoundException("Token is not found or expired");
         
-        var success = CheckTokens(tokenFromCache, token);
+        var success = string.Equals(tokenFromCache, token);
         
         await emailCacheService.Delete(key, cancellationToken);
         
@@ -52,10 +52,4 @@ public class EmailTokenService(
 
     public async Task<string> GetEmailFromToken(string token, CancellationToken cancellationToken) =>
         await jwtProvider.GetClaimFromToken(token, ClaimTypes.Email);
-
-    private bool CheckTokens(string token, string encodedToken)
-    {
-        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
-        return token != decodedTokenFromDto;
-    }
 }
