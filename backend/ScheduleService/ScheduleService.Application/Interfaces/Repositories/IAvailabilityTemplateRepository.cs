@@ -1,6 +1,6 @@
 ﻿using ScheduleService.DomainModel.Models;
 
-namespace ScheduleService.DataAccess.Interfaces.Repositories;
+namespace ScheduleService.Application.Interfaces.Repositories;
 
 public interface IAvailabilityTemplateRepository : IBaseRepository<AvailabilityTemplate>
 {

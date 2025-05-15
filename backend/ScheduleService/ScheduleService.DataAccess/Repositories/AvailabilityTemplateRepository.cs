@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
+using ScheduleService.Application.Interfaces.Repositories;
 using ScheduleService.DataAccess.Interfaces.DbContext;
-using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DomainModel.Models;
 
 namespace ScheduleService.DataAccess.Repositories;

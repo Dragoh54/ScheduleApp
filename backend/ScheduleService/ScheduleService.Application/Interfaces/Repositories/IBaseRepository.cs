@@ -1,7 +1,6 @@
 using ScheduleService.DomainModel.Intefaces;
-using ScheduleService.DomainModel.Models;
 
-namespace ScheduleService.DataAccess.Interfaces.Repositories;
+namespace ScheduleService.Application.Interfaces.Repositories;
 
 public interface IBaseRepository<T> where T : IEntity
 {

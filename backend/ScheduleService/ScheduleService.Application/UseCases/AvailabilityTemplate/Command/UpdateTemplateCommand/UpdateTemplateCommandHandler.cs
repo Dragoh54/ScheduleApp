@@ -2,7 +2,7 @@
 using MediatR;
 using ScheduleService.Application.Dto;
 using ScheduleService.Application.Dto.AvailabilityTemplates.Responses;
-using ScheduleService.DataAccess.Interfaces.UnitOfWork;
+using ScheduleService.Application.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.UpdateTemplateCommand;

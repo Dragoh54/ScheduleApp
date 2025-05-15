@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using ScheduleService.Application.Dto;
-using ScheduleService.DataAccess.Interfaces.UnitOfWork;
+using ScheduleService.Application.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Enums;
 using ScheduleService.DomainModel.Exceptions;
 

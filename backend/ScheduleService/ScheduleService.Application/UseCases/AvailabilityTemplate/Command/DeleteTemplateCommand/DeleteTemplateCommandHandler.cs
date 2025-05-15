@@ -1,7 +1,7 @@
 ﻿using Mapster;
 using MediatR;
 using ScheduleService.Application.Dto;
-using ScheduleService.DataAccess.Interfaces.UnitOfWork;
+using ScheduleService.Application.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;

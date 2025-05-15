@@ -2,8 +2,8 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using ScheduleService.Application.Interfaces.Repositories;
 using ScheduleService.DataAccess.Interfaces.DbContext;
-using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DomainModel.Intefaces;
 
 namespace ScheduleService.DataAccess.Repositories;

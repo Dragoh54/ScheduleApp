@@ -14,7 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ScheduleService.Application\ScheduleService.Application.csproj" />
       <ProjectReference Include="..\ScheduleService.DataAccess\ScheduleService.DataAccess.csproj" />
     </ItemGroup>
 

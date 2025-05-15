@@ -1,6 +1,6 @@
-﻿using ScheduleService.DataAccess.Interfaces.Repositories;
+﻿using ScheduleService.Application.Interfaces.Repositories;
 
-namespace ScheduleService.DataAccess.Interfaces.UnitOfWork;
+namespace ScheduleService.Application.Interfaces.UnitOfWork;
 
 
 public interface IUnitOfWork : IDisposable

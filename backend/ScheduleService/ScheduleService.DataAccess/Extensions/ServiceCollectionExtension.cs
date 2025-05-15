@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using ScheduleService.Application.Interfaces.Repositories;
+using ScheduleService.Application.Interfaces.UnitOfWork;
 using ScheduleService.DataAccess.DbContext;
 using ScheduleService.DataAccess.Indexes;
 using ScheduleService.DataAccess.Interfaces.DbContext;
-using ScheduleService.DataAccess.Interfaces.Repositories;
-using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DataAccess.Repositories;
 using ScheduleService.DataAccess.Settings;
 

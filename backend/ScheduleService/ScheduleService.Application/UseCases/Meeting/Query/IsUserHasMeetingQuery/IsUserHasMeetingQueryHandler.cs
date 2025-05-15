@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using ScheduleService.DataAccess.Interfaces.UnitOfWork;
+using ScheduleService.Application.Interfaces.UnitOfWork;
 
 namespace ScheduleService.Application.UseCases.Meeting.Query.IsUserHasMeetingQuery;
 
