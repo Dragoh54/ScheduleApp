@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.TimeSlots;
 
 namespace ScheduleService.Application.Validation;
 

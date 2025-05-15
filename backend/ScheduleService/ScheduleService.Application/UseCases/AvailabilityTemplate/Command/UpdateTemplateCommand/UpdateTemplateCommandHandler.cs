@@ -1,12 +1,13 @@
 ﻿using Mapster;
 using MediatR;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Responses;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.UpdateTemplateCommand;
 
-public class UpdateTemplateCommandHandler : IRequestHandler<UpdateTemplateCommand, AvailabilityTemplateDto>
+public class UpdateTemplateCommandHandler : IRequestHandler<UpdateTemplateCommand, AvailabilityTemplateResponseDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     
@@ -15,7 +16,7 @@ public class UpdateTemplateCommandHandler : IRequestHandler<UpdateTemplateComman
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<AvailabilityTemplateDto> Handle(UpdateTemplateCommand request, CancellationToken cancellationToken)
+    public async Task<AvailabilityTemplateResponseDto> Handle(UpdateTemplateCommand request, CancellationToken cancellationToken)
     {
         var template = await _unitOfWork.AvailabilityTemplates.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Template not found");
@@ -30,6 +31,6 @@ public class UpdateTemplateCommandHandler : IRequestHandler<UpdateTemplateComman
             throw new BadRequestException("Failed to update availability template");
         }
         
-        return template.Adapt<AvailabilityTemplateDto>();
+        return template.Adapt<AvailabilityTemplateResponseDto>();
     }
 }

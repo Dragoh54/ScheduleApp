@@ -1,13 +1,14 @@
 ﻿using Mapster;
 using MediatR;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.Meetings.Responses;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Enums;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.CreateMeetingCommand;
 
-public class CreateMeetingCommandHandler : IRequestHandler<CreateMeetingCommand, MeetingDto>
+public class CreateMeetingCommandHandler : IRequestHandler<CreateMeetingCommand, MeetingResponseDto>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -16,7 +17,7 @@ public class CreateMeetingCommandHandler : IRequestHandler<CreateMeetingCommand,
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<MeetingDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<MeetingResponseDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await _unitOfWork.Meetings.AddAsync(request.Adapt<DomainModel.Models.Meeting>(), cancellationToken);
 
@@ -26,7 +27,7 @@ public class CreateMeetingCommandHandler : IRequestHandler<CreateMeetingCommand,
             throw new BadRequestException("Failed to create meeting");
         }
         
-        return meeting.Adapt<MeetingDto>();
+        return meeting.Adapt<MeetingResponseDto>();
     }
     
 }

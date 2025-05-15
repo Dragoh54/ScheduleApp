@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.TimeSlots;
 using ScheduleService.DomainModel.Models;
 
 namespace ScheduleService.Application.Mapping;

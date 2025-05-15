@@ -1,12 +1,13 @@
 ﻿using Mapster;
 using MediatR;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Responses;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Command.AddTemplateCommand;
 
-public class AddTemplateCommandHandler : IRequestHandler<AddTemplateCommand, AvailabilityTemplateDto>
+public class AddTemplateCommandHandler : IRequestHandler<AddTemplateCommand, AvailabilityTemplateResponseDto>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -15,7 +16,7 @@ public class AddTemplateCommandHandler : IRequestHandler<AddTemplateCommand, Ava
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<AvailabilityTemplateDto> Handle(AddTemplateCommand request, CancellationToken cancellationToken)
+    public async Task<AvailabilityTemplateResponseDto> Handle(AddTemplateCommand request, CancellationToken cancellationToken)
     {
         var addedTemplate = await _unitOfWork.AvailabilityTemplates.AddAsync(request.Adapt<DomainModel.Models.AvailabilityTemplate>(), cancellationToken)
             ?? throw new BadRequestException("Failed to add template to database");
@@ -31,6 +32,6 @@ public class AddTemplateCommandHandler : IRequestHandler<AddTemplateCommand, Ava
             throw new BadRequestException("Failed to add template to database");
         }
         
-        return addedTemplate.Adapt<AvailabilityTemplateDto>();
+        return addedTemplate.Adapt<AvailabilityTemplateResponseDto>();
     }
 }

@@ -1,5 +1,8 @@
 ﻿using Mapster;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Responses;
+using ScheduleService.Application.Dto.DayOfWeekSchedules;
+using ScheduleService.Application.Dto.TimeSlots;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.AddTemplateCommand;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.UpdateTemplateCommand;
 using ScheduleService.DomainModel.Models;
@@ -21,7 +24,7 @@ public class AvailabilityTemplateConfig
             }).ToList())
             .IgnoreNonMapped(true);
 
-        TypeAdapterConfig.GlobalSettings.ForType<AvailabilityTemplate, AvailabilityTemplateDto>()
+        TypeAdapterConfig.GlobalSettings.ForType<AvailabilityTemplate, AvailabilityTemplateResponseDto>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.UserId, src => src.UserId)
             .Map(dest => dest.Name, src => src.Name)

@@ -1,8 +1,8 @@
-﻿using ScheduleService.DomainModel.Models;
+﻿using ScheduleService.Application.Dto.DayOfWeekSchedules;
 
-namespace ScheduleService.Application.Dto;
+namespace ScheduleService.Application.Dto.AvailabilityTemplates.Responses;
 
-public record AvailabilityTemplateDto
+public record AvailabilityTemplateResponseDto
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

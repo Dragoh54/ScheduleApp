@@ -1,6 +1,6 @@
-﻿namespace ScheduleService.Application.Dto;
+﻿namespace ScheduleService.Application.Dto.TimeSlots;
 
-public class TimeSlotDto
+public record TimeSlotDto
 {
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }

@@ -1,12 +1,13 @@
 ﻿using Mapster;
 using MediatR;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Responses;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.AvailabilityTemplate.Query.GetDefaultTemplateQuery;
 
-public class GetDefaultTemplateQueryHandler : IRequestHandler<GetDefaultTemplateQuery, AvailabilityTemplateDto>
+public class GetDefaultTemplateQueryHandler : IRequestHandler<GetDefaultTemplateQuery, AvailabilityTemplateResponseDto>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -15,11 +16,11 @@ public class GetDefaultTemplateQueryHandler : IRequestHandler<GetDefaultTemplate
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<AvailabilityTemplateDto> Handle(GetDefaultTemplateQuery request, CancellationToken cancellationToken)
+    public async Task<AvailabilityTemplateResponseDto> Handle(GetDefaultTemplateQuery request, CancellationToken cancellationToken)
     {
         var template = await _unitOfWork.AvailabilityTemplates.GetDefaultTemplateAsync(request.UserId, cancellationToken)
             ?? throw new NotFoundException("Default template not found");
 
-        return template.Adapt<AvailabilityTemplateDto>();
+        return template.Adapt<AvailabilityTemplateResponseDto>();
     }
 }

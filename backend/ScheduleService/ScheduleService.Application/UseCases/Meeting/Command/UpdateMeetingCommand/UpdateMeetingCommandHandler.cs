@@ -1,12 +1,13 @@
 ﻿using Mapster;
 using MediatR;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.Meetings.Responses;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingCommand;
 
-public class UpdateMeetingCommandHandler : IRequestHandler<UpdateMeetingCommand, MeetingDto>
+public class UpdateMeetingCommandHandler : IRequestHandler<UpdateMeetingCommand, MeetingResponseDto>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -15,7 +16,7 @@ public class UpdateMeetingCommandHandler : IRequestHandler<UpdateMeetingCommand,
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<MeetingDto> Handle(UpdateMeetingCommand request, CancellationToken cancellationToken)
+    public async Task<MeetingResponseDto> Handle(UpdateMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await _unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
@@ -31,6 +32,6 @@ public class UpdateMeetingCommandHandler : IRequestHandler<UpdateMeetingCommand,
             throw new BadRequestException("Failed to update meeting");
         }
         
-        return updatedMeeting.Adapt<MeetingDto>();
+        return updatedMeeting.Adapt<MeetingResponseDto>();
     }
 }

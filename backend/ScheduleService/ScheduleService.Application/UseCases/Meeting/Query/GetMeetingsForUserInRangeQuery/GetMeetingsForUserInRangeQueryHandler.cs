@@ -1,12 +1,13 @@
 ﻿using Mapster;
 using MediatR;
 using ScheduleService.Application.Dto;
+using ScheduleService.Application.Dto.Meetings.Responses;
 using ScheduleService.DataAccess.Interfaces.UnitOfWork;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Application.UseCases.Meeting.Query.GetMeetingsForUserInRangeQuery;
 
-public class GetMeetingsForUserInRangeQueryHandler : IRequestHandler<GetMeetingsForUserInRangeQuery, IEnumerable<MeetingDto>>
+public class GetMeetingsForUserInRangeQueryHandler : IRequestHandler<GetMeetingsForUserInRangeQuery, IEnumerable<MeetingResponseDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -15,11 +16,11 @@ public class GetMeetingsForUserInRangeQueryHandler : IRequestHandler<GetMeetings
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<IEnumerable<MeetingDto>> Handle(GetMeetingsForUserInRangeQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MeetingResponseDto>> Handle(GetMeetingsForUserInRangeQuery request, CancellationToken cancellationToken)
     {
         var meetings = await _unitOfWork.Meetings.GetMeetingsForUserInRangeAsync(request.UserId, request.StartDate, request.EndDate, cancellationToken)
             ?? throw new NotFoundException("Meetings not found");
 
-        return meetings.Adapt<IEnumerable<MeetingDto>>();
+        return meetings.Adapt<IEnumerable<MeetingResponseDto>>();
     }
 }

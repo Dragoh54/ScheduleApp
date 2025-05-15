@@ -1,11 +1,9 @@
 ﻿using ScheduleService.DomainModel.Enums;
 
-namespace ScheduleService.Application.Dto;
+namespace ScheduleService.Application.Dto.Meetings.Requests.Commands;
 
-public record MeetingDto
+public record CreateMeetingRequestDto
 {
-    public Guid Id { get; set; } 
-    public Guid UserId { get; set; } 
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public MeetingStatus Status { get; set; }
