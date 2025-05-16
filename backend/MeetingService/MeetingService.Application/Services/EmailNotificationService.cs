@@ -14,16 +14,22 @@ public class EmailNotificationService(
     public async Task SendNotificationAtNotifyTime(Guid meetingId, EmailNotificationDto dto, DateTime notifyTime,
         CancellationToken cancellationToken)
     {
-        var jobId = BackgroundJob.Schedule(() => 
+        if (notifyTime < DateTime.UtcNow)
+        {
+            await SendNotification(dto, cancellationToken);
+            return;
+        }
+        
+        var jobId = BackgroundJob.Schedule(() =>
             emailService.SendEmailAsync(
                 dto.ParticipantEmail,
                 $"Reminder",
                 $"Meeting {dto.MeetingTitle} will be at {dto.StartTime:f}!",
                 cancellationToken
             ), notifyTime);
-        
+
         var scheduleJob = new ScheduledJob(meetingId, jobId, notifyTime);
-        
+
         await unitOfWork.ScheduledJobRepository.Add(scheduleJob, cancellationToken);
 
         await unitOfWork.SaveChangesAsync();

@@ -54,6 +54,7 @@ public class MeetingMappingConfig
         TypeAdapterConfig<RescheduleMeetingCommand, Meeting>.NewConfig()
             .Map(dest => dest.StartTime, src => src.StartTime)
             .Map(dest => dest.EndTime, src => src.EndTime)
+            .Map(dest => dest.NotifyTime, src => src.NotifyTime)
             .Map(dest => dest.Status, _ => MeetingStatus.Rescheduled);
 
         TypeAdapterConfig<UpdateMeetingInformationCommand, Meeting>.NewConfig()

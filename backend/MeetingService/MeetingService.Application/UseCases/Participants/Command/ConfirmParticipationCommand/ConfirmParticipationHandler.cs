@@ -57,8 +57,7 @@ public class ConfirmParticipationHandler(
         
         await SendEmailNotification(meeting, participantInDatabase, cancellationToken);
         await participantNotifier.NotifyJoinedAsync(meeting.Id, participantInDatabase.UserId, meeting.Title!);
-        await meetingNotifier.NotifyOnTimeAsync(meeting.Id, meeting.Title!, meeting.StartTime, meeting.NotifyTime,
-            cancellationToken);
+        await meetingNotifier.NotifyOnTimeAsync(meeting.Id, meeting.Title!, meeting.StartTime, meeting.NotifyTime, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -77,13 +76,13 @@ public class ConfirmParticipationHandler(
         var notifyTime = meeting.NotifyTime;
         
         var emailNotificationDto = new EmailNotificationDto(participant.Email, meeting.Title!, meeting.StartTime);
-        if (notifyTime > DateTime.UtcNow)
+        if (notifyTime < DateTime.UtcNow)
         {
-            await emailNotificationService.SendNotificationAtNotifyTime(meeting.Id,  emailNotificationDto, notifyTime, cancellationToken);
+            await emailNotificationService.SendNotification(emailNotificationDto, cancellationToken);
         }
         else
         {
-            await emailNotificationService.SendNotification(emailNotificationDto, cancellationToken);
+            await emailNotificationService.SendNotificationAtNotifyTime(meeting.Id,  emailNotificationDto, notifyTime, cancellationToken);
         }
     }
 }

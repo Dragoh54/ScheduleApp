@@ -22,7 +22,9 @@ public class UpdateMeetingInformationHandler(
     {
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
-
+        
+        var oldTitle = meeting.Title!;
+        
         request.Adapt(meeting);
         
         var updatedMeeting = await unitOfWork.MeetingRepository.Update(meeting, cancellationToken)
@@ -32,7 +34,6 @@ public class UpdateMeetingInformationHandler(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        var oldTitle = meeting.Title!;
         var newTitle = updatedMeeting.Title!;
         var newDescription = updatedMeeting.Description!;
         

@@ -5,7 +5,7 @@ namespace MeetingService.Api.Managers;
 public class UserConnectionManager : IUserConnectionManager
 {
     private static readonly Dictionary<string, List<string>> UserConnectionMap = new();
-    private static readonly string UserConnectionMapLocker = string.Empty;
+    private static readonly object UserConnectionMapLocker = new();
     
     public void KeepUserConnection(string userId, string connectionId)
     {

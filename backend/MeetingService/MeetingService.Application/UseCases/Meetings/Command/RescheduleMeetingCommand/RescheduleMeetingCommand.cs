@@ -15,6 +15,7 @@ public record RescheduleMeetingCommand : IRequest<MeetingWithParticipantsDto>
         Id = meetingId;
         StartTime = dto.StartTime;
         EndTime = dto.EndTime;
+        NotifyTime = dto.NotifyTime;    
     }
     
     public Guid Id { get; set; }
