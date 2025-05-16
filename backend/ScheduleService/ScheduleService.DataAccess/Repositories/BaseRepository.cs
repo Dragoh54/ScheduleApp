@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System.Linq.Expressions;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
@@ -27,6 +28,11 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : IEntity
     public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await Collection.Find(new BsonDocument()).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken)
+    {
+        return await Collection.Find(filter).ToListAsync(cancellationToken);
     }
 
     public async Task<T?> AddAsync(T entity, CancellationToken cancellationToken = default)

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using ScheduleService.DomainModel.Intefaces;
 
 namespace ScheduleService.Application.Interfaces.Repositories;
@@ -13,11 +14,12 @@ public interface IBaseRepository<T> where T : IEntity
     public Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Get all entities 
+    /// Get all entities filtered by filter query
     /// </summary>
+    /// <param name="filter"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken);
+    public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken);
     
     /// <summary>
     /// add entity
