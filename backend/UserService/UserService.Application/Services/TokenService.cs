@@ -34,7 +34,7 @@ public class TokenService(
         var token = jwtProvider.GenerateRefreshToken(user, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
-        await unitOfWork.TokenModelRepository.Add(token, cancellationToken);
+        await unitOfWork.TokenModelRepository.AddAsync(token, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -74,13 +74,13 @@ public class TokenService(
             throw new UnauthorizedAccessException();
         }
         
-        var user = await unitOfWork.UserRepository.GetById(token.UserId, cancellationToken)
+        var user = await unitOfWork.UserRepository.GetByIdWithRolesAsync(token.UserId, cancellationToken)
                    ?? throw new UnauthorizedAccessException();
 
         token.Token = jwtProvider.GenerateRefreshTokenString();
         token.UpdatedAt = DateTime.UtcNow;
         
-        await unitOfWork.TokenModelRepository.Update(token, cancellationToken);
+        await unitOfWork.TokenModelRepository.UpdateAsync(token, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         
         var accessToken = await GenerateAccessToken(user, cancellationToken)

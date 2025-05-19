@@ -16,7 +16,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         _dbSet = _dbContext.Set<T>();
     }
     
-    public virtual async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken)
+    public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _dbSet
             .AsNoTracking()
@@ -27,7 +27,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return entities;
     }
 
-    public virtual async Task<T?> GetById(Guid id, CancellationToken cancellationToken)
+    public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _dbSet
             .AsNoTracking()
@@ -38,7 +38,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return entity;
     }
 
-    public virtual async Task<T> Add(T item, CancellationToken cancellationToken)
+    public virtual async Task<T> AddAsync(T item, CancellationToken cancellationToken)
     {
         var addedEntity = await _dbSet.AddAsync(item, cancellationToken);
         
@@ -47,7 +47,7 @@ public class BaseRepository<T> : IBaseRepository<T>
         return addedEntity.Entity;
     }
 
-    public virtual async Task<T?> Update(T item, CancellationToken cancellationToken)
+    public virtual async Task<T?> UpdateAsync(T item, CancellationToken cancellationToken)
     {
         _dbSet.Update(item);
         
@@ -56,19 +56,12 @@ public class BaseRepository<T> : IBaseRepository<T>
         return item;
     }
 
-    public virtual async Task<bool> Delete(T item, CancellationToken cancellationToken)
+    public virtual async Task<bool> DeleteAsync(T item, CancellationToken cancellationToken)
     {
         _dbSet.Remove(item);
         
         cancellationToken.ThrowIfCancellationRequested();
 
         return true;
-    }
-    
-    public virtual async Task SaveAsync(CancellationToken cancellationToken)
-    {
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        
-        cancellationToken.ThrowIfCancellationRequested();
     }
 }

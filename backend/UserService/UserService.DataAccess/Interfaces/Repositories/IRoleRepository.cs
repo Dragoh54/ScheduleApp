@@ -10,7 +10,7 @@ public interface IRoleRepository : IBaseRepository<RoleEntity>
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<IEnumerable<RoleEntity>?> GetAll(CancellationToken cancellationToken);
+    public Task<IEnumerable<RoleEntity>?> GetAllWithUserAsync(CancellationToken cancellationToken);
     
     /// <summary>
     /// Get role entity, including UserRoles with User
@@ -18,7 +18,7 @@ public interface IRoleRepository : IBaseRepository<RoleEntity>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<RoleEntity?> GetById(Guid id, CancellationToken cancellationToken);
+    public Task<RoleEntity?> GetByIdWithUserAsync(Guid id, CancellationToken cancellationToken);
     
     /// <summary>
     /// Get role entity by role name fom Roles enum
@@ -26,5 +26,5 @@ public interface IRoleRepository : IBaseRepository<RoleEntity>
     /// <param name="roles"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<RoleEntity?> GetByRole(Roles roles, CancellationToken cancellationToken);
+    public Task<RoleEntity?> GetByRoleAsync(Roles roles, CancellationToken cancellationToken);
 }

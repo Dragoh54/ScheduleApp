@@ -10,7 +10,7 @@ public interface IUserRepository : IBaseRepository<UserEntity>
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<IEnumerable<UserEntity>?> GetAll(CancellationToken cancellationToken);
+    public Task<IEnumerable<UserEntity>?> GetAllWithRolesAsync(CancellationToken cancellationToken);
     
     /// <summary>
     /// Get user entity, including UserRoles entities with Roles
@@ -18,7 +18,7 @@ public interface IUserRepository : IBaseRepository<UserEntity>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<UserEntity?> GetById(Guid id, CancellationToken cancellationToken);
+    public Task<UserEntity?> GetByIdWithRolesAsync(Guid id, CancellationToken cancellationToken);
     
     /// <summary>
     /// Get paginated user entities, including UserRoles with Roles
@@ -28,7 +28,7 @@ public interface IUserRepository : IBaseRepository<UserEntity>
     /// <param name="pageSize"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<(List<UserEntity>?, int)> Get(UserFilters userFilter, int pageNumber, int pageSize, CancellationToken cancellationToken);
+    public Task<(List<UserEntity>?, int)> GetFilteredWithRoles(UserFilters userFilter, int pageNumber, int pageSize, CancellationToken cancellationToken);
     
     /// <summary>
     /// Get user entity with tracking
@@ -36,7 +36,7 @@ public interface IUserRepository : IBaseRepository<UserEntity>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<UserEntity?> GetWithTracking(Guid id, CancellationToken cancellationToken);
+    public Task<UserEntity?> GetWithTrackingAsync(Guid id, CancellationToken cancellationToken);
     
     /// <summary>
     /// Get user entity by email, including UserRoles with Roles

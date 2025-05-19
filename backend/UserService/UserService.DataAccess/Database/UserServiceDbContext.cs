@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserService.DataAccess.Models;
 
-using static UserService.DataAccess.Database.DataSeeder.DataSeeder;
+using static UserService.DataAccess.Database.DataSeeder.DataGenerator;
 
 namespace UserService.DataAccess.Database;
 

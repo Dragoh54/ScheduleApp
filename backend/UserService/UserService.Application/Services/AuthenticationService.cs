@@ -35,7 +35,7 @@ public class AuthenticationService(
         var hashedPassword = passwordHasher.Generate(registerDto.Password, cancellationToken);
         var user = new UserEntity(registerDto.Username, registerDto.Email, hashedPassword, registerDto.FirstName, registerDto.LastName);
         
-        await unitOfWork.UserRepository.Add(user, cancellationToken);
+        await unitOfWork.UserRepository.AddAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
@@ -66,7 +66,7 @@ public class AuthenticationService(
         
         userByEmail.LastLoginAt = DateTime.UtcNow;
         
-        await unitOfWork.UserRepository.Update(userByEmail, cancellationToken);
+        await unitOfWork.UserRepository.UpdateAsync(userByEmail, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         
         return (token, refreshToken);
@@ -86,7 +86,7 @@ public class AuthenticationService(
         
         refreshToken.IsUsed = true;
 
-        await unitOfWork.TokenModelRepository.Update(refreshToken, cancellationToken);
+        await unitOfWork.TokenModelRepository.UpdateAsync(refreshToken, cancellationToken);
         await unitOfWork.SaveChangesAsync();
 
         return true;
@@ -131,7 +131,7 @@ public class AuthenticationService(
         
         user.IsConfirmed = true;
     
-        await unitOfWork.UserRepository.Update(user, cancellationToken);
+        await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
@@ -179,7 +179,7 @@ public class AuthenticationService(
         
         cancellationToken.ThrowIfCancellationRequested();
     
-        await unitOfWork.UserRepository.Update(user, cancellationToken);
+        await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
@@ -241,7 +241,7 @@ public class AuthenticationService(
         
         user.IsDeleted = false;
     
-        await unitOfWork.UserRepository.Update(user, cancellationToken);
+        await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();

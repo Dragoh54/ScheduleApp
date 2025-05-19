@@ -3,7 +3,7 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.DataSeeder;
 
-public static class DataSeeder
+public static class DataGenerator
 {
     public static List<UserEntity> GenerateUsers()
     {

@@ -7,7 +7,7 @@ public interface IBaseRepository<T>
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken);
+    public Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken);
     
     /// <summary>
     /// Get entity by id to database
@@ -15,7 +15,7 @@ public interface IBaseRepository<T>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<T?> GetById(Guid id, CancellationToken cancellationToken);
+    public Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     
     /// <summary>
     /// Add entity to database
@@ -23,7 +23,7 @@ public interface IBaseRepository<T>
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<T> Add(T item, CancellationToken cancellationToken);
+    public Task<T> AddAsync(T item, CancellationToken cancellationToken);
     
     /// <summary>
     /// Update entity in database
@@ -31,14 +31,7 @@ public interface IBaseRepository<T>
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<T?> Update(T item, CancellationToken cancellationToken);
-    
-    /// <summary>
-    /// Save changes to database
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public Task SaveAsync(CancellationToken cancellationToken);
+    public Task<T?> UpdateAsync(T item, CancellationToken cancellationToken);
     
     /// <summary>
     /// Delete entity from database
@@ -46,5 +39,5 @@ public interface IBaseRepository<T>
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<bool> Delete(T item, CancellationToken cancellationToken);
+    public Task<bool> DeleteAsync(T item, CancellationToken cancellationToken);
 }

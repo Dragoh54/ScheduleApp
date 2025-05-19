@@ -10,7 +10,7 @@ public class UserRepository(
     UserServiceDbContext dbContext
     ) : BaseRepository<UserEntity>(dbContext), IUserRepository
 {
-    public override async Task<IEnumerable<UserEntity>?> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<UserEntity>?> GetAllWithRolesAsync(CancellationToken cancellationToken)
     {
         var users = await _dbContext.Users
             .Include(u => u.UserRoles)
@@ -23,7 +23,7 @@ public class UserRepository(
         return users;
     }
 
-    public override async Task<UserEntity?> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<UserEntity?> GetByIdWithRolesAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
             .Include(u => u.UserRoles) 
@@ -36,7 +36,7 @@ public class UserRepository(
         return user;
     }
 
-    public async Task<(List<UserEntity>?, int)> Get(UserFilters userFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<(List<UserEntity>?, int)> GetFilteredWithRoles(UserFilters userFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var specification = new UserByFilterSpecification(userFilter);
         var predicate = specification.ToExpression();
@@ -62,7 +62,7 @@ public class UserRepository(
     }
 
 
-    public async Task<UserEntity?> GetWithTracking(Guid id, CancellationToken cancellationToken)
+    public async Task<UserEntity?> GetWithTrackingAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users
             .Include(u => u.UserRoles) 
