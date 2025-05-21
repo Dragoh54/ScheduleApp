@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using UserService.Application.Dto.RoleDtos;
 
-namespace UserService.Application.Validator.RoleValidators;
+namespace UserService.Application.Validators.RoleValidators;
 
 public class RoleDtoValidator : AbstractValidator<RoleDto>
 {

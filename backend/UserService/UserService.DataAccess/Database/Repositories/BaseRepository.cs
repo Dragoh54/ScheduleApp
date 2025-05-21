@@ -7,18 +7,18 @@ namespace UserService.DataAccess.Database.Repositories;
 public class BaseRepository<T> : IBaseRepository<T> 
     where T : IdEntity
 {
-    protected readonly UserServiceDbContext _dbContext;
-    protected readonly DbSet<T> _dbSet;
+    protected readonly UserServiceDbContext DbContext;
+    protected readonly DbSet<T> DbSet;
 
     protected BaseRepository(UserServiceDbContext dbContext)
     {
-        _dbContext = dbContext;
-        _dbSet = _dbContext.Set<T>();
+        DbContext = dbContext;
+        DbSet = DbContext.Set<T>();
     }
     
     public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var entities = await _dbSet
+        var entities = await DbSet
             .AsNoTracking()
             .ToListAsync(cancellationToken);
         
@@ -29,7 +29,7 @@ public class BaseRepository<T> : IBaseRepository<T>
 
     public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _dbSet
+        var entity = await DbSet
             .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id.Equals(id), cancellationToken);
         
@@ -40,27 +40,33 @@ public class BaseRepository<T> : IBaseRepository<T>
 
     public virtual async Task<T> AddAsync(T item, CancellationToken cancellationToken)
     {
-        var addedEntity = await _dbSet.AddAsync(item, cancellationToken);
+        var addedEntity = await DbSet.AddAsync(item, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
 
         return addedEntity.Entity;
     }
 
     public virtual async Task<T?> UpdateAsync(T item, CancellationToken cancellationToken)
     {
-        _dbSet.Update(item);
+        DbSet.Update(item);
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
         
         return item;
     }
 
     public virtual async Task<bool> DeleteAsync(T item, CancellationToken cancellationToken)
     {
-        _dbSet.Remove(item);
+        DbSet.Remove(item);
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
 
         return true;
     }

@@ -10,10 +10,6 @@ using UserService.Application.Interfaces.Auth;
 using UserService.Application.Interfaces.Providers;
 using UserService.Application.Interfaces.Services;
 using UserService.Application.Services;
-using UserService.Application.Validator;
-using UserService.Application.Validator.EmailValidators;
-using UserService.Application.Validator.RoleValidators;
-using UserService.Application.Validator.UserValidators;
 
 namespace UserService.Application.Extensions;
 

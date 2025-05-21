@@ -3,22 +3,29 @@ using UserService.DataAccess.Interfaces.UnitOfWork;
 
 namespace UserService.DataAccess.Database.UnitOfWork;
 
-public sealed class UnitOfWork(
-    UserServiceDbContext dbContext,
-    IUserRepository userRepository,
-    IRoleRepository roleRepository,
-    ITokenModelRepository tokenModelRepository
-    ) : IUnitOfWork
+public sealed class UnitOfWork : IUnitOfWork
 {
-    private bool _disposed;
+    private readonly UserServiceDbContext _dbContext;
     
-    public IUserRepository UserRepository { get; } = userRepository;
-    public ITokenModelRepository TokenModelRepository { get; } = tokenModelRepository;
-    public IRoleRepository RoleRepository { get; } = roleRepository;
+    private bool _disposed;
+
+    public UnitOfWork(UserServiceDbContext dbContext, IUserRepository userRepository, IRoleRepository roleRepository,
+        ITokenModelRepository tokenModelRepository)
+    {
+        _dbContext = dbContext;
+        
+        UserRepository = userRepository;
+        TokenModelRepository = tokenModelRepository;
+        RoleRepository = roleRepository;
+    }
+    
+    public IUserRepository UserRepository { get; }
+    public ITokenModelRepository TokenModelRepository { get; }
+    public IRoleRepository RoleRepository { get; }
 
     public async Task SaveChangesAsync()
     {
-        await dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
 
     public void Dispose()
@@ -31,7 +38,7 @@ public sealed class UnitOfWork(
     {
         if (!_disposed && disposing)
         {
-            dbContext.Dispose();
+            _dbContext.Dispose();
         }
 
         _disposed = true;

@@ -5,13 +5,16 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class RoleRepository(
-    UserServiceDbContext dbContext
-    ) : BaseRepository<RoleEntity>(dbContext), IRoleRepository
+public class RoleRepository : BaseRepository<RoleEntity>, IRoleRepository
 {
+
+    public RoleRepository(UserServiceDbContext dbContext) : base(dbContext)
+    {
+    }
+    
     public async Task<IEnumerable<RoleEntity>?> GetAllWithUserAsync(CancellationToken cancellationToken)
     {
-        var roles = await _dbContext.Roles
+        var roles = await DbContext.Roles
             .Include(r => r.UserRoles)
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
@@ -24,7 +27,7 @@ public class RoleRepository(
 
     public async Task<RoleEntity?> GetByIdWithUserAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Roles
+        var user = await DbContext.Roles
             .Include(r => r.UserRoles) 
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
@@ -37,7 +40,7 @@ public class RoleRepository(
 
     public async Task<RoleEntity?> GetByRoleAsync(Roles roles, CancellationToken cancellationToken)
     {
-        var role = await _dbContext.Roles
+        var role = await DbContext.Roles
             .Include(r => r.UserRoles)
             .ThenInclude(ur => ur.User)
             .AsNoTracking()

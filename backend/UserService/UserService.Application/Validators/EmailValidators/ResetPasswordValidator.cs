@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using UserService.Application.Dto.EmailDtos;
 
-namespace UserService.Application.Validator.EmailValidators;
+namespace UserService.Application.Validators.EmailValidators;
 
 public class ResetPasswordValidator : AbstractValidator<ResetPasswordDto>
 {

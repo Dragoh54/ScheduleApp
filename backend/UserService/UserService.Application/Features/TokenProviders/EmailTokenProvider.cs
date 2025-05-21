@@ -13,17 +13,20 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Features.Providers;
 
-public class EmailTokenProvider(
-        IConfiguration configuration, 
-        IOptions<JwtOptions> jwtOptions
-    ) : IEmailTokenProvider
+public class EmailTokenProvider : IEmailTokenProvider
 {
-    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
-    private readonly string _secretKey = configuration["JWTSecretKey"] ?? throw new NullReferenceException();
+    private readonly JwtOptions _jwtOptions;
+    private readonly string _secretKey;
+
+    public EmailTokenProvider(IConfiguration configuration, IOptions<JwtOptions> jwtOptions)
+    {
+        _jwtOptions = jwtOptions.Value;
+        _secretKey = configuration["JWTSecretKey"] ?? throw new NullReferenceException();
+    }
     
     public TokenEntity GenerateTokenEntity(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
     {
-        var token = new TokenEntity()
+        var token = new TokenEntity
         {
             Id = Guid.NewGuid(),
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(JwtConfig.Base64)),

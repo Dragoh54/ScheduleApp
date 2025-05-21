@@ -4,13 +4,15 @@ using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class TokenModelModelRepository(
-    UserServiceDbContext dbContext
-    ) : BaseRepository<TokenEntity>(dbContext), ITokenModelRepository
+public class TokenModelModelRepository : BaseRepository<TokenEntity>, ITokenModelRepository
 {
+    public TokenModelModelRepository(UserServiceDbContext dbContext) : base(dbContext)
+    {
+    }
+    
     public async Task<TokenEntity?> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
-        var token = await _dbContext.Tokens
+        var token = await DbContext.Tokens
             .AsNoTracking()
             .FirstOrDefaultAsync(rt => rt.UserId == userId, cancellationToken);
         
@@ -21,7 +23,7 @@ public class TokenModelModelRepository(
 
     public async Task<TokenEntity?> GetByToken(string token, CancellationToken cancellationToken)
     {
-        var result = await _dbContext.Tokens
+        var result = await DbContext.Tokens
             .AsNoTracking()
             .FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
         

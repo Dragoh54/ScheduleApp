@@ -9,12 +9,16 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthenticationController(
-    IAuthenticationService authService, 
-    IOptions<JwtOptions> jwtOptions
-    ) : Controller
+public class AuthenticationController : Controller
 {
-    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+    private readonly JwtOptions _jwtOptions;
+    private readonly IAuthenticationService _authenticationService;
+
+    public AuthenticationController(IAuthenticationService authService, IOptions<JwtOptions> jwtOptions)
+    {
+        _jwtOptions = jwtOptions.Value;
+        _authenticationService = authService;
+    }
     
     /// <summary>
     /// Login user
@@ -22,7 +26,7 @@ public class AuthenticationController(
     [HttpPost]
     public async Task<IResult> Login(LoginUserDto user, CancellationToken cancellationToken)
     {
-        var (token, refreshToken) = await authService.Login(user, cancellationToken);
+        var (token, refreshToken) = await _authenticationService.Login(user, cancellationToken);
         
         HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", refreshToken, new CookieOptions()
         {
@@ -44,7 +48,7 @@ public class AuthenticationController(
     public async Task<IResult> Logout(CancellationToken cancellationToken)
     {
         var refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
-        var result = await authService.Logout(refreshToken, cancellationToken);
+        var result = await _authenticationService.Logout(refreshToken, cancellationToken);
 
         HttpContext.Response.Cookies.Delete("not-a-refresh-token-cookies");
         

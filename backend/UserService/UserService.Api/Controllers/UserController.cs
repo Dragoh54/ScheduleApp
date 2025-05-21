@@ -12,11 +12,17 @@ namespace UserService.Api.Controllers;
 [ApiController]
 [Route("users")]
 [Authorize]
-public class UserController(
-    IUserService service,
-    IAuthenticationService authService
-    ) : Controller
+public class UserController : Controller
 {
+    private readonly IAuthenticationService _authenticationService;
+    private readonly IUserService _userService;
+
+    public UserController(IAuthenticationService authService, IUserService userService)
+    {
+        _authenticationService = authService;
+        _userService = userService;
+    }
+    
     /// <summary>
     /// Get users with pagination
     /// </summary>
@@ -26,7 +32,7 @@ public class UserController(
     [HttpGet]
     public async Task<IResult> GetUsers([FromQuery] PaginatedPageUsers query, CancellationToken cancellationToken)
     {
-        var resultUsers = await service.GetUsers(query, cancellationToken);
+        var resultUsers = await _userService.GetUsers(query, cancellationToken);
         
         return Results.Ok(resultUsers);
     }
@@ -40,7 +46,7 @@ public class UserController(
     [HttpGet("{id:Guid}")]
     public async Task<IResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var resultUsers = await service.GetUserById(id, cancellationToken);
+        var resultUsers = await _userService.GetUserById(id, cancellationToken);
         
         return Results.Ok(resultUsers);
     }
@@ -54,7 +60,7 @@ public class UserController(
     [HttpPost]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
-        var resultUser = await authService.Register(user, cancellationToken);
+        var resultUser = await _authenticationService.Register(user, cancellationToken);
         
         return Results.Ok(resultUser);
     }
@@ -70,7 +76,7 @@ public class UserController(
     [Authorize]
     public async Task<IResult> UpdateUser([FromRoute] Guid id, UpdateUserDto user, CancellationToken cancellationToken)
     {
-        var resultUser = await service.UpdateUser(id, user, cancellationToken);
+        var resultUser = await _userService.UpdateUser(id, user, cancellationToken);
         
         return Results.Ok(resultUser);
     }
@@ -85,7 +91,7 @@ public class UserController(
     public async Task<IResult> SoftDeleteUser(CancellationToken cancellationToken)
     {
         var accessToken = HttpContext.GetBearerToken();
-        var deletedUser = await service.SoftDelete(accessToken, cancellationToken);
+        var deletedUser = await _userService.SoftDelete(accessToken, cancellationToken);
         
         return Results.Ok(deletedUser);
     }
@@ -104,7 +110,7 @@ public class UserController(
             values: null,
             protocol: Request.Scheme);
     
-        var token = await authService.RecoverAccountAsync(email, callbackUrl!, cancellationToken);
+        var token = await _authenticationService.RecoverAccountAsync(email, callbackUrl!, cancellationToken);
     
         return Results.Ok(token);
     }
@@ -118,7 +124,7 @@ public class UserController(
     [HttpGet("restore", Name = "RestoreAccount")]
     public async Task<IResult> OnRestoreAccount([FromQuery] EmailTokenDto restoreAccountRequest, CancellationToken cancellationToken)
     {
-        var restoreSuccess = await authService.RestoreAccountAsync(restoreAccountRequest, cancellationToken);
+        var restoreSuccess = await _authenticationService.RestoreAccountAsync(restoreAccountRequest, cancellationToken);
     
         return Results.Ok(restoreSuccess);
     }
@@ -135,7 +141,7 @@ public class UserController(
     public async Task<IResult> AddAdminRoleToUser([FromRoute] Guid id, [FromQuery] Roles role, CancellationToken cancellationToken)
     {
         var addRoleDto = new AddRoleDto{Role = role, UserId = id};
-        var resultUser = await service.AddRole(addRoleDto, cancellationToken);
+        var resultUser = await _userService.AddRole(addRoleDto, cancellationToken);
         
         return Results.Ok(resultUser);
     }

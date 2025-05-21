@@ -7,10 +7,15 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("confirmations")]
-public class ConfirmationController(
-    IAuthenticationService authService
-) : Controller
+public class ConfirmationController : Controller
 {
+    private readonly IAuthenticationService _authenticationService;
+
+    public ConfirmationController(IAuthenticationService authService)
+    {
+        _authenticationService = authService;
+    }
+    
     /// <summary>
     /// create link to confirm account and send to email
     /// </summary>
@@ -23,7 +28,7 @@ public class ConfirmationController(
             values: null,
             protocol: Request.Scheme);
     
-        var token = await authService.ConfirmEmailSendAsync(accessToken, callbackUrl!, cancellationToken);
+        var token = await _authenticationService.ConfirmEmailSendAsync(accessToken, callbackUrl!, cancellationToken);
     
         return Results.Ok(token);
     }
@@ -34,7 +39,7 @@ public class ConfirmationController(
     [HttpGet(Name = "EmailConfirmation")]
     public async Task<IResult> ConfirmEmailReceive([FromQuery] EmailTokenDto emailTokenDto, CancellationToken cancellationToken)
     {
-        var result = await authService.ConfirmEmailReceiveAsync(emailTokenDto, cancellationToken);
+        var result = await _authenticationService.ConfirmEmailReceiveAsync(emailTokenDto, cancellationToken);
     
         return Results.Ok(result);
     }

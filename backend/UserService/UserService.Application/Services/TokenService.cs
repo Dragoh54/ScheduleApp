@@ -13,17 +13,28 @@ using UserService.DataAccess.Models;
 
 namespace UserService.Application.Services;
 
-public class TokenService(
-    IJwtProvider jwtProvider, 
-    IEmailTokenProvider emailTokenProvider,
-    IDistributedCache cache, 
-    IEmailCacheService emailCacheService,
-    IUnitOfWork unitOfWork
-    ) : ITokenService
+public class TokenService : ITokenService
 {
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailTokenProvider _emailTokenProvider;
+    private readonly IDistributedCache _cache;
+    private readonly IEmailCacheService _emailCacheService;
+    private readonly IJwtProvider _jwtProvider;
+
+    public TokenService(IJwtProvider jwtProvider, IEmailTokenProvider emailTokenProvider, IDistributedCache cache,
+        IEmailCacheService emailCacheService, IUnitOfWork unitOfWork
+    )
+    {
+        _unitOfWork = unitOfWork;
+        _emailTokenProvider = emailTokenProvider;
+        _cache = cache;
+        _emailCacheService = emailCacheService;
+        _jwtProvider = jwtProvider;
+    }
+    
     public async Task<string> GenerateAccessToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = jwtProvider.GenerateAccessToken(user, cancellationToken)
+        var token = _jwtProvider.GenerateAccessToken(user, cancellationToken)
             ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
         return token;
@@ -31,11 +42,11 @@ public class TokenService(
     
     public async Task<string> GenerateRefreshToken(UserEntity user, CancellationToken cancellationToken)
     {
-        var token = jwtProvider.GenerateRefreshToken(user, cancellationToken)
-            ?? throw new UnauthorizedAccessException("Failed to generate token.");
+        var token = _jwtProvider.GenerateRefreshToken(user, cancellationToken)
+                    ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
-        await unitOfWork.TokenModelRepository.AddAsync(token, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.TokenModelRepository.AddAsync(token, cancellationToken);
+
         cancellationToken.ThrowIfCancellationRequested();
         
         return token.Token;
@@ -43,16 +54,16 @@ public class TokenService(
     
     public async Task<string> GenerateEmailToken(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
     {
-        var token = await cache.GetStringAsync(user.Email, cancellationToken);
+        var token = await _cache.GetStringAsync(user.Email, cancellationToken);
         if (!string.IsNullOrEmpty(token))
         {
             return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         }
         
-        var confirmToken = emailTokenProvider.GenerateEmailToken(user, tokenType, cancellationToken)
-            ?? throw new UnauthorizedAccessException("Failed to generate token.");
+        var confirmToken = _emailTokenProvider.GenerateEmailToken(user, tokenType, cancellationToken)
+                           ?? throw new UnauthorizedAccessException("Failed to generate token.");
         
-        await emailCacheService.AddEmailTokenToCacheAsync(user.Email, confirmToken, tokenType, cancellationToken);
+        await _emailCacheService.AddEmailTokenToCacheAsync(user.Email, confirmToken, tokenType, cancellationToken);
         
         confirmToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmToken));
         return confirmToken;
@@ -65,7 +76,7 @@ public class TokenService(
             throw new UnauthorizedAccessException();
         }
         
-        var token = await unitOfWork.TokenModelRepository.GetByToken(refreshToken, cancellationToken);
+        var token = await _unitOfWork.TokenModelRepository.GetByToken(refreshToken, cancellationToken);
         
         var isTokenInvalid = token is null || token.IsUsed || token.ExpiresAt < DateTime.UtcNow;
         
@@ -74,14 +85,13 @@ public class TokenService(
             throw new UnauthorizedAccessException();
         }
         
-        var user = await unitOfWork.UserRepository.GetByIdWithRolesAsync(token.UserId, cancellationToken)
+        var user = await _unitOfWork.UserRepository.GetByIdWithRolesAsync(token.UserId, cancellationToken)
                    ?? throw new UnauthorizedAccessException();
 
-        token.Token = jwtProvider.GenerateRefreshTokenString();
+        token.Token = _jwtProvider.GenerateRefreshTokenString();
         token.UpdatedAt = DateTime.UtcNow;
         
-        await unitOfWork.TokenModelRepository.UpdateAsync(token, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.TokenModelRepository.UpdateAsync(token, cancellationToken);
         
         var accessToken = await GenerateAccessToken(user, cancellationToken)
             ?? throw new BadRequestException("Failed to refresh token.");
@@ -90,8 +100,8 @@ public class TokenService(
     }
 
     public async Task<string> GetEmailFromToken(string token, CancellationToken cancellationToken) =>
-        await jwtProvider.GetClaimFromToken(token, ClaimTypes.Email);
+        await _jwtProvider.GetClaimFromToken(token, ClaimTypes.Email);
 
     public async Task<string> GetIdFromToken(string token, CancellationToken cancellationToken) =>
-        await jwtProvider.GetClaimFromToken(token, "Id");
+        await _jwtProvider.GetClaimFromToken(token, "Id");
 }

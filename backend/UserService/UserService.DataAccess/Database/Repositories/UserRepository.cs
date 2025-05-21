@@ -1,18 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Models;
-using UserService.DataAccess.Models.Pagination;
+using UserService.DataAccess.Pagination;
 using UserService.DataAccess.Specifications;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class UserRepository(
-    UserServiceDbContext dbContext
-    ) : BaseRepository<UserEntity>(dbContext), IUserRepository
+public class UserRepository : BaseRepository<UserEntity>, IUserRepository
 {
+    public UserRepository(UserServiceDbContext dbContext) : base(dbContext)
+    {
+    }
+    
     public async Task<IEnumerable<UserEntity>?> GetAllWithRolesAsync(CancellationToken cancellationToken)
     {
-        var users = await _dbContext.Users
+        var users = await DbContext.Users
             .Include(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
             .AsNoTracking()
@@ -25,7 +27,7 @@ public class UserRepository(
 
     public async Task<UserEntity?> GetByIdWithRolesAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users
+        var user = await DbContext.Users
             .Include(u => u.UserRoles) 
             .ThenInclude(ur => ur.Role)
             .AsNoTracking()
@@ -41,7 +43,7 @@ public class UserRepository(
         var specification = new UserByFilterSpecification(userFilter);
         var predicate = specification.ToExpression();
 
-        var query = _dbContext.Users
+        var query = DbContext.Users
             .AsNoTracking()
             .Where(predicate)
             .Include(u => u.UserRoles)
@@ -64,7 +66,7 @@ public class UserRepository(
 
     public async Task<UserEntity?> GetWithTrackingAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users
+        var user = await DbContext.Users
             .Include(u => u.UserRoles) 
             .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
@@ -76,7 +78,7 @@ public class UserRepository(
 
     public async Task<UserEntity?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users
+        var user = await DbContext.Users
             .Include(u => u.UserRoles) 
             .ThenInclude(ur => ur.Role)
             .AsNoTracking()
@@ -89,7 +91,7 @@ public class UserRepository(
 
     public async Task<IEnumerable<UserEntity>?> GetDeletedUsersAsync(CancellationToken cancellationToken)
     {
-        var deletedUsers = await _dbSet
+        var deletedUsers = await DbSet
             .AsNoTracking()
             .IgnoreQueryFilters()
             .Where(u => u.IsDeleted)
@@ -102,7 +104,7 @@ public class UserRepository(
 
     public async Task<UserEntity?> GetDeletedUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var deletedUser = await _dbSet
+        var deletedUser = await DbSet
             .AsNoTracking()
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.IsDeleted && u.Email == email, cancellationToken);

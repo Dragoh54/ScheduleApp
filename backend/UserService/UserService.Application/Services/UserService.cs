@@ -9,14 +9,20 @@ using UserService.DataAccess.Models.Pagination;
 
 namespace UserService.Application.Services;
 
-public class UserService(
-    IUnitOfWork unitOfWork,
-    ITokenService tokenService
-    ) : IUserService
+public class UserService : IUserService
 {
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ITokenService _tokenService;
+
+    public UserService(IUnitOfWork unitOfWork, ITokenService tokenService)
+    {
+        _unitOfWork = unitOfWork;
+        _tokenService = tokenService;
+    }
+    
     public async Task<UserDto> GetUserById(Guid id, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetByIdWithRolesAsync(id, cancellationToken)
+        var candidate = await _unitOfWork.UserRepository.GetByIdWithRolesAsync(id, cancellationToken)
             ?? throw new NotFoundException("User with this id doesn't exist!");
         
         return candidate.Adapt<UserDto>();
@@ -26,7 +32,7 @@ public class UserService(
     {
         var (pageNumber, pageSize) = (request.PageNumber, request.PageSize);
         
-        var (users, totalCount) = await unitOfWork.UserRepository.GetFilteredWithRoles(request.UserFilters, pageNumber, pageSize, cancellationToken);
+        var (users, totalCount) = await _unitOfWork.UserRepository.GetFilteredWithRoles(request.UserFilters, pageNumber, pageSize, cancellationToken);
 
         if (users is null)
         {
@@ -51,13 +57,12 @@ public class UserService(
             throw new BadRequestException("Id cannot be empty!");
         }
         
-        var candidate = await unitOfWork.UserRepository.GetByIdWithRolesAsync(id, cancellationToken)
+        var candidate = await _unitOfWork.UserRepository.GetByIdWithRolesAsync(id, cancellationToken)
                         ?? throw new AlreadyExistsException("User with this id doesn't exist!");
         
         userDto.Adapt(candidate);
         
-        await unitOfWork.UserRepository.UpdateAsync(candidate, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.UserRepository.UpdateAsync(candidate, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -66,7 +71,7 @@ public class UserService(
 
     public async Task<UserDto> AddRole(AddRoleDto roleDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetWithTrackingAsync(roleDto.UserId, cancellationToken)
+        var candidate = await _unitOfWork.UserRepository.GetWithTrackingAsync(roleDto.UserId, cancellationToken)
                         ?? throw new AlreadyExistsException("User with this id doesn't exist!");
     
         if (!candidate.IsConfirmed)
@@ -79,14 +84,13 @@ public class UserService(
             throw new BadRequestException($"User is already an {roleDto.Role}!");
         }
     
-        var role = await unitOfWork.RoleRepository.GetByRoleAsync(roleDto.Role, cancellationToken)
+        var role = await _unitOfWork.RoleRepository.GetByRoleAsync(roleDto.Role, cancellationToken)
                    ?? throw new BadRequestException("Role does not exist!");
         
         candidate.UserRoles.Add(new UserRoles { UserId = candidate.Id, RoleId = role.Id });
         candidate.UpdatedAt = DateTime.UtcNow;
         
-        await unitOfWork.UserRepository.UpdateAsync(candidate, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.UserRepository.UpdateAsync(candidate, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -100,16 +104,15 @@ public class UserService(
             throw new BadRequestException("Invalid access token");
         }
         
-        var idFromToken = await tokenService.GetIdFromToken(token, cancellationToken);
+        var idFromToken = await _tokenService.GetIdFromToken(token, cancellationToken);
         
-        var candidate = await unitOfWork.UserRepository.GetByIdWithRolesAsync(Guid.Parse(idFromToken), cancellationToken)
+        var candidate = await _unitOfWork.UserRepository.GetByIdWithRolesAsync(Guid.Parse(idFromToken), cancellationToken)
                         ?? throw new NotFoundException("User with this id doesn't exist!");
         
         candidate.IsDeleted = true;
         candidate.DeletedAt = DateTime.UtcNow;
         
-        await unitOfWork.UserRepository.UpdateAsync(candidate, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.UserRepository.UpdateAsync(candidate, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
         

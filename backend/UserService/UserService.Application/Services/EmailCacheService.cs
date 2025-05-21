@@ -7,26 +7,25 @@ using UserService.DataAccess.Exceptions;
 
 namespace UserService.Application.Services;
 
-public class EmailCacheService(
-    IDistributedCache cache, 
-    IJwtProvider jwtProvider,
-    IEmailTokenProvider emailTokenProvider
-    ) : CacheService<string>(cache), IEmailCacheService
+public class EmailCacheService : CacheService<string>, IEmailCacheService
 {
-    private readonly IDistributedCache _cache = cache;
+    private readonly IEmailTokenProvider _emailTokenProvider;
+
+    public EmailCacheService(IDistributedCache cache, IEmailTokenProvider emailTokenProvider) : base(cache)
+    {
+        _emailTokenProvider = emailTokenProvider;
+    }
 
     public async Task AddEmailTokenToCacheAsync(string email, string token, TokenTypes type, CancellationToken cancellationToken)
     {
-        var tokenFromCache = await _cache.GetStringAsync(email, cancellationToken);
+        var tokenFromCache = await Get(email, cancellationToken);
         
         if (tokenFromCache is not null)
         {
             throw new BadRequestException("Email Token already exists");
         }
-        
-        await _cache.SetStringAsync(email, token, new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(emailTokenProvider.GetTokenExistingTime(type))
-        }, cancellationToken);
+
+        var timeSpan = TimeSpan.FromHours(_emailTokenProvider.GetTokenExistingTime(type));
+        await Set(email, token, timeSpan, cancellationToken);
     }
 }

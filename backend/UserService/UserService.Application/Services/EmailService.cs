@@ -8,11 +8,14 @@ using UserService.Application.Interfaces.Services;
 
 namespace UserService.Application.Services;
 
-public class EmailService(
-    IOptions<EmailSettings> settings
-    ) : IEmailService
+public class EmailService : IEmailService
 {
-    private readonly EmailSettings _settings = settings.Value;
+    private readonly EmailSettings _settings;
+
+    public EmailService(IOptions<EmailSettings> settings)
+    {
+        _settings = settings.Value;
+    }
     
     public async Task SendEmailAsync(string mailTo, string subject, string message, CancellationToken cancellationToken)
     {

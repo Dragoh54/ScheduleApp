@@ -5,9 +5,12 @@ using static UserService.DataAccess.Database.DataSeeder.DataGenerator;
 
 namespace UserService.DataAccess.Database;
 
-public class UserServiceDbContext(DbContextOptions<UserServiceDbContext> options)
-    : DbContext(options)
+public class UserServiceDbContext : DbContext
 {
+    public UserServiceDbContext(DbContextOptions<UserServiceDbContext> options) : base(options)
+    {
+    }
+
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<RoleEntity> Roles { get; set; }
     public DbSet<TokenEntity> Tokens { get; set; }

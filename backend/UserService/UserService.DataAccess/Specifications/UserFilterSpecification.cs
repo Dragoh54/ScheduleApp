@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using UserService.DataAccess.Interfaces.Specifications;
 using UserService.DataAccess.Models;
-using UserService.DataAccess.Models.Pagination;
+using UserService.DataAccess.Pagination;
 
 namespace UserService.DataAccess.Specifications;
 

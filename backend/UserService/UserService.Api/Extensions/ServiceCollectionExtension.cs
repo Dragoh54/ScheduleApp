@@ -9,9 +9,9 @@ using UserService.Application.Dto.EmailDtos;
 using UserService.Application.Dto.RoleDtos;
 using UserService.Application.Dto.UserDtos;
 using UserService.Application.Validator;
-using UserService.Application.Validator.EmailValidators;
-using UserService.Application.Validator.RoleValidators;
-using UserService.Application.Validator.UserValidators;
+using UserService.Application.Validators.EmailValidators;
+using UserService.Application.Validators.RoleValidators;
+using UserService.Application.Validators.UserValidators;
 using UserService.DataAccess.Enums;
 
 namespace UserService.Api.Extensions;

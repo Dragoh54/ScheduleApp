@@ -1,4 +1,5 @@
 ﻿using UserService.DataAccess.Models.Pagination;
+using UserService.DataAccess.Pagination;
 
 namespace UserService.Application.Dto.UserDtos;
 

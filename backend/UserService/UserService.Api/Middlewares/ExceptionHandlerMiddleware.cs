@@ -4,20 +4,26 @@ using UserService.DataAccess.Exceptions;
 
 namespace UserService.Api.Middlewares;
 
-public class ExceptionHandlerMiddleware(
-    RequestDelegate next, 
-    ILogger<ExceptionHandlerMiddleware> logger
-    )
+public class ExceptionHandlerMiddleware
 {
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionHandlerMiddleware> _logger;
+
+    public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+    
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await next(context); 
+            await _next(context); 
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An unhandled exception occurred");
+            _logger.LogError(ex, "An unhandled exception occurred");
             await HandleExceptionAsync(context, ex);
         }
     }

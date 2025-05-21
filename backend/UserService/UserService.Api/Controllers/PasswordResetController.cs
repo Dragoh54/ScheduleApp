@@ -6,10 +6,15 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("password-resets")]
-public class PasswordResetController(
-    IAuthenticationService authService
-    ) : Controller
+public class PasswordResetController : Controller
 {
+    private readonly IAuthenticationService _authenticationService;
+
+    public PasswordResetController(IAuthenticationService authService)
+    {
+        _authenticationService = authService;
+    }
+    
     /// <summary>
     /// Create link to reset password
     /// </summary>
@@ -21,7 +26,7 @@ public class PasswordResetController(
             values: null,
             protocol: Request.Scheme);
     
-        var token = await authService.ForgotPasswordAsync(email, callbackUrl!, cancellationToken);
+        var token = await _authenticationService.ForgotPasswordAsync(email, callbackUrl!, cancellationToken);
     
         return Results.Ok(token);
     }
@@ -32,7 +37,7 @@ public class PasswordResetController(
     [HttpGet(Name = "ResetPassword")]
     public async Task<IResult> OnResetPassword([FromQuery] EmailTokenDto resetPasswordRequest, CancellationToken cancellationToken)
     {
-        var success = await authService.ValidateResetPasswordAsync(resetPasswordRequest, cancellationToken);
+        var success = await _authenticationService.ValidateResetPasswordAsync(resetPasswordRequest, cancellationToken);
         
         return Results.Ok(success);
     }
@@ -43,7 +48,7 @@ public class PasswordResetController(
     [HttpPost("new-password")]
     public async Task<IResult> ResetPassword([FromForm] ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
     {
-        var result = await authService.ResetPasswordAsync(resetPasswordDto, cancellationToken);
+        var result = await _authenticationService.ResetPasswordAsync(resetPasswordDto, cancellationToken);
     
         return Results.Ok(result);
     }

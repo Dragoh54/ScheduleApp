@@ -8,12 +8,16 @@ namespace UserService.Api.Controllers;
 
 [ApiController]
 [Route("tokens")]
-public class TokenController(
-    ITokenService tokenService, 
-    IOptions<JwtOptions> jwtOptions
-    ) : Controller
+public class TokenController : Controller
 {
-    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+    private readonly JwtOptions _jwtOptions;
+    private readonly ITokenService _tokenService;
+
+    public TokenController(ITokenService tokenService, IOptions<JwtOptions> jwtOptions)
+    {
+        _jwtOptions = jwtOptions.Value;
+        _tokenService = tokenService;
+    }
     
     /// <summary>
     /// Refresh access and refresh token
@@ -23,7 +27,7 @@ public class TokenController(
     public async Task<IResult> Refresh(CancellationToken cancellationToken)
     {
         var refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
-        var (newAccessToken, newRefreshToken) = await tokenService.RefreshAccessToken(refreshToken, cancellationToken);
+        var (newAccessToken, newRefreshToken) = await _tokenService.RefreshAccessToken(refreshToken, cancellationToken);
         
         HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", newRefreshToken, new CookieOptions()
         {
