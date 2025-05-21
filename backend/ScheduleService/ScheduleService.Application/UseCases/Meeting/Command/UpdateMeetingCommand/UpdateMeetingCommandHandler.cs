@@ -25,13 +25,7 @@ public class UpdateMeetingCommandHandler : IRequestHandler<UpdateMeetingCommand,
         
         var updatedMeeting = await _unitOfWork.Meetings.UpdateAsync(meeting, cancellationToken)
             ?? throw new BadRequestException("Meeting not updated");
-        
-        var success = await _unitOfWork.Commit(cancellationToken);
-        if (!success)
-        {
-            throw new BadRequestException("Failed to update meeting");
-        }
-        
+
         return updatedMeeting.Adapt<MeetingResponseDto>();
     }
 }

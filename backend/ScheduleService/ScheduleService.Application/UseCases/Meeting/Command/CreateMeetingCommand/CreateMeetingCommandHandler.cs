@@ -20,12 +20,6 @@ public class CreateMeetingCommandHandler : IRequestHandler<CreateMeetingCommand,
     public async Task<MeetingResponseDto> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = await _unitOfWork.Meetings.AddAsync(request.Adapt<DomainModel.Models.Meeting>(), cancellationToken);
-
-        var success = await _unitOfWork.Commit(cancellationToken);
-        if (!success)
-        {
-            throw new BadRequestException("Failed to create meeting");
-        }
         
         return meeting.Adapt<MeetingResponseDto>();
     }

@@ -25,12 +25,6 @@ public class AddTemplateCommandHandler : IRequestHandler<AddTemplateCommand, Ava
         {
             await _unitOfWork.AvailabilityTemplates.SetDefaultTemplateAsync(addedTemplate.UserId, addedTemplate.Id, cancellationToken);
         }
-            
-        var success = await _unitOfWork.Commit(cancellationToken);
-        if (!success)
-        {
-            throw new BadRequestException("Failed to add template to database");
-        }
         
         return addedTemplate.Adapt<AvailabilityTemplateResponseDto>();
     }

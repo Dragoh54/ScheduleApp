@@ -47,5 +47,7 @@ public class AvailabilityTemplateRepository : BaseRepository<AvailabilityTemplat
                 cancellationToken
             );
         });
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
     }
 }

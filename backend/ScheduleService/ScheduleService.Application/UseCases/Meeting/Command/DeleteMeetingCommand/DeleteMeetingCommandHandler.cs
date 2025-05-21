@@ -20,9 +20,8 @@ public class DeleteMeetingCommandHandler : IRequestHandler<DeleteMeetingCommand,
         var meeting = await _unitOfWork.Meetings.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
-        await _unitOfWork.Meetings.DeleteAsync(meeting.Id, cancellationToken);
+        var success = await _unitOfWork.Meetings.DeleteAsync(meeting.Id, cancellationToken);
 
-        var success = await _unitOfWork.Commit(cancellationToken);
         if (!success)
         {
             throw new BadRequestException("Failed to delete meeting");

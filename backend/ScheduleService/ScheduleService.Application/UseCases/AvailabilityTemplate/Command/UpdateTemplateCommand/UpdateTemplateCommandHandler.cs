@@ -25,12 +25,6 @@ public class UpdateTemplateCommandHandler : IRequestHandler<UpdateTemplateComman
         
         await _unitOfWork.AvailabilityTemplates.UpdateAsync(template, cancellationToken);
         
-        var success = await _unitOfWork.Commit(cancellationToken);
-        if (!success)
-        {
-            throw new BadRequestException("Failed to update availability template");
-        }
-        
         return template.Adapt<AvailabilityTemplateResponseDto>();
     }
 }

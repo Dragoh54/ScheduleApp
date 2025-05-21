@@ -38,6 +38,9 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : IEntity
     public async Task<T?> AddAsync(T entity, CancellationToken cancellationToken = default)
     {
         DbContext.AddCommand(() => Collection.InsertOneAsync(entity, null, cancellationToken));
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
+        
         return entity;
     }
 
@@ -47,6 +50,8 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : IEntity
         DbContext.AddCommand(() => Collection.ReplaceOneAsync(filter, entity, 
                                       new ReplaceOptions(), cancellationToken));
         
+        await DbContext.SaveChangesAsync(cancellationToken);
+        
         return entity;
     }
 
@@ -54,6 +59,8 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : IEntity
     {
         var filter = Builders<T>.Filter.Eq(x => x.Id, id);
         DbContext.AddCommand(() => Collection.DeleteOneAsync(filter, cancellationToken));
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
         
         return true;
     }

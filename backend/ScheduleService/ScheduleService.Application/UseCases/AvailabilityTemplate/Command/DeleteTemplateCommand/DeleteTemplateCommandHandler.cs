@@ -25,12 +25,10 @@ public class DeleteTemplateCommandHandler : IRequestHandler<DeleteTemplateComman
             throw new BadRequestException("Default template cannot be deleted");
         }
         
-        await _unitOfWork.AvailabilityTemplates.DeleteAsync(template.Id, cancellationToken);
-        
-        var success = await _unitOfWork.Commit(cancellationToken);
+        var success = await _unitOfWork.AvailabilityTemplates.DeleteAsync(template.Id, cancellationToken);
         if (!success)
         {
-            throw new BadRequestException("Failed to delete template to database");
+            throw new BadRequestException("Template could not be deleted");
         }
         
         return success;
