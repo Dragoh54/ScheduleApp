@@ -1,7 +1,7 @@
 ﻿using Hangfire;
 using MeetingService.Application.Dtos.NotificationDtos;
 using MeetingService.Application.Interfaces.Services;
-using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.Application.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.Services;

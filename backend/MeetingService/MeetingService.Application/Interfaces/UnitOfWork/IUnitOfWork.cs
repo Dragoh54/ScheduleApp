@@ -1,6 +1,6 @@
-﻿using MeetingService.DataAccess.Interfaces.Repositories;
+﻿using MeetingService.Application.Interfaces.Repositories;
 
-namespace MeetingService.DataAccess.Interfaces.UnitOfWork;
+namespace MeetingService.Application.Interfaces.UnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {

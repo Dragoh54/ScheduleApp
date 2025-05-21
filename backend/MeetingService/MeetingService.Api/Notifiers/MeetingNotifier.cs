@@ -4,7 +4,7 @@ using MeetingService.Api.Helpers;
 using MeetingService.Api.Hubs;
 using MeetingService.Api.Interfaces.Hubs;
 using MeetingService.Api.Interfaces.Notifiers;
-using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.Application.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Models;
 using Microsoft.AspNetCore.SignalR;

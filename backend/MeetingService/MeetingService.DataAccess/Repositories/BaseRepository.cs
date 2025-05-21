@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using MeetingService.DataAccess.Interfaces.Repositories;
+using MeetingService.Application.Interfaces.Repositories;
 using MeetingService.DomainModel.Interfaces;
 using MeetingService.DomainModel.Models;
 using Microsoft.EntityFrameworkCore;

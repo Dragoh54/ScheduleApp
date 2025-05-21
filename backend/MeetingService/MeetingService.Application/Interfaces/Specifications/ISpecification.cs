@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace MeetingService.DataAccess.Interfaces.Specifications;
+namespace MeetingService.Application.Interfaces.Specifications;
 
 public interface ISpecification<T>
 {

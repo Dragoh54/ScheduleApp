@@ -1,6 +1,6 @@
 ﻿using Hangfire;
 using MeetingService.Application.Interfaces.Services;
-using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.Application.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Exceptions;
 
 namespace MeetingService.Application.Services;

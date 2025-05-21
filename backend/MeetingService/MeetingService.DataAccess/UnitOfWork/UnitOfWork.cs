@@ -1,5 +1,5 @@
-﻿using MeetingService.DataAccess.Interfaces.Repositories;
-using MeetingService.DataAccess.Interfaces.UnitOfWork;
+﻿using MeetingService.Application.Interfaces.Repositories;
+using MeetingService.Application.Interfaces.UnitOfWork;
 
 namespace MeetingService.DataAccess.UnitOfWork;
 

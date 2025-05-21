@@ -1,4 +1,4 @@
-﻿namespace MeetingService.DataAccess.Interfaces.Repositories;
+﻿namespace MeetingService.Application.Interfaces.Repositories;
 
 public interface IBaseRepository<T>
 {

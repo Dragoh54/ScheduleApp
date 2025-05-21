@@ -1,6 +1,6 @@
 ﻿using MeetingService.DomainModel.Models;
 
-namespace MeetingService.DataAccess.Interfaces.Repositories;
+namespace MeetingService.Application.Interfaces.Repositories;
 
 public interface IScheduledJobRepository : IBaseRepository<ScheduledJob>
 {

@@ -9,7 +9,7 @@ using MeetingService.Application.Dtos.ParticipantDtos;
 using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Providers;
 using MeetingService.Application.Interfaces.Services;
-using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.Application.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Exceptions;
 using MeetingService.DomainModel.Models;

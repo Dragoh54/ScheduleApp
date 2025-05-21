@@ -1,7 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
-using MeetingService.DataAccess.Interfaces.Repositories;
-using MeetingService.DataAccess.Interfaces.UnitOfWork;
+using MeetingService.Application.Interfaces.Repositories;
+using MeetingService.Application.Interfaces.UnitOfWork;
 using MeetingService.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
