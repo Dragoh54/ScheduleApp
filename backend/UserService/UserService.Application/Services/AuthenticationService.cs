@@ -279,7 +279,7 @@ public class AuthenticationService : IAuthenticationService
     private void CheckTokens(string token, string encodedToken)
     {
         var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
-        if (token != decodedTokenFromDto)
+        if (String.CompareOrdinal(decodedTokenFromDto, token) != 0)
         {
             throw new BadRequestException("Invalid token");
         }

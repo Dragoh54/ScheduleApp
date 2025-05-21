@@ -15,7 +15,7 @@ namespace UserService.Application.Services;
 public class CacheService<T> : ICacheService<T> where T : class
 {
     private readonly IDistributedCache _cache;
-    private readonly JsonSerializerOptions _jsonOptions;
+    private readonly JsonSerializerOptions? _jsonOptions;
     
     public CacheService(IDistributedCache cache)
     {
@@ -28,7 +28,7 @@ public class CacheService<T> : ICacheService<T> where T : class
         };
     }
     
-    public async Task<T> Get(string key, CancellationToken cancellationToken)
+    public async Task<T?> GetAsync(string key, CancellationToken cancellationToken)
     {
         try
         {
@@ -40,13 +40,13 @@ public class CacheService<T> : ICacheService<T> where T : class
             
             return entity;
         }
-        catch (JsonException ex)
+        catch
         {
-            throw new InvalidOperationException("Failed to deserialize cached data", ex);
+            return null;
         }
     }
 
-    public async Task Set(T entity, string key, CancellationToken cancellationToken, DistributedCacheEntryOptions? options = null)
+    public async Task SetAsync(T entity, string key, CancellationToken cancellationToken, DistributedCacheEntryOptions? options = null)
     {
         try
         {
@@ -65,17 +65,37 @@ public class CacheService<T> : ICacheService<T> where T : class
         }
     }
 
-    public async Task Set(T entity, string key, TimeSpan absoluteExpiration, CancellationToken cancellationToken)
+    public async Task SetAsync(T entity, string key, TimeSpan absoluteExpiration, CancellationToken cancellationToken)
     {
         var cacheOptions = new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = absoluteExpiration
         };
         
-        await Set(entity, key, cancellationToken, cacheOptions);
+        await SetAsync(entity, key, cancellationToken, cacheOptions);
     }
 
-    public async Task Delete(string key, CancellationToken cancellationToken)
+    public async Task SetStringAsync(string entity, string key, CancellationToken cancellationToken,
+        DistributedCacheEntryOptions? options = null)
+    {
+        await _cache.SetStringAsync(
+            key, 
+            entity, 
+            options ?? new DistributedCacheEntryOptions(), 
+            cancellationToken);
+    }
+
+    public async Task SetStringAsync(string entity, string key, TimeSpan absoluteExpiration, CancellationToken cancellationToken)
+    {
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = absoluteExpiration
+        };
+
+        await SetStringAsync(entity, key, cancellationToken, cacheOptions);
+    }
+
+    public async Task DeleteAsync(string key, CancellationToken cancellationToken)
     {
         try
         {
@@ -87,7 +107,7 @@ public class CacheService<T> : ICacheService<T> where T : class
         }
     }
 
-    public async Task Refresh(string key, CancellationToken cancellationToken)
+    public async Task RefreshAsync(string key, CancellationToken cancellationToken)
     {
         try
         {

@@ -17,17 +17,15 @@ public class TokenService : ITokenService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailTokenProvider _emailTokenProvider;
-    private readonly IDistributedCache _cache;
     private readonly IEmailCacheService _emailCacheService;
     private readonly IJwtProvider _jwtProvider;
 
-    public TokenService(IJwtProvider jwtProvider, IEmailTokenProvider emailTokenProvider, IDistributedCache cache,
+    public TokenService(IJwtProvider jwtProvider, IEmailTokenProvider emailTokenProvider, 
         IEmailCacheService emailCacheService, IUnitOfWork unitOfWork
     )
     {
         _unitOfWork = unitOfWork;
         _emailTokenProvider = emailTokenProvider;
-        _cache = cache;
         _emailCacheService = emailCacheService;
         _jwtProvider = jwtProvider;
     }
@@ -54,7 +52,7 @@ public class TokenService : ITokenService
     
     public async Task<string> GenerateEmailToken(UserEntity user, TokenTypes tokenType, CancellationToken cancellationToken)
     {
-        var token = await _cache.GetStringAsync(user.Email, cancellationToken);
+        var token = await _emailCacheService.GetAsync(user.Email, cancellationToken);
         if (!string.IsNullOrEmpty(token))
         {
             return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));

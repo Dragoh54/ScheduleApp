@@ -58,6 +58,7 @@ public class UserController : Controller
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IResult> Register(RegisterDto user, CancellationToken cancellationToken)
     {
         var resultUser = await _authenticationService.Register(user, cancellationToken);
@@ -73,7 +74,6 @@ public class UserController : Controller
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPut("{id:Guid}")]
-    [Authorize]
     public async Task<IResult> UpdateUser([FromRoute] Guid id, UpdateUserDto user, CancellationToken cancellationToken)
     {
         var resultUser = await _userService.UpdateUser(id, user, cancellationToken);
@@ -87,7 +87,6 @@ public class UserController : Controller
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpDelete("me")]
-    [Authorize]
     public async Task<IResult> SoftDeleteUser(CancellationToken cancellationToken)
     {
         var accessToken = HttpContext.GetBearerToken();

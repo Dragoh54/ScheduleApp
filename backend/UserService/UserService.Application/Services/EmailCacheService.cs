@@ -18,14 +18,14 @@ public class EmailCacheService : CacheService<string>, IEmailCacheService
 
     public async Task AddEmailTokenToCacheAsync(string email, string token, TokenTypes type, CancellationToken cancellationToken)
     {
-        var tokenFromCache = await Get(email, cancellationToken);
+        var tokenFromCache = await GetAsync(email, cancellationToken);
         
         if (tokenFromCache is not null)
         {
-            throw new BadRequestException("Email Token already exists");
+            return;
         }
 
         var timeSpan = TimeSpan.FromHours(_emailTokenProvider.GetTokenExistingTime(type));
-        await Set(email, token, timeSpan, cancellationToken);
+        await SetStringAsync(token, email, timeSpan, cancellationToken);
     }
 }
