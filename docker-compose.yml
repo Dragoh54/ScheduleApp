@@ -12,17 +12,39 @@
     ports:
       - ${USER_SERVICE_POSTGRES_PORTS}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - user_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U USER_SERVICE_POSTGRES_USER -d USER_SERVICE_POSTGRES_PASSWORD -t 10',
+          'pg_isready -U ${USER_SERVICE_POSTGRES_USER} -d ${USER_SERVICE_POSTGRES_PASSWORD} -t 10',
         ]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  user_hangfire_postgres:
+    image: postgres:latest
+    container_name: user_hangfire_postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${HANGFIRE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${HANGFIRE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${HANGFIRE_POSTGRES_DB}
+    ports:
+      - ${HANGFIRE_POSTGRES_PORTS}
+    volumes:
+      - user_hangfire_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${HANGFIRE_POSTGRES_USER} -d ${HANGFIRE_POSTGRES_DB} -t 10'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   meeting_postgres:
     image: postgres:latest
@@ -36,13 +58,28 @@
     ports:
       - ${MEETING_SERVICE_POSTGRES_PORTS}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - meeting_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U MEETING_SERVICE_POSTGRES_USER -d MEETING_SERVICE_POSTGRES_PASSWORD -t 10',
+          'pg_isready -U ${MEETING_SERVICE_POSTGRES_USER} -d ${MEETING_SERVICE_POSTGRES_PASSWORD} -t 10',
         ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  user_redis:
+    image: redis:latest
+    container_name: user_redis
+    env_file:
+      - .env
+    ports:
+      - ${USER_SERVICE_REDIS_PORTS}
+    volumes:
+      - user_redis_data:/var/lib/redis/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -55,7 +92,7 @@
     ports:
       - ${SCHEDULE_SERVICE_REDIS_PORTS}
     volumes:
-      - redis_data:/var/lib/redis/data
+      - schedule_redis_data:/var/lib/redis/data
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
@@ -70,31 +107,139 @@
     ports:
       - ${MEETING_SERVICE_REDIS_PORTS}
     volumes:
-      - redis_data:/var/lib/redis/data
+      - meeting_redis_data:/var/lib/redis/data
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
-      retries: 5  
-
-  mongodb:
-    image: mongo:latest
-    container_name: mongo
+      retries: 5
+      
+  #---------------------- MONGO-REPLICAS --------------------
+  mongo1:
+    build:
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo1
+    hostname: mongo1
+    restart: always
     env_file:
       - .env
+    volumes:
+      - mongo1_data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
-        - ${MONGO_PORTS}
-    volumes:
-      - mongodb_data:/var/lib/mongodb/data
+      - ${MONGO_PORTS_1}
+    command: >
+      mongod --replSet rs0 --auth --keyFile /etc/mongo-keyfile --bind_ip_all
+    networks:
+      - mongo-cluster
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 5s
+      test: [ "CMD", "mongosh", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_PASSWORD}", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
       timeout: 5s
       retries: 5
-        
+
+  mongo2:
+    build:
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo2
+    hostname: mongo2
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mongo2_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - ${MONGO_PORTS_2}
+    command: >
+      mongod --replSet rs0 --auth --keyFile /etc/mongo-keyfile --bind_ip_all
+    networks:
+      - mongo-cluster
+    healthcheck:
+      test: [ "CMD", "mongosh", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_PASSWORD}", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo3:
+    build:
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo3
+    hostname: mongo3
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mongo3_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - ${MONGO_PORTS_3}
+    command: >
+      mongod --replSet rs0 --auth --keyFile /etc/mongo-keyfile --bind_ip_all
+    networks:
+      - mongo-cluster
+    healthcheck:
+      test: [ "CMD", "mongosh", "--username", "${MONGO_INITDB_ROOT_USERNAME}", "--password", "${MONGO_PASSWORD}", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-init:
+    build: 
+      dockerfile: /MONGO_REPLICA/Dockerfile
+    container_name: mongo-init
+    env_file:
+      - .env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    command: >
+      bash -c "/scripts/init-replica.sh"
+    networks:
+      - mongo-cluster
+  
+  #---------------------- PG-ADMIN --------------------------
+  pgadmin4:
+    container_name: pgadmin4
+    image: dpage/pgadmin4:latest
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "${PGADMIN_PORTS}"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin/data
+    restart: always
+  
+  #---------------------- MONGO_DB EXPRESS ------------------
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    env_file:
+      - .env
+    depends_on:
+      mongo1:
+        condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
+    ports:
+      - "${MONGO_EXPRESS_PORT}"
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_PASSWORD}@mongo1:27017,mongo2:27017,mongo3:27017/admin?replicaSet=rs0"
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+    networks:
+      - mongo-cluster
+  
   #---------------------- MESSAGE-BROKER --------------------
   rabbitmq:
     image: rabbitmq:3.10.7-management
@@ -132,11 +277,11 @@
       - user_service
       - schedule_service
       - meeting_service
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:${API_GATEWAY_SERVICE_PORTS%:*}/health" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
+  #    healthcheck:
+  #      test: [ "CMD", "curl", "-f", "http://localhost:${API_GATEWAY_SERVICE_PORTS%:*}/health" ]
+  #      interval: 30s
+  #      timeout: 10s
+  #      retries: 3
 
   user_service:
     build:
@@ -169,7 +314,12 @@
     ports:
       - ${SCHEDULE_SERVICE_PORTS}
     depends_on:
-      - mongodb
+      mongo1:
+        condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
+    networks:
+      - mongo-cluster
     #    healthcheck:
     #      test: [ "CMD", "curl", "-f", "http://localhost:${SCHEDULE_SERVICE_PORTS%:*}/health" ]
     #      interval: 30s
@@ -219,7 +369,7 @@
       retries: 5
     networks:
       - elk
-    
+  
   logstash:
     image: logstash:7.9.1
     container_name: logstash
@@ -264,12 +414,21 @@
 networks:
   elk:
     driver: bridge
-    
+  mongo-cluster:
+    driver: bridge
+
 #---------------------- VOLUMES -----------------------------
 volumes:
-  postgres_data:
-  redis_data:
-  mongodb_data:
+  user_postgres_data:
+  user_hangfire_postgres_data:
+  meeting_postgres_data:
+  user_redis_data:
+  schedule_redis_data:
+  meeting_redis_data:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
   rabbitmq_data:
   elasticsearch_data:
   kibana_data:
+  pgadmin_data:

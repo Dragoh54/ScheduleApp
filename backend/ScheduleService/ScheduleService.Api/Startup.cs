@@ -1,0 +1,83 @@
+﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Driver;
+using ScheduleService.Api.Extensions;
+using ScheduleService.Application.Extensions;
+using ScheduleService.Application.Mapping;
+using ScheduleService.DataAccess.Extensions;
+using ScheduleService.DataAccess.Persistence;
+using ScheduleService.DataAccess.Settings;
+using ExceptionHandlerMiddleware = ScheduleService.Api.Middlewares.ExceptionHandlerMiddleware;
+
+namespace ScheduleService.Api;
+
+public class Startup(
+    IConfiguration configuration
+    )
+{
+    private IConfiguration Configuration { get; } = configuration;
+
+    public static void ConfigureBuilder(WebApplicationBuilder builder)
+    {
+        builder.Configuration.AddJsonFile("secrets.json", optional: false, reloadOnChange: true);
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllersWithViews();
+        
+        services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
+            
+        MongoDbPersistence.Configure();
+        
+        services.AddDbContext();
+        services.AddUnitOfWork();
+        services.AddRepositories();
+
+        services.AddMediatRServices();
+        
+        GeneralConfig.RegisterMappers();
+        
+        services.AddControllers();
+        services.AddSwaggerGen();
+
+        services.AddApiAuthentication(Configuration);
+        
+        services.AddSwaggerGenAuthenticationExtension();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, string[] args)
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        
+        app.UseStaticFiles();
+        app.UseRouting();
+        
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
+        
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        
+        app.UseAuthentication();
+        app.UseAuthorization();
+        
+        // if (env.IsDevelopment())
+        // {
+        //     app.UseSwagger();
+        //     app.UseSwaggerUI();
+        // }
+        
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            MinimumSameSitePolicy = SameSiteMode.Strict,
+            HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+            Secure = CookieSecurePolicy.Always,
+        });
+        
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+}

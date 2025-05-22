@@ -8,19 +8,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ScheduleService.DataAccess\ScheduleService.DataAccess.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\ScheduleService.Application\ScheduleService.Application.csproj" />
-      <ProjectReference Include="..\ScheduleService.DataAccess\ScheduleService.DataAccess.csproj" />
     </ItemGroup>
 
 </Project>
