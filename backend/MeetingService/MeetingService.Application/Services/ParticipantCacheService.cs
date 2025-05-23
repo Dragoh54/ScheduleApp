@@ -7,29 +7,29 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace MeetingService.Application.Services;
 
 public class ParticipantCacheService(
-    IDistributedCache participantCache
-    ) : CacheService<Participant>(participantCache), IParticipantCacheService
+    IDistributedCache cache
+    ) : CacheService<Participant>(cache), IParticipantCacheService
 {
     public async Task AddParticipantToCacheAsync(Participant participant, CancellationToken cancellationToken)
     {
         var key = CreateKey(participant.MeetingId, participant.Email);
-        var participantFromCache = await participantCache.GetStringAsync(key, cancellationToken);
+        var participantFromCache = await GetAsync(key, cancellationToken);
 
         if (participantFromCache is not null)
         {
-            await Delete(key, cancellationToken);
+            await DeleteAsync(key, cancellationToken);
         }
         
-        await Set(participant, key, cancellationToken);
+        await SetAsync(participant, key, cancellationToken);
     }
 
     public async Task<Participant> GetParticipantFromCache(Guid meetingId, string email, CancellationToken cancellationToken)
     {
         var key = CreateKey(meetingId, email);
-        var participant = await Get(key, cancellationToken)
+        var participant = await GetAsync(key, cancellationToken)
                           ?? throw new BadRequestException("Participant not found");
 
-        await Delete(key, cancellationToken);
+        await DeleteAsync(key, cancellationToken);
         
         return participant;
     }

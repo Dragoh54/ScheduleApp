@@ -45,6 +45,8 @@ public class BaseRepository<T> : IBaseRepository<T>
         var addedEntity = await DbSet.AddAsync(item, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
 
         return addedEntity.Entity;
     }
@@ -55,6 +57,8 @@ public class BaseRepository<T> : IBaseRepository<T>
         
         cancellationToken.ThrowIfCancellationRequested();
         
+        await DbContext.SaveChangesAsync(cancellationToken);
+        
         return item;
     }
 
@@ -63,14 +67,9 @@ public class BaseRepository<T> : IBaseRepository<T>
         DbSet.Remove(item);
         
         cancellationToken.ThrowIfCancellationRequested();
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
 
         return true;
-    }
-    
-    public virtual async Task SaveAsync(CancellationToken cancellationToken)
-    {
-        await DbContext.SaveChangesAsync(cancellationToken);
-        
-        cancellationToken.ThrowIfCancellationRequested();
     }
 }

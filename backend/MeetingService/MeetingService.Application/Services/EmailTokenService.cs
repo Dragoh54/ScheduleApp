@@ -40,12 +40,12 @@ public class EmailTokenService(
     { 
         var key = emailCacheService.CreateParticipantEmailTokenKey(meetingId, email);
         
-        var tokenFromCache = await cache.GetStringAsync(key, cancellationToken)
+        var tokenFromCache = await emailCacheService.GetStringAsync(key, cancellationToken)
             ?? throw new NotFoundException("Token is not found or expired");
         
         var success = string.Equals(tokenFromCache, token);
         
-        await emailCacheService.Delete(key, cancellationToken);
+        await emailCacheService.DeleteAsync(key, cancellationToken);
         
         return success;
     }

@@ -34,13 +34,6 @@ public interface IBaseRepository<T>
     public Task<T?> Update(T item, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Save changes to database
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public Task SaveAsync(CancellationToken cancellationToken);
-    
-    /// <summary>
     /// Delete entity from database
     /// </summary>
     /// <param name="item"></param>

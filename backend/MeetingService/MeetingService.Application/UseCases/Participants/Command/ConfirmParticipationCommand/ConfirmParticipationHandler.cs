@@ -42,6 +42,13 @@ public class ConfirmParticipationHandler(
         var meeting = await unitOfWork.MeetingRepository.GetById(request.MeetingId, cancellationToken)
                       ?? throw new BadRequestException("Meeting could not be found");
         
+        var isAcceptableMeeting = meeting.Status is MeetingStatus.Completed or MeetingStatus.Cancelled ||
+                                  meeting.StartTime < DateTime.Now;
+        if (isAcceptableMeeting)
+        {
+            throw new BadRequestException("Meeting is already completed or cancelled");
+        }
+        
         var participant = await participantCacheService.GetParticipantFromCache(request.MeetingId, request.Email, cancellationToken);
         participant.Status = ParticipationStatus.Accepted;
         

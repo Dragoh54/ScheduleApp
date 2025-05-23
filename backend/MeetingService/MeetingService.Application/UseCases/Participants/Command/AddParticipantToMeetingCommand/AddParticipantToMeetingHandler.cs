@@ -29,6 +29,13 @@ public class AddParticipantToMeetingHandler(
     {
         var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.MeetingId, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
+
+        var isAcceptableMeeting = meeting.Status is MeetingStatus.Completed or MeetingStatus.Cancelled ||
+                                  meeting.StartTime < DateTime.Now;
+        if (isAcceptableMeeting)
+        {
+            throw new BadRequestException("Meeting is already completed or cancelled");
+        }
         
         var idFromAccessToken = await jwtProvider.GetUserIdFromToken(request.AccessToken);
         
