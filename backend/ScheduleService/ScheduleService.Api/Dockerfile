@@ -8,6 +8,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["backend/ScheduleService/ScheduleService.Api/ScheduleService.Api.csproj", "backend/ScheduleService/ScheduleService.Api/"]
+COPY ["backend/ScheduleService/ScheduleService.DomainModel/ScheduleService.DomainModel.csproj", "backend/ScheduleService/ScheduleService.DomainModel/"]
+COPY ["backend/ScheduleService/ScheduleService.Application/ScheduleService.Application.csproj", "backend/ScheduleService/ScheduleService.Application/"]
+COPY ["backend/ScheduleService/ScheduleService.DataAccess/ScheduleService.DataAccess.csproj", "backend/ScheduleService/ScheduleService.DataAccess/"]
 RUN dotnet restore "backend/ScheduleService/ScheduleService.Api/ScheduleService.Api.csproj"
 COPY . .
 WORKDIR "/src/backend/ScheduleService/ScheduleService.Api"

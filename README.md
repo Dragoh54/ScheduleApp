@@ -5,8 +5,8 @@
 * Meeting Service
 * ApiGateway (Ocelot)
 
-## Secrets
-### in root <b>.env</b> for docker containers
+# Secrets
+## in root <b>.env</b> for docker containers
 ```.env
   #ApiGateway
   API_GATEWAY_SERVICE_PORTS=""
@@ -51,6 +51,16 @@
   MONGO_PASSWORD=
   MONGO_PORTS=
 
+  #MongoDB ReplicaPorts
+  MONGO_PORTS_1 = 
+  MONGO_PORTS_2 = 
+  MONGO_PORTS_3 = 
+
+  #MongoDB Express
+  MONGO_EXPRESS_PORT=8081:8081
+  MONGO_EXPRESS_USER=admin
+  MONGO_EXPRESS_PASSWORD=expresspass
+
   #RabbitMQ
   RABBITMQ_DEFAULT_USER=
   RABBITMQ_DEFAULT_PASS=
@@ -68,7 +78,8 @@
   # Kibana
   KIBANA_PORTS=
 ```
-###  in .Api projects <b>secrets.json</b> for services
+#  in .Api projects <b>secrets.json</b> for services
+## User Service
 ```json
   {
     "ConnectionStrings": {
@@ -86,5 +97,22 @@
         "FromAddress": "email",
         "EnableSsl": true
       }
+  }
+```
+
+## Schedule Service
+```json
+  {
+    "MongoDbSettings": {
+      "MongoDatabaseName": "schedule_service_db",
+      "MongoConnectionString": "connection string"
+    },
+    "MongoCollections": {
+      "AvailabilityTemplates": "availability_templates",
+      "Meetings": "meetings"
+    },
+    "ConnectionStrings": {
+      "Redis": "localhost:"
+    }
   }
 ```
