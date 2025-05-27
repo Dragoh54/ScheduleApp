@@ -1,6 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Requests.Queries;
+using ScheduleService.Application.Dto.Meetings.Requests.Commands;
+using ScheduleService.Application.Dto.Meetings.Requests.Queries;
+using ScheduleService.Application.UseCases.AvailabilityTemplate.Query.IsUserFreeQuery;
 using ScheduleService.Application.UseCases.Meeting.Command.CreateMeetingCommand;
 using ScheduleService.Application.UseCases.Meeting.Command.DeleteMeetingCommand;
 using ScheduleService.Application.UseCases.Meeting.Command.UpdateMeetingCommand;
@@ -17,77 +21,102 @@ namespace ScheduleService.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("meetings")]
-public class MeetingController(
-        IMediator mediator
-    ) : Controller
+public class MeetingController : Controller
 {
+    private readonly IMediator _mediator;
+
+    public MeetingController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+    
     [HttpPost]
-    public async Task<IResult> CreateMeeting([FromBody] CreateMeetingCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateMeeting([FromBody] CreateMeetingRequestDto dto, CancellationToken cancellationToken)
     {
-        var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
+        var command = new CreateMeetingCommand(dto);
+        
+        var meeting = await _mediator.Send(command, cancellationToken);
+        return Ok(meeting);
     }
     
-    [HttpPut]
-    public async Task<IResult> UpdateMeeting([FromBody] UpdateMeetingCommand command, CancellationToken cancellationToken)
+    [HttpPut("{meetingId:guid}")]
+    public async Task<IActionResult> UpdateMeeting([FromRoute] Guid meetingId,[FromBody] UpdateMeetingRequestDto dto, CancellationToken cancellationToken)
     {
-        var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
+        var command = new UpdateMeetingCommand(meetingId, dto);
+        
+        var meeting = await _mediator.Send(command, cancellationToken);
+        return Ok(meeting);
     }
     
-    [HttpPatch("status")]
-    public async Task<IResult> UpdateMeetingStatus([FromQuery] UpdateMeetingStatusCommand command, CancellationToken cancellationToken)
+    [HttpPatch("{meetingId:guid}")]
+    public async Task<IActionResult> UpdateMeetingStatus([FromRoute] Guid meetingId, [FromQuery] UpdateMeetingStatusRequestDto dto, CancellationToken cancellationToken)
     {
-        var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
-    }
-
-    [HttpDelete]
-    public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingCommand command, CancellationToken cancellationToken)
-    {
-        var meeting = await mediator.Send(command, cancellationToken);
-        return Results.Ok(meeting);
+        var command = new UpdateMeetingStatusCommand(meetingId, dto);
+        
+        var meeting = await _mediator.Send(command, cancellationToken);
+        return Ok(meeting);
     }
     
-    [HttpGet]
-    public async Task<IResult> GetMeeting([FromQuery] GetMeetingByIdQuery query, CancellationToken cancellationToken)
+    [HttpDelete("{MeetingId:guid}")]
+    public async Task<IActionResult> DeleteMeeting([FromQuery] DeleteMeetingRequestDto dto, CancellationToken cancellationToken)
     {
-        var meeting = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meeting);
+        var command = new DeleteMeetingCommand(dto);
+        
+        var meeting = await _mediator.Send(command, cancellationToken);
+        return Ok(meeting);
     }
     
-    [HttpGet("user/in-range")]
-    public async Task<IResult> GetMeetingsInRange([FromQuery] GetMeetingsForUserInRangeQuery query, CancellationToken cancellationToken)
+    [HttpGet("{MeetingId:guid}")]
+    public async Task<IActionResult> GetMeeting([FromRoute] GetMeetingByIdRequestDto dto, CancellationToken cancellationToken)
     {
-        var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        var query = new GetMeetingByIdQuery(dto);
+        
+        var meeting = await _mediator.Send(query, cancellationToken);
+        return Ok(meeting);
     }
     
-    [HttpGet("user/on-date")]
-    public async Task<IResult> GetMeetingsOnDate([FromQuery] GetMeetingsForUserOnDateQuery query, CancellationToken cancellationToken)
+    [HttpGet("user/{userId:guid}/in-range")]
+    public async Task<IActionResult> GetMeetingsInRange([FromRoute] Guid userId, [FromQuery] GetMeetingsInRangeRequestDto dto, CancellationToken cancellationToken)
     {
-        var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        var query = new GetMeetingsForUserInRangeQuery(userId, dto);
+        
+        var meetings = await _mediator.Send(query, cancellationToken);
+        return Ok(meetings);
     }
-
-    [HttpGet("user/upcoming")]
-    public async Task<IResult> GetUpcomingMeetings([FromQuery] GetUpcomingMeetingsQuery query, CancellationToken cancellationToken)
+    
+    [HttpGet("user/{userId:guid}/on-date")]
+    public async Task<IActionResult> GetMeetingsOnDate([FromRoute] Guid userId, [FromQuery] GetMeetingsOnDateRequestDto dto, CancellationToken cancellationToken)
     {
-        var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        var query = new GetMeetingsForUserOnDateQuery(userId, dto);
+        
+        var meetings = await _mediator.Send(query, cancellationToken);
+        return Ok(meetings);
     }
-
-    [HttpGet("user")]
-    public async Task<IResult> GetUserMeetings([FromQuery] GetUserMeetingsQuery query, CancellationToken cancellationToken)
+    
+    [HttpGet("user/{UserId:guid}/upcoming")]
+    public async Task<IActionResult> GetUpcomingMeetings([FromRoute] GetUpcomingMeetingsRequestDto dto, CancellationToken cancellationToken)
     {
-        var meetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(meetings);
+        var query = new GetUpcomingMeetingsQuery(dto);
+        
+        var meetings = await _mediator.Send(query, cancellationToken);
+        return Ok(meetings);
     }
-
-    [HttpGet("check")]
-    public async Task<IResult> IsUserHasMeetings([FromQuery] IsUserHasMeetingQuery query, CancellationToken cancellationToken)
+    
+    [HttpGet("user/{UserId:guid}")]
+    public async Task<IActionResult> GetUserMeetings([FromRoute] GetUserMeetingsRequestDto dto, CancellationToken cancellationToken)
     {
-        var isUserHasMeetings = await mediator.Send(query, cancellationToken);
-        return Results.Ok(isUserHasMeetings);
+        var query = new GetUserMeetingsQuery(dto);
+        
+        var meetings = await _mediator.Send(query, cancellationToken);
+        return Ok(meetings);
+    }
+    
+    [HttpGet("user/{userId:guid}/free")]
+    public async Task<IActionResult> IsUserHasMeetings([FromRoute] Guid userId, [FromQuery] IsUserHasMeetingsRequestDto dto, CancellationToken cancellationToken)
+    {
+        var query = new IsUserHasMeetingQuery(userId, dto);
+        
+        var isUserHasMeetings = await _mediator.Send(query, cancellationToken);
+        return Ok(isUserHasMeetings);
     }
 }

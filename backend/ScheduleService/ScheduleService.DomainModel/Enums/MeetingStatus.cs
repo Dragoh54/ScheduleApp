@@ -4,5 +4,6 @@ public enum MeetingStatus
 {
     Scheduled,
     Rescheduled,
+    Completed,
     Cancelled
 }

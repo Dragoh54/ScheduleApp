@@ -21,18 +21,12 @@ public class ScheduleDbContext : IScheduleDbContext
     
     private readonly List<Func<Task>> _commands = new List<Func<Task>>();
 
-    public ScheduleDbContext(IServiceProvider services, IOptions<MongoDbSettings> settings)
+    public ScheduleDbContext(IOptions<MongoDbSettings> settings)
     { 
         _mongoDbSettings = settings.Value;
         
         MongoClient = new MongoClient(_mongoDbSettings.MongoConnectionString);
         Database = MongoClient.GetDatabase(_mongoDbSettings.MongoDatabaseName);
-        
-        // Database =  services.GetService<IMongoDatabase>()
-        //             ?? throw new NullReferenceException("Database");
-        //
-        // MongoClient = services.GetService<IMongoClient>()
-        //     ?? throw new NullReferenceException("MongoClient");
         
         ConfigureIndexes();
     }

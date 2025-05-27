@@ -1,15 +1,17 @@
 ﻿using MongoDB.Driver;
+using ScheduleService.Application.Interfaces.Repositories;
 using ScheduleService.DataAccess.Interfaces.DbContext;
-using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DomainModel.Models;
 
 namespace ScheduleService.DataAccess.Repositories;
 
-public class AvailabilityTemplateRepository(
-    IScheduleDbContext dbContext
-    ) : BaseRepository<AvailabilityTemplate>(dbContext, CollectionName), IAvailabilityTemplateRepository
+public class AvailabilityTemplateRepository : BaseRepository<AvailabilityTemplate>, IAvailabilityTemplateRepository
 {
     private const string CollectionName = "availability_templates";
+
+    public AvailabilityTemplateRepository(IScheduleDbContext dbContext) : base(dbContext, CollectionName)
+    {
+    }
 
     public async Task<AvailabilityTemplate?> GetDefaultTemplateAsync(Guid userId, CancellationToken cancellationToken)
     {
@@ -45,5 +47,7 @@ public class AvailabilityTemplateRepository(
                 cancellationToken
             );
         });
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
     }
 }

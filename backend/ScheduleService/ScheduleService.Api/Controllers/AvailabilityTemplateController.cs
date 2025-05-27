@@ -1,6 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Requests;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Requests.Commands;
+using ScheduleService.Application.Dto.AvailabilityTemplates.Requests.Queries;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.AddTemplateCommand;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.DeleteTemplateCommand;
 using ScheduleService.Application.UseCases.AvailabilityTemplate.Command.SetToDefaultCommand;
@@ -15,64 +18,86 @@ namespace ScheduleService.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("availabilityTemplates")]
-public class AvailabilityTemplateController(
-    IMediator mediator
-    ) : Controller
+public class AvailabilityTemplateController : Controller
 {
+    private readonly IMediator _mediator;
+
+    public AvailabilityTemplateController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [HttpPost]
-    public async Task<IResult> AddAvailabilityTemplate([FromBody] AddTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddAvailabilityTemplate([FromBody] AddTemplateRequestDto dto,
+        CancellationToken cancellationToken)
     {
-        var newTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(newTemplate);
+        var command = new AddTemplateCommand(dto);
+
+        var template = await _mediator.Send(command, cancellationToken);
+        return Ok(template);
     }
-    
+
     [HttpPut]
-    public async Task<IResult> UpdateAvailabilityTemplate([FromBody] UpdateTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateAvailabilityTemplate([FromBody] UpdateTemplateRequestDto dto, CancellationToken cancellationToken)
     {
-        var updatedTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(updatedTemplate);
+        var command = new UpdateTemplateCommand(dto);
+        
+        var updatedTemplate = await _mediator.Send(command, cancellationToken);
+        return Ok(updatedTemplate);
     }
-
+    
     [HttpDelete]
-    public async Task<IResult> DeleteAvailabilityTemplate([FromQuery] DeleteTemplateCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteAvailabilityTemplate([FromQuery] DeleteTemplateRequestDto dto, CancellationToken cancellationToken)
     {
-        var updatedTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(updatedTemplate);
+        var command = new DeleteTemplateCommand(dto);
+        
+        var updatedTemplate = await _mediator.Send(command, cancellationToken);
+        return Ok(updatedTemplate);
+    }
+
+    [HttpPatch("user/{userId}/default")]
+    public async Task<IActionResult> SetToDefaultTemplate([FromRoute] Guid userId,[FromQuery] SetToDefaultRequestDto dto,
+        CancellationToken cancellationToken)
+    {
+        var command = new SetToDefaultCommand(userId, dto);
+
+        var updatedTemplate = await _mediator.Send(command, cancellationToken);
+        return Ok(updatedTemplate);
+    }
+
+    [HttpGet("{Id:guid}")]
+    public async Task<IActionResult> GetAvailabilityTemplateById([FromRoute] GetTemplateByIdRequestDto dto, CancellationToken cancellationToken)
+    {
+        var query = new GetByIdTemplateQuery(dto);
+        
+        var updatedTemplate = await _mediator.Send(query, cancellationToken);
+        return Ok(updatedTemplate);
     }
     
-    [HttpPatch("default")]
-    public async Task<IResult> SetToDefaultTemplate([FromQuery] SetToDefaultCommand command, CancellationToken cancellationToken)
+    [HttpGet("user/{UserId:guid}")]
+    public async Task<IActionResult> GetUserAvailabilityTemplates([FromRoute] GetUserTemplatesRequestDto dto, CancellationToken cancellationToken)
     {
-        var updatedTemplate = await mediator.Send(command, cancellationToken);
-        return Results.Ok(updatedTemplate);
-    }
-
-    [HttpGet("{id:guid}")]
-    public async Task<IResult> GetAvailabilityTemplate([FromRoute] Guid id, CancellationToken cancellationToken)
-    {
-        var query = new GetByIdTemplateQuery { Id = id };
-        var updatedTemplate = await mediator.Send(query, cancellationToken);
-        return Results.Ok(updatedTemplate);
-    }
-
-    [HttpGet("me")]
-    public async Task<IResult> GetUserAvailabilityTemplates([FromQuery] GetUserTemplatesQuery query, CancellationToken cancellationToken)
-    {
-        var templates = await mediator.Send(query, cancellationToken);
-        return Results.Ok(templates);
+        var query = new GetUserTemplatesQuery(dto);
+        
+        var templates = await _mediator.Send(query, cancellationToken);
+        return Ok(templates);
     }
     
-    [HttpGet("default")]
-    public async Task<IResult> GetDefaultTemplate([FromQuery] GetDefaultTemplateQuery query, CancellationToken cancellationToken)
+    [HttpGet("user/{UserId:guid}/default")]
+    public async Task<IActionResult> GetDefaultTemplate([FromQuery] GetDefaultTemplateRequestDto dto, CancellationToken cancellationToken)
     {
-        var template = await mediator.Send(query, cancellationToken);
-        return Results.Ok(template);
+        var query = new GetDefaultTemplateQuery(dto);
+        
+        var template = await _mediator.Send(query, cancellationToken);
+        return Ok(template);
     }
-
-    [HttpGet("check")]
-    public async Task<IResult> IsUserFree([FromQuery] IsUserFreeQuery query, CancellationToken token)
+    
+    [HttpGet("user/{userId:guid}/free")]
+    public async Task<IActionResult> IsUserFree([FromRoute] Guid userId, [FromBody] IsUserFreeRequestDto dto, CancellationToken token)
     {
-        var isFree = await mediator.Send(query, token);
-        return Results.Ok(isFree);
+        var query = new IsUserFreeQuery(userId, dto);
+        
+        var isFree = await _mediator.Send(query, token);
+        return Ok(isFree);
     }
 }

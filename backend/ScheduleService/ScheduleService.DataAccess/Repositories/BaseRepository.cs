@@ -1,19 +1,23 @@
-﻿using MongoDB.Bson;
+﻿using System.Linq.Expressions;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using ScheduleService.Application.Interfaces.Repositories;
 using ScheduleService.DataAccess.Interfaces.DbContext;
-using ScheduleService.DataAccess.Interfaces.Repositories;
 using ScheduleService.DomainModel.Intefaces;
 
 namespace ScheduleService.DataAccess.Repositories;
-public abstract class BaseRepository<T>(
-    IScheduleDbContext dbContext, 
-    string collectionName
-    ) : IBaseRepository<T> where T : IEntity
+public abstract class BaseRepository<T> : IBaseRepository<T> where T : IEntity
 {
-    protected readonly IMongoCollection<T> Collection = dbContext.GetCollection<T>(collectionName);
-    protected readonly IScheduleDbContext DbContext = dbContext;
+    protected readonly IMongoCollection<T> Collection;
+    protected readonly IScheduleDbContext DbContext;
+
+    protected BaseRepository(IScheduleDbContext dbContext, string collectionName)
+    {
+        Collection = dbContext.GetCollection<T>(collectionName);
+        DbContext = dbContext;
+    }
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
@@ -26,9 +30,17 @@ public abstract class BaseRepository<T>(
         return await Collection.Find(new BsonDocument()).ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken)
+    {
+        return await Collection.Find(filter).ToListAsync(cancellationToken);
+    }
+
     public async Task<T?> AddAsync(T entity, CancellationToken cancellationToken = default)
     {
         DbContext.AddCommand(() => Collection.InsertOneAsync(entity, null, cancellationToken));
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
+        
         return entity;
     }
 
@@ -38,6 +50,8 @@ public abstract class BaseRepository<T>(
         DbContext.AddCommand(() => Collection.ReplaceOneAsync(filter, entity, 
                                       new ReplaceOptions(), cancellationToken));
         
+        await DbContext.SaveChangesAsync(cancellationToken);
+        
         return entity;
     }
 
@@ -45,6 +59,8 @@ public abstract class BaseRepository<T>(
     {
         var filter = Builders<T>.Filter.Eq(x => x.Id, id);
         DbContext.AddCommand(() => Collection.DeleteOneAsync(filter, cancellationToken));
+        
+        await DbContext.SaveChangesAsync(cancellationToken);
         
         return true;
     }
