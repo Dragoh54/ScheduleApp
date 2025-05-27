@@ -1,20 +1,21 @@
 ﻿using MediatR;
 using MeetingService.Application.Dtos;
-using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Dtos.MeetingDto.Requests;
+using MeetingService.Application.Dtos.MeetingDto.Responses;
 using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingStatusCommand;
 
-public record UpdateMeetingStatusCommand : IRequest<MeetingWithParticipantsDto>
+public record UpdateMeetingStatusCommand : IRequest<MeetingWithParticipantsResponseDto>
 {
     public UpdateMeetingStatusCommand()
     {
     }
     
-    public UpdateMeetingStatusCommand(Guid meetingId, UpdateMeetingStatusDto dto)
+    public UpdateMeetingStatusCommand(Guid meetingId, UpdateMeetingStatusRequestDto requestDto)
     {
         Id = meetingId;
-        Status = dto.Status;
+        Status = requestDto.Status;
     }
     
     public Guid Id { get; set; }

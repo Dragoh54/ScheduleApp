@@ -1,21 +1,22 @@
 ﻿using MediatR;
-using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.Application.Dtos.ParticipantDto.Requests;
+using MeetingService.Application.Dtos.ParticipantDto.Responses;
 using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Application.UseCases.Participants.Command.ConfirmParticipationCommand;
 
-public record ConfirmParticipationCommand : IRequest<ParticipantWithMeetingDto>
+public record ConfirmParticipationCommand : IRequest<ParticipantWithMeetingResponseDto>
 {
     public ConfirmParticipationCommand()
     {
     }
 
-    public ConfirmParticipationCommand(Guid meetingId, ConfirmParticipantStatusDto dto)
+    public ConfirmParticipationCommand(Guid meetingId, ConfirmParticipantStatusRequestDto requestDto)
     {
         MeetingId = meetingId;
-        Email = dto.Email;
-        Token = dto.Token;
-        ParticipationStatusString = dto.ParticipationStatusString;
+        Email = requestDto.Email;
+        Token = requestDto.Token;
+        ParticipationStatusString = requestDto.ParticipationStatusString;
     }
 
     public Guid MeetingId { get; set; }

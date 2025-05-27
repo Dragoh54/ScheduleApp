@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using MeetingService.Api.Extensions;
 using MeetingService.Api.Interfaces.Notifiers;
-using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Dtos.MeetingDto.Requests;
 using MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
 using MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
 using MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
@@ -27,11 +27,11 @@ public class MeetingController : Controller
     private readonly IMediator _mediator;
     
     [HttpPost]
-    public async Task<IResult> CreateMeeting([FromForm] CreateMeetingDto dto, CancellationToken cancellationToken)
+    public async Task<IResult> CreateMeeting([FromForm] CreateMeetingRequestDto requestDto, CancellationToken cancellationToken)
     {
         var accessToken = HttpContext.GetBearerToken();
         
-        var command = new CreateMeetingCommand(dto, accessToken);
+        var command = new CreateMeetingCommand(requestDto, accessToken);
         
         var meeting = await _mediator.Send(command, cancellationToken);
         
@@ -39,9 +39,9 @@ public class MeetingController : Controller
     }
     
     [HttpDelete]
-    public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingDto dto, CancellationToken cancellationToken)
+    public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var command = new DeleteMeetingCommand(dto, HttpContext.GetBearerToken());
+        var command = new DeleteMeetingCommand(requestDto, HttpContext.GetBearerToken());
         
         var meeting = await _mediator.Send(command, cancellationToken);
         
@@ -50,9 +50,9 @@ public class MeetingController : Controller
     
     [HttpPatch("{meetingId:guid}/reschedule")]
     public async Task<IResult> RescheduleMeeting([FromRoute] Guid meetingId, 
-        [FromForm] RescheduleMeetingDto dto, CancellationToken cancellationToken)
+        [FromForm] RescheduleMeetingRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var command = new RescheduleMeetingCommand(meetingId, dto);
+        var command = new RescheduleMeetingCommand(meetingId, requestDto);
         
         var meeting = await _mediator.Send(command, cancellationToken);
         
@@ -61,9 +61,9 @@ public class MeetingController : Controller
     
     [HttpPatch("{meetingId:guid}/information")]
     public async Task<IResult> UpdateInformation([FromRoute] Guid meetingId, 
-        [FromForm] UpdateMeetingInformationDto dto, CancellationToken cancellationToken)
+        [FromForm] UpdateMeetingInformationRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var command = new UpdateMeetingInformationCommand(meetingId, dto);
+        var command = new UpdateMeetingInformationCommand(meetingId, requestDto);
         
         var meeting = await _mediator.Send(command, cancellationToken);
         
@@ -72,9 +72,9 @@ public class MeetingController : Controller
     
     [HttpPatch("{meetingId:guid}/status")]
     public async Task<IResult> UpdateMeetingStatus([FromRoute] Guid meetingId,
-        [FromForm] UpdateMeetingStatusDto dto, CancellationToken cancellationToken)
+        [FromForm] UpdateMeetingStatusRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var command = new UpdateMeetingStatusCommand(meetingId, dto);
+        var command = new UpdateMeetingStatusCommand(meetingId, requestDto);
         
         var meeting = await _mediator.Send(command, cancellationToken);
         

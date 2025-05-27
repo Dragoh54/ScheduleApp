@@ -1,7 +1,7 @@
 ﻿using Mapster;
 using MeetingService.Application.Dtos;
-using MeetingService.Application.Dtos.MeetingDtos;
-using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.Application.Dtos.MeetingDto.Responses;
+using MeetingService.Application.Dtos.ParticipantDto.Responses;
 using MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Models;
@@ -22,7 +22,7 @@ public class ParticipantMappingConfig
             .Map(dest => dest.LastName, src => src.LastName)
             .Map(dest => dest.Status, src => ParticipationStatus.Pending);
 
-        TypeAdapterConfig<Participant, ParticipantDto>.NewConfig()
+        TypeAdapterConfig<Participant, ParticipantResponseDto>.NewConfig()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.MeetingId, src => src.MeetingId)
             .Map(dest => dest.UserId, src => src.UserId)
@@ -32,7 +32,7 @@ public class ParticipantMappingConfig
             .Map(dest => dest.LastName, src => src.LastName)
             .Map(dest => dest.Status, src => src.Status);
         
-        TypeAdapterConfig<Participant, ParticipantWithMeetingDto>.NewConfig()
+        TypeAdapterConfig<Participant, ParticipantWithMeetingResponseDto>.NewConfig()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.MeetingId, src => src.MeetingId)
             .Map(dest => dest.UserId, src => src.UserId)
@@ -41,6 +41,6 @@ public class ParticipantMappingConfig
             .Map(dest => dest.FirstName, src => src.FirstName)
             .Map(dest => dest.LastName, src => src.LastName)
             .Map(dest => dest.Status, src => src.Status)
-            .Map(dest => dest.Meeting, src => src.Meeting.Adapt<MeetingDto>());
+            .Map(dest => dest.Meeting, src => src.Meeting.Adapt<MeetingResponseDto>());
     }
 }

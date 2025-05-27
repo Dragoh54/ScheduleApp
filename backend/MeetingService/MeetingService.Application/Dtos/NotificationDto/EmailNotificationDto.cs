@@ -1,4 +1,4 @@
-﻿namespace MeetingService.Application.Dtos.NotificationDtos;
+﻿namespace MeetingService.Application.Dtos.NotificationDto;
 
 public record EmailNotificationDto
 {

@@ -1,4 +1,4 @@
-﻿using MeetingService.Application.Dtos.NotificationDtos;
+﻿using MeetingService.Application.Dtos.NotificationDto;
 
 namespace MeetingService.Application.Interfaces.Services;
 

@@ -1,19 +1,20 @@
 ﻿using MediatR;
 using MeetingService.Application.Dtos;
-using MeetingService.Application.Dtos.MeetingDtos;
+using MeetingService.Application.Dtos.MeetingDto.Requests;
+using MeetingService.Application.Dtos.MeetingDto.Responses;
 using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.CreateMeetingCommand;
 
-public record CreateMeetingCommand : IRequest<MeetingDto>
+public record CreateMeetingCommand : IRequest<MeetingResponseDto>
 {
-    public CreateMeetingCommand(CreateMeetingDto dto, string accessToken)
+    public CreateMeetingCommand(CreateMeetingRequestDto requestDto, string accessToken)
     {
         AccessToken = accessToken;
-        Title = dto.Title;
-        Description = dto.Description;
-        StartTime = dto.StartTime;
-        EndTime = dto.EndTime;
+        Title = requestDto.Title;
+        Description = requestDto.Description;
+        StartTime = requestDto.StartTime;
+        EndTime = requestDto.EndTime;
     }
     
     public string AccessToken { get; set; } = string.Empty;

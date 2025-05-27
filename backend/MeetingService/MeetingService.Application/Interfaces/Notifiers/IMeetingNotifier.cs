@@ -1,5 +1,4 @@
-﻿using MeetingService.Application.Dtos.MeetingDtos;
-using MeetingService.DomainModel.Enums;
+﻿using MeetingService.DomainModel.Enums;
 
 namespace MeetingService.Api.Interfaces.Notifiers;
 

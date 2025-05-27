@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using MeetingService.Api.Interfaces.Hubs;
-using MeetingService.Application.Dtos.MeetingDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 

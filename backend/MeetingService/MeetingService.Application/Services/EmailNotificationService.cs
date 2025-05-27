@@ -1,5 +1,5 @@
 ﻿using Hangfire;
-using MeetingService.Application.Dtos.NotificationDtos;
+using MeetingService.Application.Dtos.NotificationDto;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.Application.Interfaces.UnitOfWork;
 using MeetingService.DomainModel.Models;

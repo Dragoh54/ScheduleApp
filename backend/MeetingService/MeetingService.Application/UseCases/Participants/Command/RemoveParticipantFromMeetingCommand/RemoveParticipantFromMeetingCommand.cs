@@ -1,19 +1,20 @@
 ﻿using MediatR;
 using MeetingService.Application.Dtos;
-using MeetingService.Application.Dtos.ParticipantDtos;
+using MeetingService.Application.Dtos.ParticipantDto.Requests;
+using MeetingService.Application.Dtos.ParticipantDto.Responses;
 
 namespace MeetingService.Application.UseCases.Participants.Command.RemoveParticipantFromMeetingCommand;
 
-public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantWithMeetingDto>
+public record RemoveParticipantFromMeetingCommand : IRequest<ParticipantWithMeetingResponseDto>
 {
     public RemoveParticipantFromMeetingCommand()
     {
     }
 
-    public RemoveParticipantFromMeetingCommand(Guid meetingId, RemoveParticipantFromMeetingDto dto, string accessToken)
+    public RemoveParticipantFromMeetingCommand(Guid meetingId, RemoveParticipantFromMeetingRequestDto requestDto, string accessToken)
     {
         MeetingId = meetingId;
-        UserId = dto.UserId;
+        UserId = requestDto.UserId;
         AccessToken = accessToken;
     }
 
