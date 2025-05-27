@@ -7,6 +7,7 @@ using MeetingService.Application.Extensions;
 using MeetingService.Application.Mappings;
 using MeetingService.Application.Settings;
 using MeetingService.DataAccess.Extensions;
+using UserGrpcClient;
 using ExceptionHandlerMiddleware = MeetingService.Api.Middlewares.ExceptionHandlerMiddleware;
 
 namespace MeetingService.Api;
@@ -58,6 +59,11 @@ public class Startup
         services.AddSignalR();
         
         services.AddSwaggerGenAuthentication();
+
+        services.AddGrpcClient<UserService.UserServiceClient>(options =>
+        {
+            options.Address = new Uri(Configuration["UserGrpcUrl"]!);
+        });
     }
 
     public void Configure(WebApplication app, IWebHostEnvironment env, string[] args)

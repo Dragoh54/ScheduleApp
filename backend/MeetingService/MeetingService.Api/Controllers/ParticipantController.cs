@@ -42,6 +42,24 @@ public class ParticipantController : Controller
         return Results.Ok(participant);
     }
     
+    [HttpPost("meetings/grpc/{meetingId:guid}")]
+    public async Task<IResult> AddParticipantToMeetingWithGrpc([FromRoute]Guid meetingId, 
+        [FromForm] Guid userId, CancellationToken cancellationToken)
+    {
+        var accessToken = HttpContext.GetBearerToken();
+        
+        var callbackUrl = Url.RouteUrl(
+            "ConfirmParticipation",
+            values: new { meetingId },
+            protocol: Request.Scheme);
+        
+        var command = new AddParticipantWithGrpcToMeetingCommand(meetingId, userId, callbackUrl!, accessToken);
+        
+        var participant = await _mediator.Send(command, cancellationToken);
+        
+        return Results.Ok(participant);
+    }
+    
     [HttpGet("meetings/{meetingId:guid}/confirm", Name = "ConfirmParticipation")]
     public async Task<IResult> ConfirmParticipantStatus([FromRoute] Guid meetingId, 
         [FromQuery] ConfirmParticipantStatusRequestDto requestDto, CancellationToken cancellationToken)

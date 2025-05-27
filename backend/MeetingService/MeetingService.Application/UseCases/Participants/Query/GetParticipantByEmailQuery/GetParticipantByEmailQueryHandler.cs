@@ -9,7 +9,7 @@ namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantB
 
 public class GetParticipantByEmailQueryHandler : IRequestHandler<GetParticipantByEmailQuery, ParticipantWithMeetingResponseDto>
 {
-    GetParticipantByEmailQueryHandler(IUnitOfWork unitOfWork)
+    public GetParticipantByEmailQueryHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }

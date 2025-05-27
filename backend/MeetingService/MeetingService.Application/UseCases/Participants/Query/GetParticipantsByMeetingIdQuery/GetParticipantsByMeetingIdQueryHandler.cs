@@ -9,7 +9,7 @@ namespace MeetingService.Application.UseCases.Participants.Query.GetParticipants
 
 public class GetParticipantsByMeetingIdQueryHandler : IRequestHandler<GetParticipantsByMeetingIdQuery, IEnumerable<ParticipantWithMeetingResponseDto>>
 {
-    GetParticipantsByMeetingIdQueryHandler(IUnitOfWork unitOfWork)
+    public GetParticipantsByMeetingIdQueryHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }

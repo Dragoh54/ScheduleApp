@@ -9,7 +9,7 @@ namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantQ
 
 public class GetParticipantQueryHandler : IRequestHandler<GetParticipantQuery, ParticipantWithMeetingResponseDto>
 {
-    GetParticipantQueryHandler(IUnitOfWork unitOfWork)
+    public GetParticipantQueryHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
