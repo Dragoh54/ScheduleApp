@@ -11,11 +11,14 @@ using ExceptionHandlerMiddleware = MeetingService.Api.Middlewares.ExceptionHandl
 
 namespace MeetingService.Api;
 
-public class Startup(
-    IConfiguration configuration
-    )
+public class Startup
 {
-    private IConfiguration Configuration { get; } = configuration;
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+    
+    private IConfiguration Configuration { get; }
     
     public static void ConfigureBuilder(WebApplicationBuilder builder)
     {

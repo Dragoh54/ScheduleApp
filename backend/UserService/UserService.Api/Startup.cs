@@ -33,7 +33,7 @@ public class Startup
 
         services.AddControllersWithViews();
 
-        services.AddApiAuthenfication(configuration);
+        services.AddApiAuthenfication(Configuration);
         
         services.AddUserDbContext(Configuration);
         services.AddRedis(Configuration);
