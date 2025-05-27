@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MeetingService.DataAccess.Repositories;
 
-public class ScheduledJobRepository(
-    MeetingServiceDbContext dbContext
-    ) : BaseRepository<ScheduledJob>(dbContext), IScheduledJobRepository
+public class ScheduledJobRepository : BaseRepository<ScheduledJob>, IScheduledJobRepository
 {
+    public ScheduledJobRepository(MeetingServiceDbContext dbContext) : base(dbContext)
+    {
+    }
+    
     public async Task<IEnumerable<ScheduledJob>> GetScheduledJobsByMeetingId(Guid meetingId, CancellationToken cancellationToken)
     {
         return await DbContext.ScheduledJobs

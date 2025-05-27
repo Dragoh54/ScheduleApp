@@ -7,13 +7,18 @@ using MeetingService.DomainModel.Exceptions;
 
 namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantQuery;
 
-public class GetParticipantHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<GetParticipantQuery, ParticipantWithMeetingDto>
+public class GetParticipantHandler : IRequestHandler<GetParticipantQuery, ParticipantWithMeetingDto>
 {
+    GetParticipantHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
+    private readonly IUnitOfWork _unitOfWork;
+    
     public async Task<ParticipantWithMeetingDto> Handle(GetParticipantQuery request, CancellationToken cancellationToken)
     {
-        var participant = await unitOfWork.ParticipantRepository.GetParticipant(request.MeetingId, request.UserId, cancellationToken)
+        var participant = await _unitOfWork.ParticipantRepository.GetParticipant(request.MeetingId, request.UserId, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
         cancellationToken.ThrowIfCancellationRequested();

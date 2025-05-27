@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Security.Authentication;
+﻿using System.Security.Authentication;
 using System.Web;
 using Hangfire;
 using Mapster;
@@ -16,18 +15,35 @@ using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Participants.Command.AddParticipantToMeetingCommand;
 
-public class AddParticipantToMeetingHandler(
-    IUnitOfWork unitOfWork,
-    IJwtProvider jwtProvider,
-    IEmailService emailService,
-    IEmailTokenService emailTokenService,
-    IParticipantCacheService participantCacheService,
-    IParticipantNotifier notifier
-    ) : IRequestHandler<AddParticipantToMeetingCommand, ParticipantWithMeetingDto>
+public class AddParticipantToMeetingHandler : IRequestHandler<AddParticipantToMeetingCommand, ParticipantWithMeetingDto>
 {
+    public AddParticipantToMeetingHandler(
+        IUnitOfWork unitOfWork,
+        IJwtProvider jwtProvider,
+        IEmailService emailService,
+        IEmailTokenService emailTokenService,
+        IParticipantCacheService participantCacheService,
+        IParticipantNotifier notifier
+    )
+    {
+        _unitOfWork = unitOfWork;
+        _jwtProvider = jwtProvider;
+        _emailService = emailService;
+        _emailTokenService = emailTokenService;
+        _participantCacheService = participantCacheService;
+        _notifier = notifier;
+    }
+
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IJwtProvider _jwtProvider;
+    private readonly IEmailService _emailService;
+    private readonly IEmailTokenService _emailTokenService;
+    private readonly IParticipantCacheService _participantCacheService;
+    private readonly IParticipantNotifier _notifier;
+    
     public async Task<ParticipantWithMeetingDto> Handle(AddParticipantToMeetingCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.MeetingId, cancellationToken)
+        var meeting = await _unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.MeetingId, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
 
         var isAcceptableMeeting = meeting.Status is MeetingStatus.Completed or MeetingStatus.Cancelled ||
@@ -37,7 +53,7 @@ public class AddParticipantToMeetingHandler(
             throw new BadRequestException("Meeting is already completed or cancelled");
         }
         
-        var idFromAccessToken = await jwtProvider.GetUserIdFromToken(request.AccessToken);
+        var idFromAccessToken = await _jwtProvider.GetUserIdFromToken(request.AccessToken);
         
         var isUserValid = idFromAccessToken == meeting.OrganizationUserId;
         if (!isUserValid)
@@ -51,24 +67,24 @@ public class AddParticipantToMeetingHandler(
         }
         
         var participant = request.Adapt<Participant>();
-        await participantCacheService.AddParticipantToCacheAsync(participant, cancellationToken);
+        await _participantCacheService.AddParticipantToCacheAsync(participant, cancellationToken);
         
         cancellationToken.ThrowIfCancellationRequested();
 
-        var confirmToken = await emailTokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantConfirmation, cancellationToken);
+        var confirmToken = await _emailTokenService.GenerateEmailToken(meeting.Id, participant.Email, TokenTypes.ParticipantConfirmation, cancellationToken);
         
         var confirmLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, confirmToken, ParticipationStatus.Accepted);
         var declineLink = GenerateEmailTokenLink(request.CallbackUrl, participant.Email, confirmToken, ParticipationStatus.Declined);
 
         BackgroundJob.Enqueue(() =>
-            emailService.SendEmailAsync(
+            _emailService.SendEmailAsync(
                 participant.Email,
                 "Meeting confirmation",
                 ParticipantEmailMessageHandler.MeetingConfirmationBody(meeting.Title!, confirmLink, declineLink),
                 cancellationToken
             ));
         
-        await notifier.NotifyInvitedAsync(meeting.Id, participant.UserId, meeting.Title!);
+        await _notifier.NotifyInvitedAsync(meeting.Id, participant.UserId, meeting.Title!);
         
         return participant.Adapt<ParticipantWithMeetingDto>();
     }

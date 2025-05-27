@@ -2,7 +2,6 @@
 using Mapster;
 using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
-using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Services;
@@ -12,25 +11,36 @@ using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.UpdateMeetingInformationCommand;
 
-public class UpdateMeetingInformationHandler(
-    IUnitOfWork unitOfWork,
-    IEmailService emailService,
-    IMeetingNotifier notifier
-    ) : IRequestHandler<UpdateMeetingInformationCommand, MeetingWithParticipantsDto>
+public class UpdateMeetingInformationHandler : IRequestHandler<UpdateMeetingInformationCommand, MeetingWithParticipantsDto>
 {
+    public UpdateMeetingInformationHandler(
+        IUnitOfWork unitOfWork,
+        IEmailService emailService,
+        IMeetingNotifier notifier
+    )
+    {
+        _unitOfWork = unitOfWork;
+        _emailService = emailService;
+        _notifier = notifier;
+    }
+
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailService _emailService;
+    private readonly IMeetingNotifier _notifier;
+    
     public async Task<MeetingWithParticipantsDto> Handle(UpdateMeetingInformationCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
+        var meeting = await _unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
         var oldTitle = meeting.Title!;
         
         request.Adapt(meeting);
         
-        var updatedMeeting = await unitOfWork.MeetingRepository.Update(meeting, cancellationToken)
+        var updatedMeeting = await _unitOfWork.MeetingRepository.Update(meeting, cancellationToken)
             ?? throw new BadRequestException("Meeting not updated");
 
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -45,7 +55,7 @@ public class UpdateMeetingInformationHandler(
                 await SendEmailAsync(participant, oldTitle, newTitle, newDescription, ct);
             });
         
-        await notifier.NotifyMeetingInformationChangedAsync(meeting.Id, oldTitle, newTitle);
+        await _notifier.NotifyMeetingInformationChangedAsync(meeting.Id, oldTitle, newTitle);
         
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
     }
@@ -55,7 +65,7 @@ public class UpdateMeetingInformationHandler(
         return Task.Run(() =>
         {
             BackgroundJob.Enqueue(() =>
-                 emailService.SendEmailAsync(
+                _emailService.SendEmailAsync(
                      participant.Email,
                      "Meeting information Updated",
                      MeetingEmailMessageHandler.MeetingInformationUpdatedBody(oldTitle, updatedTitle, updatedDescription),

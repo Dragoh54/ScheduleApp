@@ -7,14 +7,19 @@ using MeetingService.DomainModel.Exceptions;
 
 namespace MeetingService.Application.UseCases.Participants.Query.GetParticipantByEmailQuery;
 
-public class GetParticipantByEmailHandler(
-    IUnitOfWork unitOfWork
-    ) : IRequestHandler<GetParticipantByEmailQuery, ParticipantWithMeetingDto>
+public class GetParticipantByEmailHandler : IRequestHandler<GetParticipantByEmailQuery, ParticipantWithMeetingDto>
 {
+    GetParticipantByEmailHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
+    private readonly IUnitOfWork _unitOfWork;
+    
     public async Task<ParticipantWithMeetingDto> Handle(GetParticipantByEmailQuery request, CancellationToken cancellationToken)
     {
-        var participant = unitOfWork.ParticipantRepository.GetParticipantByEmail(request.MeetingId, request.Email, cancellationToken)
-            ?? throw new NotFoundException("Participant not found");
+        var participant = _unitOfWork.ParticipantRepository.GetParticipantByEmail(request.MeetingId, request.Email, cancellationToken)
+                          ?? throw new NotFoundException("Participant not found");
         
         cancellationToken.ThrowIfCancellationRequested();
         

@@ -6,10 +6,12 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace MeetingService.Application.Services;
 
-public class ParticipantCacheService(
-    IDistributedCache cache
-    ) : CacheService<Participant>(cache), IParticipantCacheService
+public class ParticipantCacheService : CacheService<Participant>, IParticipantCacheService
 {
+    public ParticipantCacheService(IDistributedCache cache) : base(cache)
+    {
+    }
+
     public async Task AddParticipantToCacheAsync(Participant participant, CancellationToken cancellationToken)
     {
         var key = CreateKey(participant.MeetingId, participant.Email);

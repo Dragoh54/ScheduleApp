@@ -1,27 +1,23 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using MeetingService.Application.Interfaces.Providers;
-using MeetingService.Application.Interfaces.Services;
 using MeetingService.Application.Settings;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Exceptions;
-using MeetingService.DomainModel.Models;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MeetingService.Application.Providers;
 
-public class EmailTokenProvider(
-    IConfiguration configuration, 
-    IOptions<JwtSettings> jwtSettings
-    ) : JwtProvider(configuration, jwtSettings), IEmailTokenProvider
+public class EmailTokenProvider : JwtProvider, IEmailTokenProvider
 {
-    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    public EmailTokenProvider(IConfiguration configuration, IOptions<JwtSettings> jwtSettings)
+    : base(configuration, jwtSettings)
+    {
+    }
+    
     public string GenerateEmailToken(Guid meetingId, string email, TokenTypes tokenType, CancellationToken cancellationToken)
     {
         List<Claim> claims=
@@ -49,8 +45,8 @@ public class EmailTokenProvider(
     {
         return tokenTypesType switch
         {
-            TokenTypes.ParticipantConfirmation => _jwtSettings.ParticipantConfirmationExpiresHours,
-            TokenTypes.ParticipantDeclination => _jwtSettings.ParticipantDeclinationExpiresHours,
+            TokenTypes.ParticipantConfirmation => JwtSettings.ParticipantConfirmationExpiresHours,
+            TokenTypes.ParticipantDeclination => JwtSettings.ParticipantDeclinationExpiresHours,
             _ => throw new BadRequestException("Invalid token type")
         };
     }
@@ -59,9 +55,10 @@ public class EmailTokenProvider(
     {
         return tokenType switch
         {
-            TokenTypes.ParticipantConfirmation => DateTime.UtcNow.AddHours(_jwtSettings
-                .ParticipantConfirmationExpiresHours),
-            TokenTypes.ParticipantDeclination => DateTime.UtcNow.AddHours(_jwtSettings.ParticipantDeclinationExpiresHours),
+            TokenTypes.ParticipantConfirmation => DateTime.UtcNow.AddHours(
+                JwtSettings.ParticipantConfirmationExpiresHours),
+            TokenTypes.ParticipantDeclination => DateTime.UtcNow.AddHours(
+                JwtSettings.ParticipantDeclinationExpiresHours),
             _ => throw new BadRequestException("Invalid token type")
         };
     }

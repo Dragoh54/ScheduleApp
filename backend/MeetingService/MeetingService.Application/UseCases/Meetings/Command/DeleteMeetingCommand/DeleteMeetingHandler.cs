@@ -2,7 +2,6 @@
 using Mapster;
 using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
-using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Handlers.Email;
 using MeetingService.Application.Interfaces.Providers;
@@ -13,33 +12,44 @@ using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.DeleteMeetingCommand;
 
-public class DeleteMeetingHandler(
-    IUnitOfWork unitOfWork,
-    IEmailService emailService,
-    IJwtProvider jwtProvider,
-    IMeetingNotifier notifier
-    ) : IRequestHandler<DeleteMeetingCommand, MeetingWithParticipantsDto>
+public class DeleteMeetingHandler : IRequestHandler<DeleteMeetingCommand, MeetingWithParticipantsDto>
 {
+    public DeleteMeetingHandler(
+        IUnitOfWork unitOfWork, 
+        IEmailService emailService,
+        IJwtProvider jwtProvider, 
+        IMeetingNotifier notifier)
+    {
+        _unitOfWork = unitOfWork;
+        _emailService = emailService;
+        _jwtProvider = jwtProvider;
+        _notifier = notifier;
+    }
+
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailService _emailService;
+    private readonly IJwtProvider _jwtProvider;
+    private readonly IMeetingNotifier _notifier;
     public async Task<MeetingWithParticipantsDto> Handle(DeleteMeetingCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
+        var meeting = await _unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
         
-        var idFromToken = await jwtProvider.GetUserIdFromToken(request.Token);
+        var idFromToken = await _jwtProvider.GetUserIdFromToken(request.Token);
         
         if (meeting.OrganizationUserId != idFromToken)
         {
             throw new BadRequestException("You are not an organization user");
         }
         
-        var success = await unitOfWork.MeetingRepository.Delete(meeting, cancellationToken);
+        var success = await _unitOfWork.MeetingRepository.Delete(meeting, cancellationToken);
 
         if (!success)
         {
             throw new BadRequestException("Failed to delete meeting");
         }
         
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -53,7 +63,7 @@ public class DeleteMeetingHandler(
                 await SendEmailAsync(participant, meetingTitle, ct);
             });
         
-        await notifier.NotifyMeetingDeletedAsync(meeting.Id, meetingTitle);
+        await _notifier.NotifyMeetingDeletedAsync(meeting.Id, meetingTitle);
         
         return meeting.Adapt<MeetingWithParticipantsDto>();
     }
@@ -63,7 +73,7 @@ public class DeleteMeetingHandler(
         return Task.Run(() =>
         {
             BackgroundJob.Enqueue(() =>
-                emailService.SendEmailAsync(
+                _emailService.SendEmailAsync(
                     participant.Email,
                     "Meeting Deleted",
                     MeetingEmailMessageHandler.MeetingDeletedBody(meetingTitle),

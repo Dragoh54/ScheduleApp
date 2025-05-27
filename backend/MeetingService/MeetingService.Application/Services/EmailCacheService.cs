@@ -7,19 +7,16 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace MeetingService.Application.Services;
 
-public class EmailCacheService(
-    IDistributedCache cache,
-    IEmailTokenProvider emailTokenProvider
-    ) : CacheService<string>(cache), IEmailCacheService
+public class EmailCacheService: CacheService<string>, IEmailCacheService
 {
-    private readonly IDistributedCache _cache = cache;
-    
-    public async Task AddEmailTokenToCacheAsync(string key, string token, TokenTypes type, CancellationToken cancellationToken)
+    public EmailCacheService(IDistributedCache cache) : base(cache)
     {
-        await _cache.SetStringAsync(key, token, new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(emailTokenProvider.GetTokenExistingTime(type))
-        }, cancellationToken);
+    }
+    
+    public async Task AddEmailTokenToCacheAsync(string key, string token, 
+        TokenTypes type, CancellationToken cancellationToken)
+    {
+        await SetStringAsync(token, key, cancellationToken);
     }
 
     public string CreateParticipantEmailTokenKey(Guid meetingId, string email)

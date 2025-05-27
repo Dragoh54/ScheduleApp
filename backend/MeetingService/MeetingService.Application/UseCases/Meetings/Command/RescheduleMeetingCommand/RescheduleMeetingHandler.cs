@@ -2,7 +2,6 @@
 using Mapster;
 using MediatR;
 using MeetingService.Api.Interfaces.Notifiers;
-using MeetingService.Application.Dtos;
 using MeetingService.Application.Dtos.MeetingDtos;
 using MeetingService.Application.Dtos.NotificationDtos;
 using MeetingService.Application.Handlers.Email;
@@ -13,14 +12,29 @@ using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.UseCases.Meetings.Command.RescheduleMeetingCommand;
 
-public class RescheduleMeetingHandler(
-    IUnitOfWork unitOfWork,
-    IEmailService emailService,
-    IScheduledJobsService scheduledJobsService,
-    IMeetingNotifier notifier,
-    IEmailNotificationService emailNotificationService
-    ) : IRequestHandler<RescheduleMeetingCommand, MeetingWithParticipantsDto>
+public class RescheduleMeetingHandler : IRequestHandler<RescheduleMeetingCommand, MeetingWithParticipantsDto>
 {
+    public RescheduleMeetingHandler(
+        IUnitOfWork unitOfWork,
+        IEmailService emailService,
+        IScheduledJobsService scheduledJobsService,
+        IMeetingNotifier notifier,
+        IEmailNotificationService emailNotificationService
+    )
+    {
+        _unitOfWork = unitOfWork;
+        _emailService = emailService;
+        _scheduledJobsService = scheduledJobsService;
+        _notifier = notifier;
+        _emailNotificationService = emailNotificationService;
+    }
+
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailService _emailService;
+    private readonly IScheduledJobsService _scheduledJobsService;
+    private readonly IMeetingNotifier _notifier;
+    private readonly IEmailNotificationService _emailNotificationService;
+    
     public async Task<MeetingWithParticipantsDto> Handle(RescheduleMeetingCommand request, CancellationToken cancellationToken)
     {
         if (request.NotifyTime < DateTime.Now)
@@ -30,16 +44,16 @@ public class RescheduleMeetingHandler(
         
         var notifyTime = request.NotifyTime ?? request.StartTime.AddDays(-1);
         
-        var meeting = await unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
+        var meeting = await _unitOfWork.MeetingRepository.GetMeetingWithParticipants(request.Id, cancellationToken)
             ?? throw new NotFoundException("Meeting not found");
 
         meeting.Adapt(request);
         meeting.NotifyTime = notifyTime;
         
-        var updatedMeeting = await unitOfWork.MeetingRepository.Update(meeting, cancellationToken)
+        var updatedMeeting = await _unitOfWork.MeetingRepository.Update(meeting, cancellationToken)
             ?? throw new BadRequestException("Meeting not updated");
 
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -53,9 +67,9 @@ public class RescheduleMeetingHandler(
             async (participant, ct) =>
                 await SendEmailAsync(participant, meetingTitle, newStartTime, newEndTime, ct));
         
-        await scheduledJobsService.DeleteScheduledJobs(meeting.Id, cancellationToken);
+        await _scheduledJobsService.DeleteScheduledJobs(meeting.Id, cancellationToken);
         
-        await notifier.NotifyOnTimeAsync(meeting.Id, meetingTitle, newStartTime, notifyTime, cancellationToken);
+        await _notifier.NotifyOnTimeAsync(meeting.Id, meetingTitle, newStartTime, notifyTime, cancellationToken);
         await SendEmailNotificationAsync(meeting, cancellationToken);
         
         return updatedMeeting.Adapt<MeetingWithParticipantsDto>();
@@ -66,7 +80,7 @@ public class RescheduleMeetingHandler(
         return Task.Run(() =>
         {
             BackgroundJob.Enqueue(() =>
-                emailService.SendEmailAsync(
+                _emailService.SendEmailAsync(
                     participant.Email,
                     "Meeting Rescheduled",
                     MeetingEmailMessageHandler.MeetingRescheduledBody(meetingTitle, newStartTime, newEndTime),
@@ -83,7 +97,7 @@ public class RescheduleMeetingHandler(
             async (participant, ct) =>
             {
                 var emailNotificationDto = new EmailNotificationDto(participant.Email, meeting.Title!, meeting.StartTime);
-                await emailNotificationService.SendNotificationAtNotifyTime(meeting.Id,  emailNotificationDto, meeting.NotifyTime, ct);
+                await _emailNotificationService.SendNotificationAtNotifyTime(meeting.Id,  emailNotificationDto, meeting.NotifyTime, ct);
             });
     }
 }

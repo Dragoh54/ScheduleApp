@@ -6,13 +6,18 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Hubs;
 
-public class ParticipantNotificationHub(
-    IUserConnectionManager userConnectionManager
-    ) : Hub<IParticipantNotificationHub>
+public class ParticipantNotificationHub : Hub<IParticipantNotificationHub>
 {
+    public ParticipantNotificationHub(IUserConnectionManager userConnectionManager)
+    {
+        _userConnectionManager = userConnectionManager;
+    }
+    
+    private readonly IUserConnectionManager _userConnectionManager;
+    
     public async Task<string> SetConnectionId(string userId)
     {
-        userConnectionManager.KeepUserConnection(userId, Context.ConnectionId);
+        _userConnectionManager.KeepUserConnection(userId, Context.ConnectionId);
 
         return Context.ConnectionId;
     }
@@ -20,7 +25,7 @@ public class ParticipantNotificationHub(
     public override async Task OnDisconnectedAsync(Exception exception)
     {
         var connectionId = Context.ConnectionId;
-        userConnectionManager.RemoveUserConnection(connectionId);
+        _userConnectionManager.RemoveUserConnection(connectionId);
         
         await base.OnDisconnectedAsync(exception);
     }

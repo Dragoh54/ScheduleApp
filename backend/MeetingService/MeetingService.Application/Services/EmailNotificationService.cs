@@ -6,11 +6,17 @@ using MeetingService.DomainModel.Models;
 
 namespace MeetingService.Application.Services;
 
-public class EmailNotificationService(
-    IUnitOfWork unitOfWork,
-    IEmailService emailService
-    ) : IEmailNotificationService
+public class EmailNotificationService : IEmailNotificationService
 {
+    public EmailNotificationService(IUnitOfWork unitOfWork, IEmailService emailService)
+    {
+        _emailService = emailService;
+        _unitOfWork = unitOfWork;
+    }
+    
+    private readonly IEmailService _emailService;
+    private readonly IUnitOfWork _unitOfWork;
+
     public async Task SendNotificationAtNotifyTime(Guid meetingId, EmailNotificationDto dto, DateTime notifyTime,
         CancellationToken cancellationToken)
     {
@@ -21,7 +27,7 @@ public class EmailNotificationService(
         }
         
         var jobId = BackgroundJob.Schedule(() =>
-            emailService.SendEmailAsync(
+            _emailService.SendEmailAsync(
                 dto.ParticipantEmail,
                 $"Reminder",
                 $"Meeting {dto.MeetingTitle} will be at {dto.StartTime:f}!",
@@ -30,14 +36,14 @@ public class EmailNotificationService(
 
         var scheduleJob = new ScheduledJob(meetingId, jobId, notifyTime);
 
-        await unitOfWork.ScheduledJobRepository.Add(scheduleJob, cancellationToken);
+        await _unitOfWork.ScheduledJobRepository.Add(scheduleJob, cancellationToken);
 
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task SendNotification(EmailNotificationDto dto, CancellationToken cancellationToken)
     {
-        await emailService.SendEmailAsync(
+        await _emailService.SendEmailAsync(
             dto.ParticipantEmail,
             $"Reminder",
             $"Meeting {dto.MeetingTitle} will be at {dto.StartTime:hh:mm}!",

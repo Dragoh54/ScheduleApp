@@ -10,13 +10,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MeetingService.Application.Providers;
 
-public class JwtProvider(
-    IConfiguration configuration, 
-    IOptions<JwtSettings> jwtSettings
-    ) : IJwtProvider
+public class JwtProvider : IJwtProvider
 {
-    private protected readonly JwtSettings JwtSettings = jwtSettings.Value;
-    private protected readonly string SecretKey = configuration["JWTSecretKey"] ?? throw new NullReferenceException();
+    public JwtProvider(IConfiguration configuration, IOptions<JwtSettings> jwtSettings)
+    {
+        JwtSettings = jwtSettings.Value;
+        SecretKey = configuration["JWTSecretKey"] ?? throw new NullReferenceException();
+    }
+    
+    private protected readonly JwtSettings JwtSettings;
+    private protected readonly string SecretKey;
     
     public ClaimsPrincipal ValidateToken(string token)
     {

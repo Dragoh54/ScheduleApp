@@ -17,13 +17,15 @@ namespace MeetingService.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("meetings")]
-public class MeetingController(
-    IMediator mediator
-    ) : Controller
+public class MeetingController : Controller
 {
-    //todo: add participant who will be organizator through grpc
-    //todo: create new token with organizator id
-    //todo: store this token in cookie on server side
+    public MeetingController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+    
+    private readonly IMediator _mediator;
+    
     [HttpPost]
     public async Task<IResult> CreateMeeting([FromForm] CreateMeetingDto dto, CancellationToken cancellationToken)
     {
@@ -31,54 +33,50 @@ public class MeetingController(
         
         var command = new CreateMeetingCommand(dto, accessToken);
         
-        var meeting = await mediator.Send(command, cancellationToken);
+        var meeting = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(meeting);
     }
-
-    //todo: add [OrganizatorOnly]
+    
     [HttpDelete]
     public async Task<IResult> DeleteMeeting([FromQuery] DeleteMeetingDto dto, CancellationToken cancellationToken)
     {
         var command = new DeleteMeetingCommand(dto, HttpContext.GetBearerToken());
         
-        var meeting = await mediator.Send(command, cancellationToken);
+        var meeting = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(meeting);
     }
     
-    //todo: add [OrganizatorOnly]
     [HttpPatch("{meetingId:guid}/reschedule")]
     public async Task<IResult> RescheduleMeeting([FromRoute] Guid meetingId, 
         [FromForm] RescheduleMeetingDto dto, CancellationToken cancellationToken)
     {
         var command = new RescheduleMeetingCommand(meetingId, dto);
         
-        var meeting = await mediator.Send(command, cancellationToken);
+        var meeting = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(meeting);
     }
     
-    //todo: add [OrganizatorOnly]
     [HttpPatch("{meetingId:guid}/information")]
     public async Task<IResult> UpdateInformation([FromRoute] Guid meetingId, 
         [FromForm] UpdateMeetingInformationDto dto, CancellationToken cancellationToken)
     {
         var command = new UpdateMeetingInformationCommand(meetingId, dto);
         
-        var meeting = await mediator.Send(command, cancellationToken);
+        var meeting = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(meeting);
     }
     
-    //todo: add [OrganizatorOnly]
     [HttpPatch("{meetingId:guid}/status")]
     public async Task<IResult> UpdateMeetingStatus([FromRoute] Guid meetingId,
         [FromForm] UpdateMeetingStatusDto dto, CancellationToken cancellationToken)
     {
         var command = new UpdateMeetingStatusCommand(meetingId, dto);
         
-        var meeting = await mediator.Send(command, cancellationToken);
+        var meeting = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(meeting);
     }
@@ -86,7 +84,7 @@ public class MeetingController(
     [HttpGet("user/{OrganizerId:guid}")]
     public async Task<IResult> GetMeetingsOrganizedByUser([FromRoute] GetMeetingsOrganizedByUserQuery query, CancellationToken cancellationToken)
     {
-        var meetings = await mediator.Send(query, cancellationToken);
+        var meetings = await _mediator.Send(query, cancellationToken);
         
         return Results.Ok(meetings);
     }
@@ -94,7 +92,7 @@ public class MeetingController(
     [HttpGet("{MeetingId:guid}")]
     public async Task<IResult> GetMeetings([FromRoute] GetMeetingWithParticipantsQuery query, CancellationToken cancellationToken)
     {
-        var meeting = await mediator.Send(query, cancellationToken);
+        var meeting = await _mediator.Send(query, cancellationToken);
         
         return Results.Ok(meeting);
     }

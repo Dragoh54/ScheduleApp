@@ -15,11 +15,15 @@ namespace MeetingService.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("participants")]
-public class ParticipantController(
-    IMediator mediator
-    ) : Controller
-{                            
-    //todo: add [OrganizatorOnly]
+public class ParticipantController : Controller
+{
+    public ParticipantController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+    
+    private readonly IMediator _mediator;
+    
     [HttpPost("meetings/{meetingId:guid}")]
     public async Task<IResult> AddParticipantToMeeting([FromRoute]Guid meetingId, 
         [FromForm] AddParticipantToMeetingDto dto, CancellationToken cancellationToken)
@@ -33,7 +37,7 @@ public class ParticipantController(
         
         var command = new AddParticipantToMeetingCommand(meetingId, dto, callbackUrl!, accessToken);
         
-        var participant = await mediator.Send(command, cancellationToken);
+        var participant = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(participant);
     }
@@ -44,12 +48,11 @@ public class ParticipantController(
     {
         var command = new ConfirmParticipationCommand(meetingId, dto);
         
-        var participant = await mediator.Send(command, cancellationToken);
+        var participant = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(participant);
     }
     
-    //todo: add [OrganizatorOnly]
     [HttpDelete("meetings/{meetingId:guid}")]
     public async Task<IResult> RemoveParticipantFromMeeting([FromRoute]Guid meetingId, 
         [FromQuery] RemoveParticipantFromMeetingDto dto, CancellationToken cancellationToken)
@@ -58,7 +61,7 @@ public class ParticipantController(
         
         var command = new RemoveParticipantFromMeetingCommand(meetingId, dto, accessToken);
         
-        var participant = await mediator.Send(command, cancellationToken);
+        var participant = await _mediator.Send(command, cancellationToken);
         
         return Results.Ok(participant);
     }
@@ -67,7 +70,7 @@ public class ParticipantController(
     public async Task<IResult> GetParticipant([FromQuery] GetParticipantQuery query,
         CancellationToken cancellationToken)
     {
-        var participant = await mediator.Send(query, cancellationToken);
+        var participant = await _mediator.Send(query, cancellationToken);
         return Results.Ok(participant);
     }
 
@@ -75,7 +78,7 @@ public class ParticipantController(
     public async Task<IResult> GetParticipantsForMeeting([FromRoute] GetParticipantsByMeetingIdQuery query,
         CancellationToken cancellationToken)
     {
-        var participants = await mediator.Send(query, cancellationToken);
+        var participants = await _mediator.Send(query, cancellationToken);
         return Results.Ok(participants);
     }
 }

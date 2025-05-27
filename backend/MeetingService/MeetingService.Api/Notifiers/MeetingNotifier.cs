@@ -11,18 +11,28 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace MeetingService.Api.Notifiers;
 
-public class MeetingNotifier(
-    IHubContext<MeetingNotificationHub, IMeetingNotificationHub> hubContext,
-    IUnitOfWork unitOfWork
-    ) : IMeetingNotifier
+public class MeetingNotifier : IMeetingNotifier
 {
-    public async Task NotifyOnTimeAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, DateTime notifyTime, CancellationToken cancellationToken)
+    public MeetingNotifier(
+        IHubContext<MeetingNotificationHub, IMeetingNotificationHub> hubContext,
+        IUnitOfWork unitOfWork
+    )
+    {
+        _hubContext = hubContext;
+        _unitOfWork = unitOfWork;
+    }
+
+    private readonly IHubContext<MeetingNotificationHub, IMeetingNotificationHub> _hubContext;
+    private readonly IUnitOfWork _unitOfWork;
+    
+    public async Task NotifyOnTimeAsync(Guid meetingId, string meetingTitle, DateTime newStartTime, 
+        DateTime notifyTime, CancellationToken cancellationToken)
     {
         var stringDate = newStartTime.ToString(CultureInfo.InvariantCulture);
         
         if (notifyTime <= DateTime.UtcNow)
         {
-            await hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(meetingId.ToString(), stringDate, meetingTitle);
+            await _hubContext.Clients.Group(meetingId.ToString()).MeetingNotification(meetingId.ToString(), stringDate, meetingTitle);
         }
         else
         {
@@ -32,7 +42,7 @@ public class MeetingNotifier(
 
     public async Task NotifyMeetingDeletedAsync(Guid meetingId, string meetingTitle)
     {
-        await hubContext
+        await _hubContext
             .Clients
             .Group(meetingId.ToString())
             .MeetingDeleted(meetingId.ToString(), meetingTitle);
@@ -40,7 +50,7 @@ public class MeetingNotifier(
 
     public async Task NotifyMeetingInformationChangedAsync(Guid meetingId, string oldTitle, string newTitle)
     {
-        await hubContext
+        await _hubContext
             .Clients
             .Group(meetingId.ToString())
             .MeetingInformationUpdated(meetingId.ToString(), oldTitle, newTitle);
@@ -48,13 +58,14 @@ public class MeetingNotifier(
 
     public async Task NotifyMeetingStatusChangedAsync(Guid meetingId, string meetingTitle, MeetingStatus newStatus)
     {
-        await hubContext
+        await _hubContext
             .Clients
             .Group(meetingId.ToString())
             .MeetingStatusChanged(meetingId.ToString(), meetingTitle, newStatus.ToString());
     }
 
-    private async Task SetScheduledJob(Guid meetingId, string meetingTitle, string date, DateTime notifyTime, CancellationToken cancellationToken)
+    private async Task SetScheduledJob(Guid meetingId, string meetingTitle, string date, 
+        DateTime notifyTime, CancellationToken cancellationToken)
     {
         var jobId = BackgroundJob.Schedule<MeetingHubHelper>(h =>
                 h.SendMeetingNotification(meetingId.ToString(), meetingTitle, date), 
@@ -62,8 +73,8 @@ public class MeetingNotifier(
 
         var scheduledJob = new ScheduledJob(meetingId, jobId, notifyTime);
 
-        await unitOfWork.ScheduledJobRepository.Add(scheduledJob, cancellationToken);
+        await _unitOfWork.ScheduledJobRepository.Add(scheduledJob, cancellationToken);
 
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     } 
 }

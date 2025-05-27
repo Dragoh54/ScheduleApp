@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MeetingService.DataAccess.Repositories;
 
-public class ParticipantRepository(
-    MeetingServiceDbContext dbContext
-    ) : BaseRepository<Participant>(dbContext), IParticipantRepository
+public class ParticipantRepository : BaseRepository<Participant>, IParticipantRepository
 {
+    public ParticipantRepository(MeetingServiceDbContext dbContext) : base(dbContext)
+    {
+    }
+    
     public async Task<IEnumerable<Participant>> GetParticipantsByMeetingId(Guid meetingId, CancellationToken cancellationToken)
     {
         return await DbContext.Participants
