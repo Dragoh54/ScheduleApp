@@ -10,4 +10,19 @@
       <ProjectReference Include="..\MeetingService.DomainModel\MeetingService.DomainModel.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Hangfire" Version="1.8.18" />
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.18" />
+        <PackageReference Include="Hangfire.Core" Version="1.8.18" />
+        <PackageReference Include="Hangfire.PostgreSql" Version="1.20.12" />
+        <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+        <PackageReference Include="MailKit" Version="4.11.0" />
+        <PackageReference Include="Mapster" Version="7.4.0" />
+        <PackageReference Include="MediatR" Version="12.5.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+    </ItemGroup>
+
 </Project>

@@ -11,11 +11,14 @@ using ExceptionHandlerMiddleware = ScheduleService.Api.Middlewares.ExceptionHand
 
 namespace ScheduleService.Api;
 
-public class Startup(
-    IConfiguration configuration
-    )
+public class Startup
 {
-    private IConfiguration Configuration { get; } = configuration;
+    private IConfiguration Configuration { get; }
+
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
 
     public static void ConfigureBuilder(WebApplicationBuilder builder)
     {

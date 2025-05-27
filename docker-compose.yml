@@ -29,18 +29,18 @@
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${HANGFIRE_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${HANGFIRE_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${HANGFIRE_POSTGRES_DB}
+      POSTGRES_USER: $USER_{HANGFIRE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${USER_HANGFIRE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${USER_HANGFIRE_POSTGRES_DB}
     ports:
-      - ${HANGFIRE_POSTGRES_PORTS}
+      - ${USER_HANGFIRE_POSTGRES_PORTS}
     volumes:
       - user_hangfire_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U ${HANGFIRE_POSTGRES_USER} -d ${HANGFIRE_POSTGRES_DB} -t 10'
+          'pg_isready -U ${USER_HANGFIRE_POSTGRES_USER} -d ${USER_HANGFIRE_POSTGRES_DB} -t 10'
         ]
       interval: 5s
       timeout: 5s
@@ -64,6 +64,29 @@
         [
           'CMD-SHELL',
           'pg_isready -U ${MEETING_SERVICE_POSTGRES_USER} -d ${MEETING_SERVICE_POSTGRES_PASSWORD} -t 10',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+  meeting_hangfire_postgres:
+    image: postgres:latest
+    container_name: meeting_hangfire_postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${MEETING_HANGFIRE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${MEETING_HANGFIRE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${MEETING_HANGFIRE_POSTGRES_DB}
+    ports:
+      - ${MEETING_HANGFIRE_POSTGRES_PORTS}
+    volumes:
+      - meeting_hangfire_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${MEETING_HANGFIRE_POSTGRES_USER} -d ${MEETING_HANGFIRE_POSTGRES_DB} -t 10'
         ]
       interval: 5s
       timeout: 5s
@@ -120,7 +143,6 @@
       dockerfile: /MONGO_REPLICA/Dockerfile
     container_name: mongo1
     hostname: mongo1
-    restart: always
     env_file:
       - .env
     volumes:
@@ -145,7 +167,6 @@
       dockerfile: /MONGO_REPLICA/Dockerfile
     container_name: mongo2
     hostname: mongo2
-    restart: always
     env_file:
       - .env
     volumes:
@@ -170,7 +191,6 @@
       dockerfile: /MONGO_REPLICA/Dockerfile
     container_name: mongo3
     hostname: mongo3
-    restart: always
     env_file:
       - .env
     volumes:
@@ -218,7 +238,6 @@
       - "${PGADMIN_PORTS}"
     volumes:
       - pgadmin_data:/var/lib/pgadmin/data
-    restart: always
   
   #---------------------- MONGO_DB EXPRESS ------------------
   mongo-express:
@@ -422,6 +441,7 @@ volumes:
   user_postgres_data:
   user_hangfire_postgres_data:
   meeting_postgres_data:
+  meeting_hangfire_postgres_data:
   user_redis_data:
   schedule_redis_data:
   meeting_redis_data:
