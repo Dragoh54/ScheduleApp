@@ -16,6 +16,8 @@
         <PackageReference Include="Hangfire.AspNetCore" Version="1.8.18" />
         <PackageReference Include="Hangfire.Core" Version="1.8.18" />
         <PackageReference Include="Hangfire.PostgreSql" Version="1.20.12" />
+        <PackageReference Include="MassTransit" Version="8.5.0-develop.2304" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.0-develop.2304" />
         <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
         <PackageReference Include="FluentValidation" Version="11.11.0" />

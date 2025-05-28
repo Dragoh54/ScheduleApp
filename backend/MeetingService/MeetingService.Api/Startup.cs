@@ -41,6 +41,8 @@ public class Startup
         
         services.AddRepositories();
         services.AddUnitOfWork();
+        
+        services.AddRabbitMQ(Configuration);
 
         GeneralMappingConfig.RegisterMappers();
         
