@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
+﻿using System.Text.Json;
+using FluentValidation;
 using ScheduleService.DomainModel.Exceptions;
 
 namespace ScheduleService.Api.Middlewares;

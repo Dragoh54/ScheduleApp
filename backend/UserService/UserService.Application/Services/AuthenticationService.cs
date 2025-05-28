@@ -4,42 +4,55 @@ using Hangfire;
 using Mapster;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Distributed;
-using UserService.Api.Interfaces;
-using UserService.Application.Dto;
 using UserService.Application.Dto.EmailDtos;
+using UserService.Application.Dto.UserDtos;
+using UserService.Application.Features.Email;
+using UserService.Application.Interfaces.Auth;
+using UserService.Application.Interfaces.Services;
 using UserService.DataAccess.Enums;
 using UserService.DataAccess.Exceptions;
-using UserService.DataAccess.Interfaces.Auth;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 using UserService.DataAccess.Models;
 
 namespace UserService.Application.Services;
 
-public class AuthenticationService(
-    IPasswordHasher passwordHasher, 
-    IUnitOfWork unitOfWork, 
-    ITokenService tokenService, 
-    IEmailService emailService,
-    IDistributedCache cache
-    ) : IAuthenticationService
+public class AuthenticationService : IAuthenticationService
 {
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly ITokenService _tokenService;
+    private readonly IEmailService _emailService;
+    
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IDistributedCache _cache;
+
+    public AuthenticationService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork, ITokenService tokenService,
+        IEmailService emailService, IDistributedCache cache
+    )
+    {
+        _passwordHasher = passwordHasher;
+        _tokenService = tokenService;
+        _emailService = emailService;
+        _unitOfWork = unitOfWork;
+        _cache = cache;
+    }
+    
     public async Task<UserDto> Register(RegisterDto registerDto, CancellationToken cancellationToken)
     {
-        var candidate = await unitOfWork.UserRepository.GetByEmailAsync(registerDto.Email, cancellationToken);
+        var candidate = await _unitOfWork.UserRepository.GetByEmailAsync(registerDto.Email, cancellationToken);
         if (candidate is not null)
         {
             throw new AlreadyExistsException("User with this email already exists!");
         }
         
-        var hashedPassword = passwordHasher.Generate(registerDto.Password, cancellationToken);
+        var hashedPassword = _passwordHasher.Generate(registerDto.Password, cancellationToken);
         var user = new UserEntity(registerDto.Username, registerDto.Email, hashedPassword, registerDto.FirstName, registerDto.LastName);
         
-        await unitOfWork.UserRepository.Add(user, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.UserRepository.AddAsync(user, cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         BackgroundJob.Enqueue(() => 
-            emailService.SendEmailAsync(
+            _emailService.SendEmailAsync(
                 user.Email, 
                 "Welcome!",
                 "<h1>You are successfully registered to SCHEDULE APP</h1>",
@@ -50,23 +63,24 @@ public class AuthenticationService(
     
     public async Task<(string, string)> Login(LoginUserDto loginUserDto, CancellationToken cancellationToken)
     {
-        var userByEmail = await unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken)
-            ?? throw new NotFoundException("Cannot found user with this email");
+        var userByEmail = await _unitOfWork.UserRepository.GetByEmailAsync(loginUserDto.Email, cancellationToken);
 
-        var result = passwordHasher.Verify(loginUserDto.Password, userByEmail.PasswordHash, cancellationToken);
+        var isVerified = _passwordHasher.Verify(loginUserDto.Password, userByEmail.PasswordHash, cancellationToken);
 
-        if (!result)
+        if (!isVerified)
         {
-            throw new BadRequestException("Failed to login");
+            throw new BadRequestException("Incorrect email or password!");
         }
 
-        var token = await tokenService.GenerateAccessToken(userByEmail, cancellationToken);
-        var refreshToken = await tokenService.GenerateRefreshToken(userByEmail, cancellationToken);
+        var token = await _tokenService.GenerateAccessToken(userByEmail, cancellationToken);
+        var refreshToken = await _tokenService.GenerateRefreshToken(userByEmail, cancellationToken);
         
         userByEmail.LastLoginAt = DateTime.UtcNow;
-        await unitOfWork.UserRepository.Update(userByEmail, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
         
+        await _unitOfWork.UserRepository.UpdateAsync(userByEmail, cancellationToken);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+
         return (token, refreshToken);
     }
     
@@ -77,19 +91,17 @@ public class AuthenticationService(
             return false;
         }
         
-        var refreshToken = unitOfWork.TokenModelRepository.GetByToken(token, cancellationToken).Result;
+        var refreshToken = _unitOfWork.TokenModelRepository.GetByToken(token, cancellationToken).Result
+                           ?? throw new NotFoundException("Refresh token not found");
+        
         cancellationToken.ThrowIfCancellationRequested();
-
-        if (refreshToken is null)
-        {
-            throw new NotFoundException("Refresh token not found");
-        }
-
+        
         refreshToken.IsUsed = true;
 
-        await unitOfWork.TokenModelRepository.Update(refreshToken, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.TokenModelRepository.UpdateAsync(refreshToken, cancellationToken);
 
+        cancellationToken.ThrowIfCancellationRequested();
+        
         return true;
     }
     
@@ -100,28 +112,19 @@ public class AuthenticationService(
             throw new BadRequestException("Invalid access token");
         }
         
-        var email = await tokenService.GetEmailFromToken(accessToken, cancellationToken);
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
-    
-        if (user is null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var email = await _tokenService.GetEmailFromToken(accessToken, cancellationToken);
+        var user = await _unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken)
+            ?? throw new NotFoundException("User not found");
         
-        var confirmToken = await tokenService.GenerateEmailToken(user, TokenTypes.EmailConfirmation, cancellationToken);
+        var confirmToken = await _tokenService.GenerateEmailToken(user, TokenTypes.EmailConfirmation, cancellationToken);
         
         var link = GenerateEmailTokenLink(callbackUrl, email, confirmToken);
         
         BackgroundJob.Enqueue(() => 
-            emailService.SendEmailAsync(
+            _emailService.SendEmailAsync(
                 email, 
                 "No-reply",
-                $"""
-                 <h1>Email confirmation</h1>
-                 <p>Go thought this link to confirm:</p>
-                 <a href="{link}">Confirm!</a>
-                 <p>This link active only 24 hours.</p>
-                 """,
+                EmailTemplates.ConfirmEmailBody(link),
                 cancellationToken));
 
         return confirmToken;
@@ -129,20 +132,22 @@ public class AuthenticationService(
 
     public async Task<string> ConfirmEmailReceiveAsync(EmailTokenDto tokenDto, CancellationToken cancellationToken)
     {
-        var token = await cache.GetStringAsync(tokenDto.Email, cancellationToken)
+        var token = await _cache.GetStringAsync(tokenDto.Email, cancellationToken)
             ?? throw new NotFoundException("Token is not found or expired");
         
         CheckTokens(token, tokenDto.Token);
 
-        await cache.RemoveAsync(tokenDto.Email, cancellationToken);
+        await _cache.RemoveAsync(tokenDto.Email, cancellationToken);
         
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(tokenDto.Email, cancellationToken)
+        var user = await _unitOfWork.UserRepository.GetByEmailAsync(tokenDto.Email, cancellationToken)
              ?? throw new NotFoundException("User not found");
         
         user.IsConfirmed = true;
     
-        await unitOfWork.UserRepository.Update(user, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return "Email successfully confirmed!";
@@ -155,49 +160,41 @@ public class AuthenticationService(
             throw new BadRequestException("invalid email address");
         }
         
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
-    
-        if (user is null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await _unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken)
+            ?? throw new NotFoundException("User not found");
         
-        var resetPass = await tokenService.GenerateEmailToken(user, TokenTypes.ResetPassword, cancellationToken);
-        var link = GenerateEmailTokenLink(callbackUrl, email, resetPass);
+        var emailToken = await _tokenService.GenerateEmailToken(user, TokenTypes.ResetPassword, cancellationToken);
+        var link = GenerateEmailTokenLink(callbackUrl, email, emailToken);
 
         BackgroundJob.Enqueue(() =>
-            emailService.SendEmailAsync(
+            _emailService.SendEmailAsync(
                 email,
                 "Reset password",
-                $"""
-                 <h1>Reset password</h1>
-                 <p>Go thought this link to reset:</p>
-                 <a href="{link}">Reset!</a>
-                 <p>This link active only 24 hours.</p>
-                 """,
+                EmailTemplates.ResetPasswordEmailBody(link),
                 cancellationToken)
         );
 
-        return resetPass;
+        return emailToken;
     }
     
     public async Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
     {
-        var token = await cache.GetStringAsync(resetPasswordDto.Email, cancellationToken)
+        var token = await _cache.GetStringAsync(resetPasswordDto.Email, cancellationToken)
                     ?? throw new NotFoundException("Token is not found or expired");
         
         CheckTokens(token, resetPasswordDto.Token);
 
-        await cache.RemoveAsync(resetPasswordDto.Email, cancellationToken);
+        await _cache.RemoveAsync(resetPasswordDto.Email, cancellationToken);
         
-        var user = await unitOfWork.UserRepository.GetByEmailAsync(resetPasswordDto.Email, cancellationToken)
+        var user = await _unitOfWork.UserRepository.GetByEmailAsync(resetPasswordDto.Email, cancellationToken)
              ?? throw new NotFoundException("User not found");
         
-        user.PasswordHash = passwordHasher.Generate(resetPasswordDto.Password, cancellationToken);
+        user.PasswordHash = _passwordHasher.Generate(resetPasswordDto.Password, cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
     
-        await unitOfWork.UserRepository.Update(user, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return $"Password successfully reset!\n Password: {resetPasswordDto.Password}";
@@ -205,7 +202,7 @@ public class AuthenticationService(
     
     public async Task<bool> ValidateResetPasswordAsync(EmailTokenDto resetPasswordRequestTokenDto, CancellationToken cancellationToken)
     {
-        var token = await unitOfWork.TokenModelRepository.GetByToken(resetPasswordRequestTokenDto.Token, cancellationToken)
+        var token = await _unitOfWork.TokenModelRepository.GetByToken(resetPasswordRequestTokenDto.Token, cancellationToken)
             ?? throw new NotFoundException("Token not found");
 
         if (token.ExpiresAt < DateTime.UtcNow || token.IsUsed)
@@ -223,51 +220,42 @@ public class AuthenticationService(
             throw new BadRequestException("invalid email address");
         }
         
-        var user = await unitOfWork.UserRepository.GetDeletedUserByEmailAsync(email, cancellationToken);
-    
-        if (user is null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var user = await _unitOfWork.UserRepository.GetDeletedUserByEmailAsync(email, cancellationToken)
+            ?? throw new NotFoundException("User not found");
 
         if (!user.IsConfirmed)
         {
             throw new BadRequestException("To recover account you must activated it in past time.");
         }
         
-        var resetPass = await tokenService.GenerateEmailToken(user, TokenTypes.RecoverAccount, cancellationToken);
-        var link = GenerateEmailTokenLink(callbackUrl, email, resetPass);
+        var emailToken = await _tokenService.GenerateEmailToken(user, TokenTypes.RecoverAccount, cancellationToken);
+        var link = GenerateEmailTokenLink(callbackUrl, email, emailToken);
         
-        await emailService.SendEmailAsync(
+        await _emailService.SendEmailAsync(
             email, 
             "Recover account",
-            $"""
-             <h1>Recover account</h1>
-             <p>Go thought this link to recover:</p>
-             <a href="{link}">Reset!</a>
-             <p>This link active only 1 hour.</p>
-             """, 
+            EmailTemplates.RecoverEmailBody(link), 
             cancellationToken);
 
-        return resetPass;
+        return emailToken;
     }
 
     public async Task<string> RestoreAccountAsync(EmailTokenDto emailTokenDto, CancellationToken cancellationToken)
     {
-        var token = await cache.GetStringAsync(emailTokenDto.Email, cancellationToken)
+        var token = await _cache.GetStringAsync(emailTokenDto.Email, cancellationToken)
                     ?? throw new NotFoundException("Token is not found or expired");
         
         CheckTokens(token, emailTokenDto.Token);
 
-        await cache.RemoveAsync(emailTokenDto.Email, cancellationToken);
+        await _cache.RemoveAsync(emailTokenDto.Email, cancellationToken);
         
-        var user = await unitOfWork.UserRepository.GetDeletedUserByEmailAsync(emailTokenDto.Email, cancellationToken)
+        var user = await _unitOfWork.UserRepository.GetDeletedUserByEmailAsync(emailTokenDto.Email, cancellationToken)
                    ?? throw new NotFoundException("User not found");
         
         user.IsDeleted = false;
     
-        await unitOfWork.UserRepository.Update(user, cancellationToken);
-        await unitOfWork.SaveChangesAsync();
+        await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
 
         return "Account successfully recovered!";
@@ -288,10 +276,10 @@ public class AuthenticationService(
         return uriBuilder.ToString();
     }
 
-    private void CheckTokens(string token, string encodedToke)
+    private void CheckTokens(string token, string encodedToken)
     {
-        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToke));
-        if (token != decodedTokenFromDto)
+        var decodedTokenFromDto = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
+        if (String.CompareOrdinal(decodedTokenFromDto, token) != 0)
         {
             throw new BadRequestException("Invalid token");
         }

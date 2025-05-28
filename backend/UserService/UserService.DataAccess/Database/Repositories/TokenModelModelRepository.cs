@@ -1,16 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UserService.DataAccess.Interfaces;
+using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class TokenModelModelRepository(
-    UserServiceDbContext dbContext
-    ) : BaseRepository<TokenModel>(dbContext), ITokenModelRepository
+public class TokenModelModelRepository : BaseRepository<TokenEntity>, ITokenModelRepository
 {
-    public async Task<TokenModel?> GetByUserId(Guid userId, CancellationToken cancellationToken)
+    public TokenModelModelRepository(UserServiceDbContext dbContext) : base(dbContext)
     {
-        var token = await _dbContext.Tokens
+    }
+    
+    public async Task<TokenEntity?> GetByUserId(Guid userId, CancellationToken cancellationToken)
+    {
+        var token = await DbContext.Tokens
             .AsNoTracking()
             .FirstOrDefaultAsync(rt => rt.UserId == userId, cancellationToken);
         
@@ -19,9 +21,9 @@ public class TokenModelModelRepository(
         return token;
     }
 
-    public async Task<TokenModel?> GetByToken(string token, CancellationToken cancellationToken)
+    public async Task<TokenEntity?> GetByToken(string token, CancellationToken cancellationToken)
     {
-        var result = await _dbContext.Tokens
+        var result = await DbContext.Tokens
             .AsNoTracking()
             .FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
         

@@ -1,41 +1,46 @@
-﻿using UserService.DataAccess.Interfaces;
+﻿using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 
 namespace UserService.DataAccess.Database.UnitOfWork;
 
-public sealed class UnitOfWork(
-    UserServiceDbContext dbContext,
-    IUserRepository userRepository,
-    IRoleRepository roleRepository,
-    ITokenModelRepository tokenModelRepository
-    ) : IUnitOfWork
+public sealed class UnitOfWork : IUnitOfWork
 {
-    private bool _disposed = false;
+    private readonly UserServiceDbContext _dbContext;
     
-    public IUserRepository UserRepository { get; } = userRepository;
+    private bool _disposed;
 
-    public ITokenModelRepository TokenModelRepository { get; } = tokenModelRepository;
-
-    public IRoleRepository RoleRepository { get; } = roleRepository;
+    public UnitOfWork(UserServiceDbContext dbContext, IUserRepository userRepository, IRoleRepository roleRepository,
+        ITokenModelRepository tokenModelRepository)
+    {
+        _dbContext = dbContext;
+        
+        UserRepository = userRepository;
+        TokenModelRepository = tokenModelRepository;
+        RoleRepository = roleRepository;
+    }
+    
+    public IUserRepository UserRepository { get; }
+    public ITokenModelRepository TokenModelRepository { get; }
+    public IRoleRepository RoleRepository { get; }
 
     public async Task SaveChangesAsync()
     {
-        await dbContext.SaveChangesAsync();
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (!this._disposed && disposing)
-        {
-            dbContext.Dispose();
-        }
-
-        this._disposed = true;
+        await _dbContext.SaveChangesAsync();
     }
 
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
+    }
+    
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
+        {
+            _dbContext.Dispose();
+        }
+
+        _disposed = true;
     }
 }

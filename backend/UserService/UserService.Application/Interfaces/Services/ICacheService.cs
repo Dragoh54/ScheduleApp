@@ -1,8 +1,18 @@
-﻿using UserService.DataAccess.Enums;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using UserService.DataAccess.Enums;
 
-namespace UserService.Api.Interfaces;
+namespace UserService.Application.Interfaces.Services;
 
-public interface ICacheService
+public interface ICacheService<T> where T : class
 {
-    public Task AddEmailTokenToCacheAsync(string email, string token, TokenTypes type, CancellationToken cancellationToken);
+    public Task<T?> GetAsync(string key, CancellationToken cancellationToken);
+
+    public Task SetAsync(T entity, string key, CancellationToken cancellationToken,
+        DistributedCacheEntryOptions? options = null);
+    public Task SetAsync(T entity, string key, TimeSpan absoluteExpiration, CancellationToken cancellationToken);
+    public Task SetStringAsync(string entity, string key, CancellationToken cancellationToken,
+        DistributedCacheEntryOptions? options = null);
+    public Task SetStringAsync(string entity, string key, TimeSpan absoluteExpiration, CancellationToken cancellationToken);
+    public Task DeleteAsync(string key, CancellationToken cancellationToken);
+    public Task RefreshAsync(string key, CancellationToken cancellationToken);
 }

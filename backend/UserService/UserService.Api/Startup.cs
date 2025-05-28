@@ -1,25 +1,25 @@
 using Hangfire;
-using Hangfire.PostgreSql;
-using Microsoft.EntityFrameworkCore;
 using UserService.Api.Extensions;
 using UserService.Api.Filters;
 using UserService.Api.Middlewares;
 using UserService.Application.Extensions;
-using UserService.Application.Handlers.Email;
+using UserService.Application.Features.Email;
+using UserService.Application.Features.Jwt;
 using UserService.Application.Mapper;
-using UserService.DataAccess.Database;
 using UserService.DataAccess.Database.UnitOfWork;
 using UserService.DataAccess.Extensions;
-using UserService.DataAccess.Handlers.Jwt;
 using UserService.DataAccess.Interfaces.UnitOfWork;
 
 namespace UserService.Api;
 
-public class Startup(
-    IConfiguration configuration
-    )
+public class Startup
 {
-    private IConfiguration Configuration { get; } = configuration;
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+    
+    private IConfiguration Configuration { get; }
 
     public static void ConfigureBuilder(WebApplicationBuilder builder)
     {
@@ -35,9 +35,9 @@ public class Startup(
 
         services.AddApiAuthenfication(Configuration);
         
-        services.AddUserDbContext(configuration);
-        services.AddRedis(configuration);
-        services.AddHangfire(configuration);
+        services.AddUserDbContext(Configuration);
+        services.AddRedis(Configuration);
+        services.AddHangfire(Configuration);
         
         GeneralConfig.RegisterMappers();
         

@@ -1,0 +1,182 @@
+[33m89a0d9e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/rabbitMQ[m[33m, [m[1;31morigin/feature/meeting-service[m[33m, [m[1;32mfeature/meeting-service[m[33m)[m HEAD@{0}: checkout: moving from feature/user-service to feature/rabbitMQ
+[33md2e78b5[m[33m ([m[1;31morigin/feature/user-service[m[33m, [m[1;32mfeature/user-service[m[33m)[m HEAD@{1}: checkout: moving from feature/rabbitMQ to feature/user-service
+[33m89a0d9e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/rabbitMQ[m[33m, [m[1;31morigin/feature/meeting-service[m[33m, [m[1;32mfeature/meeting-service[m[33m)[m HEAD@{2}: checkout: moving from feature/meeting-service to feature/rabbitMQ
+[33m89a0d9e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/rabbitMQ[m[33m, [m[1;31morigin/feature/meeting-service[m[33m, [m[1;32mfeature/meeting-service[m[33m)[m HEAD@{3}: commit: feat: add saving to database from repository methods
+[33m40fe450[m HEAD@{4}: checkout: moving from feature/schedule-service to feature/meeting-service
+[33m6629624[m[33m ([m[1;31morigin/feature/schedule-service[m[33m, [m[1;32mfeature/schedule-service[m[33m)[m HEAD@{5}: checkout: moving from feature/user-service to feature/schedule-service
+[33md2e78b5[m[33m ([m[1;31morigin/feature/user-service[m[33m, [m[1;32mfeature/user-service[m[33m)[m HEAD@{6}: commit: fix: fixed cacheService
+[33m20f489c[m HEAD@{7}: commit: fix: saving to db from repository methods, remove primary constructors from all classes except dto
+[33m54bc760[m HEAD@{8}: checkout: moving from feature/schedule-service to feature/user-service
+[33m6629624[m[33m ([m[1;31morigin/feature/schedule-service[m[33m, [m[1;32mfeature/schedule-service[m[33m)[m HEAD@{9}: commit: fix: add saving to database from repository methods
+[33m0e4983f[m HEAD@{10}: checkout: moving from feature/meeting-service to feature/schedule-service
+[33m40fe450[m HEAD@{11}: commit: feat: minor changes
+[33m9149360[m HEAD@{12}: checkout: moving from feature/schedule-service to feature/meeting-service
+[33m0e4983f[m HEAD@{13}: checkout: moving from feature/user-service to feature/schedule-service
+[33m54bc760[m HEAD@{14}: commit: fix: add async to method's names, rename dataSeeder -> dataGenerator
+[33md047d99[m HEAD@{15}: checkout: moving from feature/schedule-service to feature/user-service
+[33m0e4983f[m HEAD@{16}: commit: fix: add query filter to get all in base repository
+[33m39b6ddb[m HEAD@{17}: checkout: moving from feature/meeting-service to feature/schedule-service
+[33m9149360[m HEAD@{18}: commit: feat: fixed caching tokens
+[33mc7e22a5[m HEAD@{19}: commit: feat: fixed bug with tokens in cache
+[33m5dba5d2[m HEAD@{20}: checkout: moving from feature/schedule-service to feature/meeting-service
+[33m39b6ddb[m HEAD@{21}: commit: feat: add filter entities
+[33me8695de[m HEAD@{22}: commit: fix: fixed nuget packeges references
+[33m89a9800[m HEAD@{23}: commit: fix: fixed references in projects, replaced interfaces from DataAccess to Application
+[33m5a2a445[m HEAD@{24}: commit: fix: minor changes in controllers
+[33mc1a2606[m HEAD@{25}: commit: fix: changed commands and queries in controlles to dto
+[33m6826212[m HEAD@{26}: commit: fix: add new structure for dto, add new skeleton response and requests dto
+[33m6b62f94[m HEAD@{27}: commit: fix: fixed names in handlers, removed primary constructors, IResult -> IActionResult
+[33mb03a515[m HEAD@{28}: checkout: moving from feature/grpc to feature/schedule-service
+[33m40fb581[m[33m ([m[1;31morigin/feature/grpc[m[33m, [m[1;32mfeature/grpc[m[33m)[m HEAD@{29}: commit: feat: add new project with .proto in UserService
+[33m5dba5d2[m HEAD@{30}: checkout: moving from feature/meeting-service to feature/grpc
+[33m5dba5d2[m HEAD@{31}: commit: feat: add todos to new logic
+[33m0588b63[m HEAD@{32}: commit: feat: removed caching login in handlers to caching services, removed email message body to email message handlers
+[33m4cb2b46[m HEAD@{33}: commit: feat: add storing notification time in meeting entity
+[33ma74102c[m HEAD@{34}: commit: feat: add scheduled job service
+[33m2a47eca[m HEAD@{35}: commit: feat: add rescheduling hangfire jobs
+[33m3d6143a[m HEAD@{36}: commit: feat: add scheduledJob entity to database for reschedulling jobs in hangfire
+[33m4e10943[m HEAD@{37}: commit: feat: remove notifiers from controllers
+[33m4fd660a[m HEAD@{38}: commit: feat: changed dto models for participant and meeting
+[33md15c835[m HEAD@{39}: commit: feat: changed participant hub, send email notifications parallel
+[33m871d8ac[m HEAD@{40}: commit: feat: add sending notifications through hangfire with signalR
+[33mbf355d9[m HEAD@{41}: commit: feat: add signalR
+[33mf9a9587[m HEAD@{42}: commit: feat: add participant from cache and deletion for certain users
+[33mcb77c4e[m HEAD@{43}: commit: feat: add caching to participant, reworked token system for confirmation status
+[33m8a34df7[m HEAD@{44}: commit: feat: add tokens through jwt
+[33m02db43e[m HEAD@{45}: commit: feat: new Token logic
+[33m9251afb[m HEAD@{46}: commit: feat: add auth
+[33m0ac2f46[m HEAD@{47}: commit: feat: add email sending
+[33m282773c[m HEAD@{48}: commit: feat: fixed mapping
+[33m7a29600[m HEAD@{49}: commit: feat: add email token provider
+[33m40d3137[m HEAD@{50}: commit: feat: add token enum foir emails, email service and cache service
+[33mdf34bf7[m HEAD@{51}: commit: feat: fixed controllers with dto
+[33m8f92483[m HEAD@{52}: commit: feat: completed base logic in use cases, implemented based controllers
+[33m3c6ebca[m HEAD@{53}: commit: feat: removed GetMeetingsInRange, completed base use cases for meeting
+[33mad1453a[m HEAD@{54}: commit: feat: divide deleting in UpdateParticipantStatusHandler
+[33m126f0eb[m HEAD@{55}: commit: feat: add commands to participant
+[33m53ececb[m HEAD@{56}: commit: feat: add participant and meeting settings to control restrictions, add based commands for meetings
+[33m11fbda5[m HEAD@{57}: commit: feat: add delete, create, reschedule commands to meeting and add, delete commands to participant
+[33ma3ddb08[m HEAD@{58}: commit: feat: add use cases skeleton part 2
+[33m020c0ae[m HEAD@{59}: commit: feat: add use cases skeleton part 1
+[33mfdb7bbb[m HEAD@{60}: commit: feat: implemented repositories
+[33ma1daec8[m HEAD@{61}: commit: feat: add migrations, configurations and reworked entities
+[33mbaa7425[m HEAD@{62}: commit: feat: add dbContext, add Hangfire
+[33m0d241b1[m HEAD@{63}: commit: feat: add IEntity for models, custom exceptions
+[33mde60a15[m HEAD@{64}: checkout: moving from feature/schedule-service to feature/meeting-service
+[33mb03a515[m HEAD@{65}: commit: feat: updated meeting statuses
+[33m4d8711a[m HEAD@{66}: checkout: moving from feature/meeting-service to feature/schedule-service
+[33mde60a15[m HEAD@{67}: commit: feat: add based domain models
+[33m4d8711a[m HEAD@{68}: checkout: moving from feature/schedule-service to feature/meeting-service
+[33m4d8711a[m HEAD@{69}: commit: feat: add authorization with Jwt
+[33mbe5b8e4[m HEAD@{70}: commit: feat: completed use cases
+[33mbe509e6[m HEAD@{71}: commit: feat: add check user availability to meeting and template controller
+[33md8a03ed[m HEAD@{72}: commit: feat: fixed dbContext
+[33m3f91446[m HEAD@{73}: checkout: moving from feature/user-service to feature/schedule-service
+[33md047d99[m HEAD@{74}: commit: feat: renamed handlers folder to features
+[33mcaa1666[m HEAD@{75}: commit: feat: split jwtProvider to JwtProvider and EmailTokenProvider
+[33mfbc337d[m HEAD@{76}: commit: feat: add fixes from pr, add documentation for DA layer for interfaces
+[33mccc22ac[m HEAD@{77}: checkout: moving from feature/schedule-service to feature/user-service
+[33m3f91446[m HEAD@{78}: commit: feat: add indexes, remove connection string to secrets
+[33m8c2affb[m HEAD@{79}: commit: feat: add controller for meetings
+[33md7c46f2[m HEAD@{80}: commit: feat: add meeting queries, change class to record in command and queries
+[33mba11908[m HEAD@{81}: commit: feat: add commands skeleton
+[33m95647fd[m HEAD@{82}: checkout: moving from feature/user-service to feature/schedule-service
+[33mccc22ac[m HEAD@{83}: commit: feat: pr fixes
+[33m835b85c[m HEAD@{84}: commit: feat: add new specification
+[33m983426e[m HEAD@{85}: commit: feat: fixes. todo: rework specifications
+[33m6b8fa8f[m HEAD@{86}: commit: feat: add specification to usserFilters
+[33mb6815c8[m HEAD@{87}: checkout: moving from feature/schedule-service to feature/user-service
+[33m95647fd[m HEAD@{88}: commit: feat: in progress meeting use cases
+[33mc063ef2[m HEAD@{89}: commit: feat: fixed templete controller
+[33m5de1c43[m HEAD@{90}: commit: feat: add meeting and meeting repository
+[33mdebc344[m HEAD@{91}: commit: feat: add validators to templates
+[33mfe59422[m HEAD@{92}: commit: feat: restored controller
+[33m2ca5424[m HEAD@{93}: commit: feat: fixed validation and mapping
+[33me6c978c[m HEAD@{94}: commit: feat: add replica set to mongo
+[33ma4337ca[m HEAD@{95}: commit: feat: fixed error mongo client
+[33m2339279[m HEAD@{96}: commit: feat: refactored DataAccess layer to new logic
+[33m687025c[m HEAD@{97}: commit: feat: refactored logic of this full service
+[33mc27fab7[m HEAD@{98}: checkout: moving from feature/schedule-service to feature/schedule-service
+[33mc27fab7[m HEAD@{99}: checkout: moving from feature/user-service to feature/schedule-service
+[33mb6815c8[m HEAD@{100}: checkout: moving from feature/schedule-service to feature/user-service
+[33mc27fab7[m HEAD@{101}: commit: feat: use cases lost
+[33md4da839[m HEAD@{102}: checkout: moving from feature/user-service to feature/schedule-service
+[33mb6815c8[m HEAD@{103}: checkout: moving from feature/schedule-service to feature/user-service
+[33md4da839[m HEAD@{104}: commit: feat: add skeleton use cases
+[33ma2d636b[m HEAD@{105}: checkout: moving from feature/user-service to feature/schedule-service
+[33mb6815c8[m HEAD@{106}: commit: feat: add extension to HttpContext
+[33m5fd254f[m HEAD@{107}: commit: feat: refactors from pull request
+[33ma84305b[m HEAD@{108}: commit: feat: fixed BaseRepository
+[33m608deca[m HEAD@{109}: checkout: moving from feature/schedule-service to feature/user-service
+[33ma2d636b[m HEAD@{110}: commit: feat: add availability template use cases
+[33mc0f7529[m HEAD@{111}: commit: feat: add mongo replica
+[33m8963187[m HEAD@{112}: commit: feat: add indexes configuration
+[33m470d51d[m HEAD@{113}: commit: feat: in DbContext change getting MongoClient from DI
+[33m16fd294[m HEAD@{114}: commit: feat: implemented ScheduleDbContext and UnitOfWork for MongoDb
+[33mcaa115a[m HEAD@{115}: commit: feat: add MongoCollectionSettings to fix repositories in DI
+[33m6763754[m HEAD@{116}: commit: feat: add base to DA layer
+[33m780c09f[m HEAD@{117}: checkout: moving from feature/user-service to feature/schedule-service
+[33m608deca[m HEAD@{118}: commit: feat: minor changes and removing unused usings
+[33m6dc790e[m HEAD@{119}: commit: feat: change routes
+[33mdf00e9d[m HEAD@{120}: checkout: moving from feature/schedule-service to feature/user-service
+[33m780c09f[m HEAD@{121}: commit: feat: add dbcontext and repos
+[33m740db5e[m HEAD@{122}: commit: feat: add exception middleware, basic entites
+[33mf1a55c2[m HEAD@{123}: commit: feat: add new dockerfile and devide Program to Startup
+[33mdf00e9d[m HEAD@{124}: checkout: moving from feature/user-service to feature/schedule-service
+[33mdf00e9d[m HEAD@{125}: commit: feat: change user endpoints, refactored services, removed unused methods
+[33m5fc9674[m HEAD@{126}: commit: feat: implemented based user-service
+[33mc4b83f2[m HEAD@{127}: commit: feat: add cleanup service
+[33m071dcbf[m HEAD@{128}: commit: feat: add hangfire
+[33m2b6e9c9[m HEAD@{129}: commit: feat: add pagination filter
+[33m857c245[m HEAD@{130}: commit: feat: add pagination
+[33m844b1a8[m HEAD@{131}: commit: feat: change user table
+[33m010df92[m HEAD@{132}: commit: fix: add roles to userDto
+[33m638b5c8[m HEAD@{133}: reset: moving to HEAD
+[33m638b5c8[m HEAD@{134}: commit: feat: add account recovery
+[33mea10eac[m HEAD@{135}: commit: feat: add checks for xisting values in cache. todo: choose method of storing refresh tokens
+[33m6896e75[m HEAD@{136}: commit: feat: add redis to cache email confirm and email reset tokens
+[33m2aca32d[m HEAD@{137}: commit: feat: add redis to cache email tokens
+[33m31206af[m HEAD@{138}: commit: feat: more minor refactors, todo: add redis and hangfire
+[33m1574391[m HEAD@{139}: commit: feat: minor refactors, todo: add redis and hangfire
+[33mdd45ba5[m HEAD@{140}: commit: feat: fix add user admin role
+[33m842182a[m HEAD@{141}: commit: feat: add reset password
+[33m1b2e255[m HEAD@{142}: commit: feat: add reset password
+[33mb0a9ab6[m HEAD@{143}: commit: fix: token confirmation link
+[33m3259e64[m HEAD@{144}: commit: feat: add email confirmation
+[33mdf8b192[m HEAD@{145}: commit: feat: add email confirmation sending link
+[33m018266e[m HEAD@{146}: commit: feat: add email sending
+[33md3bb1e2[m HEAD@{147}: commit: feat: add new migration with is confirmed
+[33m722f187[m HEAD@{148}: commit: todo: add email confirmation
+[33m516c1c8[m HEAD@{149}: commit: feat: add modificator new to UserRepository Get methods, add refresh token route
+[33m7ea42d9[m HEAD@{150}: commit: feat: devide user service to auth service, change token model
+[33mcd7d9f0[m HEAD@{151}: commit: feat: change acces token from cookies to header
+[33m0b4146e[m HEAD@{152}: commit: todo: change access token
+[33mae0e1dc[m HEAD@{153}: commit: feat: minor changes
+[33md9b97fe[m HEAD@{154}: commit: fix: save delete user, user include roles now
+[33me5bac07[m HEAD@{155}: commit: feat: minor cahnges after demo, todo: change access cookies to header
+[33mf7aaf75[m HEAD@{156}: commit: feat: add cookies, add authenfication filters, add eager loading for user roles, todo: add user and users with roles
+[33m09236a3[m HEAD@{157}: commit: feat: updated readme
+[33m347083d[m HEAD@{158}: commit: feat: add login and logout
+[33m3ef57da[m HEAD@{159}: commit: feat: add exception handler middleware
+[33m5fdbf80[m HEAD@{160}: commit: feat: add validation to user dto, add basic controller for crud user, add mapping for user dto
+[33m1797166[m HEAD@{161}: commit: feat: refactored add validation in startup
+[33mc54ac46[m HEAD@{162}: commit: feat: add validation filter
+[33m1cdacaa[m HEAD@{163}: commit: feat: add basic registration
+[33m727c02c[m HEAD@{164}: commit: feat: fixed database
+[33m226db02[m HEAD@{165}: commit: feat: in progress database update
+[33m2a35f7c[m HEAD@{166}: pull: Fast-forward
+[33ma687177[m HEAD@{167}: commit: fix: refactored .gitignore for ignoring secrets
+[33m2326b7f[m HEAD@{168}: commit: feat: add secrets
+[33m2b45bc0[m HEAD@{169}: commit: feat: add repository service extension
+[33m99f009e[m HEAD@{170}: commit: feat: add configurations
+[33m5d80dea[m HEAD@{171}: commit: feat: add pgAdmin to docker, repositories implemention, unitOfWork, dbContext, custom exceptions, userConfiguration
+[33m23ae5f0[m HEAD@{172}: checkout: moving from dev to feature/user-service
+[33ma27350b[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{173}: checkout: moving from feature/user-service to dev
+[33m23ae5f0[m HEAD@{174}: checkout: moving from dev to feature/user-service
+[33ma27350b[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{175}: checkout: moving from feature/user-service to dev
+[33m23ae5f0[m HEAD@{176}: commit: feat: add models, interfaces, startup
+[33ma27350b[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{177}: checkout: moving from dev to feature/user-service
+[33ma27350b[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{178}: reset: moving to HEAD
+[33ma27350b[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{179}: checkout: moving from feature/skeleton to dev
+[33m7e8bdad[m[33m ([m[1;31morigin/feature/skeleton[m[33m, [m[1;32mmain[m[33m, [m[1;32mfeature/skeleton[m[33m)[m HEAD@{180}: checkout: moving from dev to feature/skeleton
+[33ma27350b[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{181}: clone: from https://github.com/Dragoh54/ScheduleApp.git

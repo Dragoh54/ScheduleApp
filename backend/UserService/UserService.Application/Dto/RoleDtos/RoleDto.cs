@@ -1,6 +1,6 @@
 ﻿using UserService.DataAccess.Enums;
 
-namespace UserService.Application.Dto.RoleDto;
+namespace UserService.Application.Dto.RoleDtos;
 
 public class RoleDto
 {

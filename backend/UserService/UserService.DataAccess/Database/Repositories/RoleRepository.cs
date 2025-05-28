@@ -1,29 +1,33 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserService.DataAccess.Enums;
-using UserService.DataAccess.Interfaces;
+using UserService.DataAccess.Interfaces.Repositories;
 using UserService.DataAccess.Models;
 
 namespace UserService.DataAccess.Database.Repositories;
 
-public class RoleRepository(
-    UserServiceDbContext dbContext
-    ) : BaseRepository<RoleEntity>(dbContext), IRoleRepository
+public class RoleRepository : BaseRepository<RoleEntity>, IRoleRepository
 {
-    public async Task<IEnumerable<RoleEntity>?> Get(CancellationToken cancellationToken)
+
+    public RoleRepository(UserServiceDbContext dbContext) : base(dbContext)
     {
-        var roles = await _dbContext.Roles
+    }
+    
+    public async Task<IEnumerable<RoleEntity>?> GetAllWithUserAsync(CancellationToken cancellationToken)
+    {
+        var roles = await DbContext.Roles
             .Include(r => r.UserRoles)
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        
         cancellationToken.ThrowIfCancellationRequested();
         
         return roles;
     }
 
-    public new async Task<RoleEntity?> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<RoleEntity?> GetByIdWithUserAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Roles
+        var user = await DbContext.Roles
             .Include(r => r.UserRoles) 
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
@@ -34,9 +38,9 @@ public class RoleRepository(
         return user;
     }
 
-    public async Task<RoleEntity?> GetByRole(Roles roles, CancellationToken cancellationToken)
+    public async Task<RoleEntity?> GetByRoleAsync(Roles roles, CancellationToken cancellationToken)
     {
-        var item = await _dbContext.Roles
+        var role = await DbContext.Roles
             .Include(r => r.UserRoles)
             .ThenInclude(ur => ur.User)
             .AsNoTracking()
@@ -44,6 +48,6 @@ public class RoleRepository(
         
         cancellationToken.ThrowIfCancellationRequested();
         
-        return item;
+        return role;
     }
 }

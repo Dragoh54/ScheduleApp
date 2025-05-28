@@ -1,26 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using UserService.Api.Interfaces;
-using UserService.DataAccess.Handlers.Jwt;
-using UserService.DataAccess.Interfaces.Auth;
+using UserService.Application.Features.Jwt;
+using UserService.Application.Interfaces.Services;
 
 namespace UserService.Api.Controllers;
 
 [ApiController]
-public class TokenController(
-    ITokenService tokenService, 
-    IOptions<JwtOptions> jwtOptions
-    ) : Controller
+[Route("tokens")]
+public class TokenController : Controller
 {
-    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+    private readonly JwtOptions _jwtOptions;
+    private readonly ITokenService _tokenService;
+
+    public TokenController(ITokenService tokenService, IOptions<JwtOptions> jwtOptions)
+    {
+        _jwtOptions = jwtOptions.Value;
+        _tokenService = tokenService;
+    }
     
-    [HttpPost("/refresh")]
+    /// <summary>
+    /// Refresh access and refresh token
+    /// </summary>
+    [HttpPost]
     [AllowAnonymous]
     public async Task<IResult> Refresh(CancellationToken cancellationToken)
     {
         var refreshToken = HttpContext.Request.Cookies["not-a-refresh-token-cookies"];
-        var (newAccessToken, newRefreshToken) = await tokenService.RefreshAccessToken(refreshToken, cancellationToken);
+        var (newAccessToken, newRefreshToken) = await _tokenService.RefreshAccessToken(refreshToken, cancellationToken);
         
         HttpContext.Response.Cookies.Append("not-a-refresh-token-cookies", newRefreshToken, new CookieOptions()
         {

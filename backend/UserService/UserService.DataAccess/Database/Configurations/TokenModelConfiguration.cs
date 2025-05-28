@@ -2,11 +2,11 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UserService.DataAccess.Models;
 
-namespace UserService.DataAccess.Configurations;
+namespace UserService.DataAccess.Database.Configurations;
 
-public class TokenModelConfiguration : IEntityTypeConfiguration<TokenModel>
+public class TokenModelConfiguration : IEntityTypeConfiguration<TokenEntity>
 {
-    public void Configure(EntityTypeBuilder<TokenModel> builder)
+    public void Configure(EntityTypeBuilder<TokenEntity> builder)
     {
         builder.HasKey(rt => rt.Id);
 

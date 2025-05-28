@@ -1,21 +1,33 @@
 ﻿using MailKit.Net.Smtp;
-using MailKit.Security;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
-using UserService.Api.Interfaces;
-using UserService.Application.Dto.EmailDtos;
-using UserService.Application.Handlers.Email;
+using UserService.Application.Features.Email;
+using UserService.Application.Interfaces.Services;
 
 namespace UserService.Application.Services;
 
-public class EmailService(
-    IOptions<EmailSettings> settings
-    ) : IEmailService
+public class EmailService : IEmailService
 {
-    private readonly EmailSettings _settings = settings.Value;
+    private readonly EmailSettings _settings;
+
+    public EmailService(IOptions<EmailSettings> settings)
+    {
+        _settings = settings.Value;
+    }
+    
     public async Task SendEmailAsync(string mailTo, string subject, string message, CancellationToken cancellationToken)
+    {
+        var emailMessage = BuildMimeMessage(mailTo, subject, message);
+             
+        using (var client = new SmtpClient())
+        {
+            await SendEmailThroughClientAsync(client, emailMessage, cancellationToken);
+        }
+    }
+
+    private MimeMessage BuildMimeMessage(string mailTo, string subject, string message)
     {
         var emailMessage = new MimeMessage();
  
@@ -26,14 +38,17 @@ public class EmailService(
         {
             Text = message
         };
-             
-        using (var client = new SmtpClient())
-        {
-            await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.EnableSsl, cancellationToken);
-            await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword, cancellationToken);
-            await client.SendAsync(emailMessage, cancellationToken);
-            
-            await client.DisconnectAsync(true, cancellationToken);
-        }
+        
+        return emailMessage;
+    }
+
+    private async Task SendEmailThroughClientAsync(SmtpClient client, MimeMessage emailMessage, CancellationToken cancellationToken)
+    {
+        await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, _settings.EnableSsl, cancellationToken);
+    
+        await client.AuthenticateAsync(_settings.SmtpUsername, _settings.SmtpPassword, cancellationToken);
+    
+        await client.SendAsync(emailMessage, cancellationToken);
+        await client.DisconnectAsync(true, cancellationToken);
     }
 }

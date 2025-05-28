@@ -1,8 +1,7 @@
-﻿using UserService.Application.Dto;
-using UserService.DataAccess.Enums;
+﻿using UserService.DataAccess.Enums;
 using UserService.DataAccess.Models;
 
-namespace UserService.Api.Interfaces;
+namespace UserService.Application.Interfaces.Services;
 
 public interface ITokenService
 {
