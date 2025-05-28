@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using ScheduleService.Api.Extensions;
 using ScheduleService.Application.Extensions;
 using ScheduleService.Application.Mapping;
+using ScheduleService.Application.RabbitMQ.Options;
 using ScheduleService.DataAccess.Extensions;
 using ScheduleService.DataAccess.Persistence;
 using ScheduleService.DataAccess.Settings;
@@ -27,6 +28,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<RabbitMQConnectionOptions>(Configuration.GetSection("RabbitMQ"));
+        
         services.AddControllersWithViews();
         
         services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
@@ -36,6 +39,8 @@ public class Startup
         services.AddDbContext();
         services.AddUnitOfWork();
         services.AddRepositories();
+        
+        services.AddRabbitMQ(Configuration);
 
         services.AddMediatRServices();
         

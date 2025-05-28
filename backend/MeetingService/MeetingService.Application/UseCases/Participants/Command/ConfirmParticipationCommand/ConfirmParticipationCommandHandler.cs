@@ -5,8 +5,11 @@ using MeetingService.Api.Interfaces.Notifiers;
 using MeetingService.Application.Dtos.NotificationDto;
 using MeetingService.Application.Dtos.ParticipantDto.Responses;
 using MeetingService.Application.Handlers.Email;
+using MeetingService.Application.Interfaces.RabbitMQ.Producers;
+using MeetingService.Application.Interfaces.RabbitMQ.Services;
 using MeetingService.Application.Interfaces.Services;
 using MeetingService.Application.Interfaces.UnitOfWork;
+using MeetingService.Application.RabbitMQ.Dto;
 using MeetingService.DomainModel.Enums;
 using MeetingService.DomainModel.Exceptions;
 using MeetingService.DomainModel.Models;
@@ -22,7 +25,8 @@ public class ConfirmParticipationCommandHandler : IRequestHandler<ConfirmPartici
         IEmailTokenService emailTokenService,
         IEmailNotificationService emailNotificationService,
         IParticipantNotifier participantNotifier,
-        IMeetingNotifier meetingNotifier
+        IMeetingNotifier meetingNotifier,
+        IRabbitMQService rabbitMqService
     )
     {
         _unitOfWork = unitOfWork;
@@ -32,6 +36,7 @@ public class ConfirmParticipationCommandHandler : IRequestHandler<ConfirmPartici
         _emailNotificationService = emailNotificationService;
         _participantNotifier = participantNotifier;
         _meetingNotifier = meetingNotifier;
+        _rabbitMqService = rabbitMqService;
     }
 
     private readonly IUnitOfWork _unitOfWork;
@@ -41,6 +46,7 @@ public class ConfirmParticipationCommandHandler : IRequestHandler<ConfirmPartici
     private readonly IEmailNotificationService _emailNotificationService;
     private readonly IParticipantNotifier _participantNotifier;
     private readonly IMeetingNotifier _meetingNotifier;
+    private readonly IRabbitMQService _rabbitMqService;
     
     public async Task<ParticipantWithMeetingResponseDto> Handle(ConfirmParticipationCommand request, CancellationToken cancellationToken)
     {
@@ -74,6 +80,16 @@ public class ConfirmParticipationCommandHandler : IRequestHandler<ConfirmPartici
         var participantInDatabase = await _unitOfWork.ParticipantRepository.Add(participant, cancellationToken)
             ?? throw new BadRequestException("Participant could not be added");
         
+        var dto = new MeetingFromRabbitDto
+        {
+            UserId = participantInDatabase.UserId,
+            StartTime = meeting.StartTime,
+            EndTime = meeting.EndTime,
+            Status = meeting.Status
+        };
+
+        await _rabbitMqService.SendSubscriptionMessage(dto, cancellationToken);
+        
         BackgroundJob.Enqueue(() =>
             _emailService.SendEmailAsync(participant.Email,
                 $"Welcome on board",
@@ -82,9 +98,9 @@ public class ConfirmParticipationCommandHandler : IRequestHandler<ConfirmPartici
             ));
         
         await SendEmailNotification(meeting, participantInDatabase, cancellationToken);
-        await _participantNotifier.NotifyJoinedAsync(meeting.Id, participantInDatabase.UserId, meeting.Title!);
-        await _meetingNotifier.NotifyOnTimeAsync(meeting.Id, meeting.Title!, meeting.StartTime, meeting.NotifyTime, cancellationToken);
-        
+        //await _participantNotifier.NotifyJoinedAsync(meeting.Id, participantInDatabase.UserId, meeting.Title!);
+        //await _meetingNotifier.NotifyOnTimeAsync(meeting.Id, meeting.Title!, meeting.StartTime, meeting.NotifyTime, cancellationToken);
+
         cancellationToken.ThrowIfCancellationRequested();
         
         return participantInDatabase.Adapt<ParticipantWithMeetingResponseDto>();

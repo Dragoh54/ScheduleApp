@@ -1,11 +1,19 @@
-﻿using MeetingService.Application.Interfaces.RabbitMQ;
-using MeetingService.Application.RabbitMQ.Options;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
+using ScheduleService.Application.Interfaces.RabbitMQ;
+using ScheduleService.Application.RabbitMQ.Options;
 
-namespace MeetingService.Application.RabbitMQ;
+namespace ScheduleService.Application.RabbitMQ.Connection;
 
 public class RabbitMQConnection : IRabbitMQConnection
 {
+    public RabbitMQConnection(RabbitMQConnectionOptions options)
+    {
+        _options = options;
+        _connectionLock = new SemaphoreSlim(1, 1);
+        
+        InitializeConnection();
+    }
+    
     private IConnection? _connection;
 
     private readonly RabbitMQConnectionOptions _options;
@@ -15,26 +23,6 @@ public class RabbitMQConnection : IRabbitMQConnection
 
     private bool disposed = false;
 
-    public RabbitMQConnection(RabbitMQConnectionOptions options)
-    {
-        _options = options;
-        _connectionLock = new SemaphoreSlim(1, 1);
-        StartConnection();
-    }
-
-    private void StartConnection()
-    {
-        var connectionFactory = new ConnectionFactory
-        {
-            HostName = _options.Hostname,
-            Port = _options.Port,
-            UserName = _options.Username,
-            Password = _options.Password,
-        };
-
-        _taskConnection = connectionFactory.CreateConnectionAsync();
-    }
-    
     public async ValueTask<IConnection> GetConnectionAsync(CancellationToken cancellationToken)
     {
         if (_connection != null)
@@ -58,6 +46,21 @@ public class RabbitMQConnection : IRabbitMQConnection
         {
             _connectionLock.Release();
         }
+    }
+    
+    private void InitializeConnection()
+    {
+        var factory = new ConnectionFactory
+        {
+            HostName = _options.Hostname,
+            Port = _options.Port,
+            UserName = _options.Username,
+            Password = _options.Password,
+        };
+
+        factory.RequestedHeartbeat = TimeSpan.FromSeconds(30);
+
+        _taskConnection = factory.CreateConnectionAsync();
     }
 
     protected virtual void Dispose(bool disposing)
