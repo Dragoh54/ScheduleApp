@@ -1,9 +1,41 @@
 # Schedule App
-### Features(in progress)
-* User Service
-* Schedule Service
-* Meeting Service
-* ApiGateway (Ocelot)
+This project implements a scheduling platform using a microservices architecture inspired by Calendly. The system is composed of several independent services, each responsible for a distinct domain.
+
+## User Service
+### Overview:
+Handles user registration, authentication, profile management, roles, and permissions.
+### Technologies:
+* Jwt
+* PostgreSQL
+* Hangfire
+* Mapster
+* gRpc
+* redis
+* fluent validation
+
+## Schedule Service
+### Overview:
+Manages availability templates, working hours, and scheduling rules.
+### Technologies:
+* Jwt
+* MongoDb (with replicas)
+* RabbitMQ (Consumer)
+* redis
+* mediatoR
+
+## Meeting Service
+### Overview:
+Manages meeting booking, rescheduling, cancellation, and notifications.
+### Technologies:
+* Jwt
+* PostgreSQL
+* Hangfire
+* Mapster
+* SignalR
+* RabbitMQ
+* gRpc
+* redis
+* mediatoR
 
 # Secrets
 ## in root <b>.env</b> for docker containers
@@ -100,19 +132,65 @@
   }
 ```
 
+## User Service gRpc
+```json
+  {
+    "ConnectionStrings": {
+    "UserServiceDbContext": "connection string"
+    }
+  }
+```
+
 ## Schedule Service
 ```json
   {
-    "MongoDbSettings": {
-      "MongoDatabaseName": "schedule_service_db",
-      "MongoConnectionString": "connection string"
-    },
-    "MongoCollections": {
-      "AvailabilityTemplates": "availability_templates",
-      "Meetings": "meetings"
-    },
-    "ConnectionStrings": {
-      "Redis": "localhost:"
-    }
+  "MongoDbSettings": {
+    "MongoDatabaseName": "schedule_service_db",
+    "MongoConnectionString": "connection string"
+  },
+  "JWTSecretKey": "key",
+  "MongoCollections": {
+    "AvailabilityTemplates": "availability_templates",
+    "Meetings": "meetings"
+  },
+  "RabbitMQ": {
+    "Hostname": "hostname",
+    "Username": "username",
+    "Password": "password",
+    "Port": 5672,
+    "SubscriptionQueueName": "queue name"
+  },
+  "ConnectionStrings": {
+    "Redis": "connection string"
   }
+}
+```
+
+## Meeting Service
+```json
+{
+  "ConnectionStrings": {
+    "MeetingServiceDbContext": "connection string",
+    "Hangfire": "connection string",
+    "Redis": "connection string"
+  },
+  "JWTSecretKey": "key",
+  "RabbitMQ": {
+    "Hostname": "hostname",
+    "Username": "username",
+    "Password": "password",
+    "Port": 5672,
+    "SubscriptionQueueName": "queue name"
+  },
+  "EmailSettings": {
+    "SmtpServer": "smtp.gmail.com",
+    "SmtpPort": 465,
+    "SmtpUsername": "email",
+    "SmtpPassword": "key",
+    "FromName": "Schedule App",
+    "FromAddress": "email",
+    "EnableSsl": true
+  },
+  "UserGrpcUrl": "http://hostname:port"
+}
 ```
